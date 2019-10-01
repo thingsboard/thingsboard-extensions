@@ -14,6 +14,7 @@ mvn clean install -DskipTests
 cd ${TB_WORK_DIR}
 scp widgets/target/thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar ubuntu@${CUSTOMER}:~/.
 ssh ${CUSTOMER}
+
 sudo cp thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar /usr/share/thingsboard/extensions/
 sudo chown thingsboard:thingsboard /usr/share/thingsboard/extensions/thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar
 sudo service thingsboard restart
