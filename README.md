@@ -4,14 +4,14 @@ Extension ThingsBoard Platform
 ## Build Project
 
 ```
-cd ${TB_WORK_DIR}
+cd ${TB_EXTENSION_WORK_DIR}
 mvn clean install -DskipTests
 ```
 
 ## Deploy project to customer server
 
 ```
-cd ${TB_WORK_DIR}
+cd ${TB_EXTENSION_WORK_DIR}
 scp widgets/target/thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar ubuntu@${CUSTOMER}:~/.
 ssh ${CUSTOMER}
 
