@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 ThingsBoard
+ * Copyright © 2020 ThingsBoard
  */
 /* eslint-disable */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 ThingsBoard
+ * Copyright © 2020 ThingsBoard
  */
 import thingsboardExtensionTypes from './thingsboard-extension-types.constant';
 import thingsboardExtensionConfig from './thingsboard-extension-config';
