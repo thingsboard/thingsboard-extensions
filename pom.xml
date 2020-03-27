@@ -101,7 +101,6 @@
                             <exclude>**/.env</exclude>
                             <exclude>**/.eslintrc</exclude>
                             <exclude>**/.babelrc</exclude>
-                            <exclude>**/.jshintrc</exclude>
                             <exclude>**/.gradle/**</exclude>
                             <exclude>**/nightwatch</exclude>
                             <exclude>**/README</exclude>
