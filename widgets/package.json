@@ -39,7 +39,7 @@
     "imagemin": "^6.0.0",
     "img-loader": "^3.0.1",
     "jsonminify": "^0.4.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "^0.8.0",
