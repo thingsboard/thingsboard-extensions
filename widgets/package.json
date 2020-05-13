@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "ThingsBoard Extension Widgets",
   "scripts": {
-    "getthingsboard": "git clone git@github.com:thingsboard/thingsboard.git ./target/git-tmp/thingsboard",
+    "getthingsboard": "git clone --branch release-2.5 git@github.com:thingsboard/thingsboard.git ./target/git-tmp/thingsboard",
     "start": "babel-node --max_old_space_size=4096 server.js",
     "build": "cross-env NODE_OPTIONS=--max_old_space_size=4096 NODE_ENV=production webpack -p"
   },
