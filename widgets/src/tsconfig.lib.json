@@ -1,0 +1,29 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/lib",
+    "target": "es5",
+    "declaration": true,
+    "inlineSources": true,
+    "types": ["node", "jquery", "flot", "tooltipster", "tinycolor2", "js-beautify", "jstree", "raphael", "canvas-gauges"],
+    "skipLibCheck": true,
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "lib": [
+      "dom",
+      "es2018"
+    ]
+  },
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true,
+    "strictMetadataEmit": true,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "enableResourceInlining": true,
+    "enableIvy": false
+  },
+  "exclude": [
+    "**/*.spec.ts"
+  ]
+}

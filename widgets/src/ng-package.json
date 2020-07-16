@@ -1,0 +1,13 @@
+{
+  "$schema": "../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../dist/widget-extension",
+  "lib": {
+    "entryFile": "app/public-api.ts",
+    "umdModuleIds": {
+      "@ngrx/store": "ngrx-store",
+      "@ngx-translate/core": "ngx-translate",
+      "@core/public-api": "core",
+      "@shared/public-api": "shared"
+    }
+  }
+}

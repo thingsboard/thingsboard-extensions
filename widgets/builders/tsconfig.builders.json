@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "./static-serve",
+    "importHelpers": false,
+    "sourceMap": false,
+    "target": "es6"
+  },
+  "files": [
+    "./static-serve/index.ts"
+  ]
+}

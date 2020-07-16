@@ -1,0 +1,14 @@
+{
+  "name": "thingsboard-extension-widgets",
+  "version": "3.0.0",
+  "peerDependencies": {
+    "@angular/common": "^9.1.2",
+    "@angular/core": "^9.1.2",
+    "@angular/cdk": "~9.2.1",
+    "@angular/forms": "~9.1.2",
+    "@angular/material": "^9.2.1",
+    "@angular/router": "~9.1.2",
+    "@ngrx/store": "^9.1.0",
+    "@ngx-translate/core": "^12.1.2"
+  }
+}

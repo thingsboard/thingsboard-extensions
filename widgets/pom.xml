@@ -11,7 +11,7 @@
         <version>1.0.0-SNAPSHOT</version>
         <artifactId>thingsboard-extension</artifactId>
     </parent>
-    <groupId>com.thingsboard.extension</groupId>
+    <groupId>com.thingsboard.widget-extension</groupId>
     <artifactId>thingsboard-extension-widgets</artifactId>
     <packaging>jar</packaging>
 
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.0</version>
+                <version>1.7.5</version>
                 <configuration>
                     <installDirectory>target</installDirectory>
                     <workingDirectory>${basedir}</workingDirectory>
@@ -44,12 +44,12 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v10.16.0</nodeVersion>
-                            <npmVersion>6.4.1</npmVersion>
+                            <nodeVersion>v12.16.1</nodeVersion>
+                            <npmVersion>6.13.4</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm getthingsboard</id>
+                        <id>npm getThingsboard</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -81,7 +81,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.0</version>
+                        <version>1.7.5</version>
                         <configuration>
                             <installDirectory>target</installDirectory>
                             <workingDirectory>${basedir}</workingDirectory>
@@ -113,7 +113,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.0</version>
+                        <version>1.7.5</version>
                         <configuration>
                             <installDirectory>target</installDirectory>
                             <workingDirectory>${basedir}</workingDirectory>

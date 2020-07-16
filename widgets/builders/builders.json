@@ -1,0 +1,10 @@
+{
+  "builders": {
+    "static-serve": {
+      "implementation": "./static-serve",
+      "class": "./static-serve",
+      "schema": "./static-serve/schema.json",
+      "description": "Serve static files"
+    }
+  }
+}

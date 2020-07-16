@@ -12,14 +12,14 @@
     <packaging>pom</packaging>
 
     <name>ThingsBoard Extension</name>
-    <inceptionYear>2017</inceptionYear>
+    <inceptionYear>2016</inceptionYear>
 
     <properties>
         <main.dir>${basedir}</main.dir>
-        <thingsboard.version>2.4.3PE</thingsboard.version>
+        <thingsboard.version>3.0.0PE</thingsboard.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.1.7</logback.version>
+        <logback.version>1.2.3</logback.version>
         <mockito.version>1.9.5</mockito.version>
         <surfire.version>2.19.1</surfire.version>
     </properties>
@@ -114,6 +114,8 @@
                             <exclude>src/sh/**</exclude>
                             <exclude>src/main/scripts/control/**</exclude>
                             <exclude>src/main/scripts/windows/**</exclude>
+                            <exclude>dist/**</exclude>
+                            <exclude>builders/static-serve/index.js</exclude>
                         </excludes>
                         <mapping>
                             <proto>JAVADOC_STYLE</proto>

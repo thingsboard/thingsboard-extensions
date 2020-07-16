@@ -1,0 +1,46 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es5",
+    "jsx": "react",
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/thingsboard/src/typings/rawloader.typings.d.ts",
+      "node_modules/thingsboard/src/typings/jquery.typings.d.ts",
+      "node_modules/thingsboard/src/typings/jquery.flot.typings.d.ts",
+      "node_modules/thingsboard/src/typings/jquery.jstree.typings.d.ts",
+      "node_modules/thingsboard/src/typings/split.js.typings.d.ts"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "@angular/*": [
+        "./node_modules/@angular/*"
+      ],
+      "widget-extension-config": [
+        "dist/widget-extension"
+      ],
+      "widget-extension-config/*": [
+        "dist/widget-extension/*"
+      ],
+      "@env/*": ["node_modules/thingsboard/src/environments/*"],
+      "@app/*": ["node_modules/thingsboard/src/app/*"],
+      "@core/*": ["node_modules/thingsboard/src/app/core/*"],
+      "@shared/*": ["node_modules/thingsboard/src/app/shared/*"],
+      "@modules/*": ["node_modules/thingsboard/src/app/modules/*"],
+      "@home/*": ["node_modules/thingsboard/src/app/modules/home/*"]
+    }
+  }
+}
