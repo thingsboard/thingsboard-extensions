@@ -22,6 +22,7 @@
       "node_modules/thingsboard/src/typings/split.js.typings.d.ts"
     ],
     "lib": [
+      "es2019",
       "es2018",
       "dom"
     ],

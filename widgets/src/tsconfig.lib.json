@@ -11,8 +11,9 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "lib": [
-      "dom",
-      "es2018"
+      "es2019",
+      "es2018",
+      "dom"
     ]
   },
   "angularCompilerOptions": {

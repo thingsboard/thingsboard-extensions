@@ -4,6 +4,7 @@
   "version": "3.0.0",
   "description": "ThingsBoard Extension Widgets",
   "scripts": {
+    "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
     "cleanup": "rm -rf ./target",
     "getthingsboard": "git clone --depth 1 git@github.com:thingsboard/thingsboard.git ./target/git-tmp/thingsboard",
     "ng": "ng",
@@ -54,6 +55,7 @@
     "ngrx-store-freeze": "^0.2.4",
     "protractor": "~5.4.4",
     "rxjs": "~6.5.5",
+    "split.js": "^1.6.2",
     "thingsboard": "file:./target/git-tmp/thingsboard/ui-ngx",
     "ts-node": "~8.9.0",
     "tslib": "^1.11.1",
