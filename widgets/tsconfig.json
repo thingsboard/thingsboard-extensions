@@ -41,7 +41,9 @@
       "@core/*": ["node_modules/thingsboard/src/app/core/*"],
       "@shared/*": ["node_modules/thingsboard/src/app/shared/*"],
       "@modules/*": ["node_modules/thingsboard/src/app/modules/*"],
-      "@home/*": ["node_modules/thingsboard/src/app/modules/home/*"]
+      "@home/*": ["node_modules/thingsboard/src/app/modules/home/*"],
+      "rxjs": ["node_modules/rxjs"],
+      "rxjs/*": ["node_modules/rxjs/*"]
     }
   }
 }
