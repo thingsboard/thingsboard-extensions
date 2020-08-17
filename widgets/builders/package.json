@@ -7,21 +7,21 @@
     "postinstall": "tsc -p tsconfig.builders.json --skipLibCheck"
   },
   "dependencies": {
-    "@angular-devkit/architect": "~0.901.1",
-    "rxjs": "6.5.5"
+    "@angular-devkit/architect": "~0.1000.6",
+    "rxjs": "6.6.2"
   },
   "peerDependencies": {
-    "ng-packagr": "^9.1.1"
+    "ng-packagr": "^10.0.4"
   },
   "devDependencies": {
-    "@angular-devkit/core": "~9.1.1",
-    "@angular-devkit/architect": "~0.901.1",
-    "@angular-devkit/build-ng-packagr": "~0.901.1",
-    "@angular/compiler": "~9.1.2",
-    "@angular/compiler-cli": "~9.1.2",
-    "ng-packagr": "^9.1.1",
-    "tslib": "^1.11.1",
-    "tsickle": "^0.38.1",
+    "@angular-devkit/core": "~10.0.6",
+    "@angular-devkit/architect": "~0.1000.6",
+    "@angular-devkit/build-ng-packagr": "~0.1000.6",
+    "@angular/compiler": "~10.0.9",
+    "@angular/compiler-cli": "~10.0.9",
+    "ng-packagr": "^10.0.4",
+    "tslib": "^2.0.1",
+    "tsickle": "^0.39.1",
     "express": "^4.17.1",
     "http": "^0.0.0"
   }
