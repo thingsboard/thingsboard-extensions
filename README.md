@@ -8,18 +8,24 @@ cd ${TB_EXTENSION_WORK_DIR}/widgets
 mvn clean install -P npm-start
 ```
 
-In widgets library create a new widget. In the resources tab of the widget editor add these two files:
+In widgets library create a new widget. In the resources tab of the widget editor add this file:
 ```
-http://localhost:5000/thingsboard-extension-widgets.js
-http://localhost:5000/thingsboard-extension-style.css
+static/thingsboard-extension-widgets.js
+```
+
+You also need to update the local UI TB settings. You need to replace the proxy settings in the file ui-ngx/proxy.conf.js with:
+```
+"/static": {
+    "target": "http://localhost:5000",
+    "secure": false,
+}
 ```
 
 ## Run project in production mode
 
-In widgets library create a new widget. In the resources tab of the widget editor add these two files:
+In widgets library create a new widget. In the resources tab of the widget editor add this file:
 ```
 static/thingsboard-extension-widgets.js
-static/thingsboard-extension-style.css
 ```
 
 ## Build project
