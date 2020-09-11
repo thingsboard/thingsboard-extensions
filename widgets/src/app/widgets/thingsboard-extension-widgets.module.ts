@@ -9,14 +9,19 @@ import addCustomWidgetLocale from './locale/custom-widget-locale.constant';
 import { ExampleModule } from './components/example/example.module';
 import { SharedModule } from '@shared/public-api';
 import { HomeComponentsModule } from '@home/components/public-api';
+import { ExampleMap } from './components/map/example-map.component';
 
 @NgModule({
+  declarations: [
+    ExampleMap
+  ],
   imports: [
     CommonModule,
     HomeComponentsModule,
     SharedModule
   ],
   exports: [
+    ExampleMap,
     ExampleModule
   ]
 })
