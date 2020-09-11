@@ -31,8 +31,7 @@ export class ExampleMap implements MapWidgetInterface, OnInit {
   @Input() mapProvider: MapProviders
 
   public $element: any;
-  constructor(
-  ) {}
+  constructor() {}
 
   map: any;
   provider: MapProviders;
@@ -82,23 +81,6 @@ export class ExampleMap implements MapWidgetInterface, OnInit {
     return schema;
   }
 
-  public static actionSources(): object {
-    return {
-      markerClick: {
-        name: 'widget-action.marker-click',
-        multiple: false
-      },
-      polygonClick: {
-        name: 'widget-action.polygon-click',
-        multiple: false
-      },
-      tooltipAction: {
-        name: 'widget-action.tooltip-tag-action',
-        multiple: true
-      }
-    };
-  }
-
   translate = (key: string, defaultTranslation?: string): string => {
     if (key) {
       return (this.ctx.$injector.get(UtilsService).customTranslation(key, defaultTranslation || key)
@@ -117,13 +99,14 @@ export class ExampleMap implements MapWidgetInterface, OnInit {
   }
 
   ngOnInit() {
+    this.ctx.onResize = this.onResize;
+
     if (this.map) {
       this.map.map.remove();
       delete this.map;
     }
 
     this.data = this.ctx.data;
-    console.log(this.ctx, this.mapProvider);
     this.$element = this.ctx.$containerParent[0];
     this.settings = this.initSettings(this.ctx.settings, false);
     this.settings.tooltipAction = this.getDescriptors('tooltipAction');
@@ -208,9 +191,8 @@ export class ExampleMap implements MapWidgetInterface, OnInit {
   }
 
   public onResize() {
-    console.log("resize");
     this.map?.invalidateSize();
-    this.map.onResize();
+    this.map?.onResize();
   }
 
   onDestroy() {
