@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "@angular-devkit/architect": "~0.1000.6",
-    "rxjs": "6.6.2"
+    "rxjs": "6.6.2",
+    "typescript": "3.9.7"
   },
   "peerDependencies": {
     "ng-packagr": "^10.0.4"
