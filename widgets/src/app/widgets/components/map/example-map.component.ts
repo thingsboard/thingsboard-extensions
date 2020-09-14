@@ -6,17 +6,17 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MapWidgetInterface } from './map-widget.interface';
 import { defaultSettings, hereProviders, MapProviders, UnitedMapSettings } from './map-models';
 import { Datasource, DatasourceData, JsonSettingsSchema, WidgetActionDescriptor } from '@shared/public-api';
-import { deepClone } from '@core/public-api';
+import { deepClone, UtilsService } from '@core/public-api';
 import {
   commonMapSettingsSchema,
   mapPolygonSchema,
   mapProviderSchema,
-  markerClusteringSettingsSchema, markerClusteringSettingsSchemaLeaflet,
+  markerClusteringSettingsSchema,
+  markerClusteringSettingsSchemaLeaflet,
   routeMapSettingsSchema
 } from './schemes';
 import { addCondition, addGroupInfo, addToSchema, initSchema, mergeSchemes } from '../../utils/schema-utils';
 import { providerSets } from './providers';
-import { UtilsService } from '@core/public-api';
 import { TranslateService } from '@ngx-translate/core';
 import { getDefCenterPosition, parseFunction, parseWithTranslation } from './maps-utils';
 

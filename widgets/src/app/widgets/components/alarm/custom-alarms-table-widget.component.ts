@@ -25,16 +25,16 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {
-  DISPLAY_COLUMNS_PANEL_DATA,
-  DisplayColumnsPanelComponent,
-  DisplayColumnsPanelData
-} from './display-columns-panel.component';
-import {
-  ALARM_FILTER_PANEL_DATA,
-  AlarmFilterPanelComponent,
-  AlarmFilterPanelData
-} from '@home/components/widget/lib/alarm-filter-panel.component';
+// import {
+//   DISPLAY_COLUMNS_PANEL_DATA,
+//   DisplayColumnsPanelComponent,
+//   DisplayColumnsPanelData
+// } from './display-columns-panel.component';
+// import {
+//   ALARM_FILTER_PANEL_DATA,
+//   AlarmFilterPanelComponent,
+//   AlarmFilterPanelData
+// } from './alarm-filter-panel.component';
 import {
   AlarmDataInfo,
   alarmFields,
@@ -97,7 +97,7 @@ import {
 } from './table-widget.models';
 import { ConnectedPosition, Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { DatePipe } from '@angular/common';
-import { AlarmDetailsDialogComponent, AlarmDetailsDialogData } from './alarm-details-dialog.component';
+// import { AlarmDetailsDialogComponent, AlarmDetailsDialogData } from './alarm-details-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
   AlarmData,
@@ -435,93 +435,93 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
     if ($event) {
       $event.stopPropagation();
     }
-    const target = $event.target || $event.srcElement || $event.currentTarget;
-    const config = new OverlayConfig();
-    config.backdropClass = 'cdk-overlay-transparent-backdrop';
-    config.hasBackdrop = true;
-    const connectedPosition: ConnectedPosition = {
-      originX: 'end',
-      originY: 'bottom',
-      overlayX: 'end',
-      overlayY: 'top'
-    };
-    config.positionStrategy = this.overlay.position().flexibleConnectedTo(target as HTMLElement)
-      .withPositions([connectedPosition]);
-
-    const overlayRef = this.overlay.create(config);
-    overlayRef.backdropClick().subscribe(() => {
-      overlayRef.dispose();
-    });
-
-    const columns: DisplayColumn[] = this.columns.map(column => {
-      return {
-        title: column.title,
-        def: column.def,
-        display: this.displayedColumns.indexOf(column.def) > -1
-      };
-    });
-
-    const injectionTokens = new WeakMap<any, any>([
-      [DISPLAY_COLUMNS_PANEL_DATA, {
-        columns,
-        columnsUpdated: (newColumns) => {
-          this.displayedColumns = newColumns.filter(column => column.display).map(column => column.def);
-          if (this.enableSelection) {
-            this.displayedColumns.unshift('select');
-          }
-          this.displayedColumns.push('actions');
-        }
-      } as DisplayColumnsPanelData],
-      [OverlayRef, overlayRef]
-    ]);
-    const injector = new PortalInjector(this.viewContainerRef.injector, injectionTokens);
-    overlayRef.attach(new ComponentPortal(DisplayColumnsPanelComponent,
-      this.viewContainerRef, injector));
-    this.ctx.detectChanges();
+    // const target = $event.target || $event.srcElement || $event.currentTarget;
+    // const config = new OverlayConfig();
+    // config.backdropClass = 'cdk-overlay-transparent-backdrop';
+    // config.hasBackdrop = true;
+    // const connectedPosition: ConnectedPosition = {
+    //   originX: 'end',
+    //   originY: 'bottom',
+    //   overlayX: 'end',
+    //   overlayY: 'top'
+    // };
+    // config.positionStrategy = this.overlay.position().flexibleConnectedTo(target as HTMLElement)
+    //   .withPositions([connectedPosition]);
+    //
+    // const overlayRef = this.overlay.create(config);
+    // overlayRef.backdropClick().subscribe(() => {
+    //   overlayRef.dispose();
+    // });
+    //
+    // const columns: DisplayColumn[] = this.columns.map(column => {
+    //   return {
+    //     title: column.title,
+    //     def: column.def,
+    //     display: this.displayedColumns.indexOf(column.def) > -1
+    //   };
+    // });
+    //
+    // const injectionTokens = new WeakMap<any, any>([
+    //   [DISPLAY_COLUMNS_PANEL_DATA, {
+    //     columns,
+    //     columnsUpdated: (newColumns) => {
+    //       this.displayedColumns = newColumns.filter(column => column.display).map(column => column.def);
+    //       if (this.enableSelection) {
+    //         this.displayedColumns.unshift('select');
+    //       }
+    //       this.displayedColumns.push('actions');
+    //     }
+    //   } as DisplayColumnsPanelData],
+    //   [OverlayRef, overlayRef]
+    // ]);
+    // const injector = new PortalInjector(this.viewContainerRef.injector, injectionTokens);
+    // overlayRef.attach(new ComponentPortal(DisplayColumnsPanelComponent,
+    //   this.viewContainerRef, injector));
+    // this.ctx.detectChanges();
   }
 
   private editAlarmFilter($event: Event) {
     if ($event) {
       $event.stopPropagation();
     }
-    const target = $event.target || $event.srcElement || $event.currentTarget;
-    const config = new OverlayConfig();
-    config.backdropClass = 'cdk-overlay-transparent-backdrop';
-    config.hasBackdrop = true;
-    const connectedPosition: ConnectedPosition = {
-      originX: 'end',
-      originY: 'bottom',
-      overlayX: 'end',
-      overlayY: 'top'
-    };
-    config.positionStrategy = this.overlay.position().flexibleConnectedTo(target as HTMLElement)
-      .withPositions([connectedPosition]);
-
-    const overlayRef = this.overlay.create(config);
-    overlayRef.backdropClick().subscribe(() => {
-      overlayRef.dispose();
-    });
-    const injectionTokens = new WeakMap<any, any>([
-      [ALARM_FILTER_PANEL_DATA, {
-        statusList: this.pageLink.statusList,
-        severityList: this.pageLink.severityList,
-        typeList: this.pageLink.typeList
-      } as AlarmFilterPanelData],
-      [OverlayRef, overlayRef]
-    ]);
-    const injector = new PortalInjector(this.viewContainerRef.injector, injectionTokens);
-    const componentRef = overlayRef.attach(new ComponentPortal(AlarmFilterPanelComponent,
-      this.viewContainerRef, injector));
-    componentRef.onDestroy(() => {
-      if (componentRef.instance.result) {
-        const result = componentRef.instance.result;
-        this.pageLink.statusList = result.statusList;
-        this.pageLink.severityList = result.severityList;
-        this.pageLink.typeList = result.typeList;
-        this.updateData();
-      }
-    });
-    this.ctx.detectChanges();
+  //   const target = $event.target || $event.srcElement || $event.currentTarget;
+  //   const config = new OverlayConfig();
+  //   config.backdropClass = 'cdk-overlay-transparent-backdrop';
+  //   config.hasBackdrop = true;
+  //   const connectedPosition: ConnectedPosition = {
+  //     originX: 'end',
+  //     originY: 'bottom',
+  //     overlayX: 'end',
+  //     overlayY: 'top'
+  //   };
+  //   config.positionStrategy = this.overlay.position().flexibleConnectedTo(target as HTMLElement)
+  //     .withPositions([connectedPosition]);
+  //
+  //   const overlayRef = this.overlay.create(config);
+  //   overlayRef.backdropClick().subscribe(() => {
+  //     overlayRef.dispose();
+  //   });
+  //   const injectionTokens = new WeakMap<any, any>([
+  //     [ALARM_FILTER_PANEL_DATA, {
+  //       statusList: this.pageLink.statusList,
+  //       severityList: this.pageLink.severityList,
+  //       typeList: this.pageLink.typeList
+  //     } as AlarmFilterPanelData],
+  //     [OverlayRef, overlayRef]
+  //   ]);
+  //   const injector = new PortalInjector(this.viewContainerRef.injector, injectionTokens);
+  //   const componentRef = overlayRef.attach(new ComponentPortal(AlarmFilterPanelComponent,
+  //     this.viewContainerRef, injector));
+  //   componentRef.onDestroy(() => {
+  //     if (componentRef.instance.result) {
+  //       const result = componentRef.instance.result;
+  //       this.pageLink.statusList = result.statusList;
+  //       this.pageLink.severityList = result.severityList;
+  //       this.pageLink.typeList = result.typeList;
+  //       this.updateData();
+  //     }
+  //   });
+  //   this.ctx.detectChanges();
   }
 
   private enterFilterMode() {
@@ -672,26 +672,26 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
     if ($event) {
       $event.stopPropagation();
     }
-    if (alarm && alarm.id && alarm.id.id !== NULL_UUID) {
-      this.dialog.open<AlarmDetailsDialogComponent, AlarmDetailsDialogData, boolean>
-      (AlarmDetailsDialogComponent,
-        {
-          disableClose: true,
-          panelClass: ['tb-dialog', 'tb-fullscreen-dialog'],
-          data: {
-            alarmId: alarm.id.id,
-            allowAcknowledgment: this.allowAcknowledgment,
-            allowClear: this.allowClear,
-            displayDetails: true
-          }
-        }).afterClosed().subscribe(
-        (res) => {
-          if (res) {
-            this.subscription.update();
-          }
-        }
-      );
-    }
+    // if (alarm && alarm.id && alarm.id.id !== NULL_UUID) {
+    //   this.dialog.open<AlarmDetailsDialogComponent, AlarmDetailsDialogData, boolean>
+    //   (AlarmDetailsDialogComponent,
+    //     {
+    //       disableClose: true,
+    //       panelClass: ['tb-dialog', 'tb-fullscreen-dialog'],
+    //       data: {
+    //         alarmId: alarm.id.id,
+    //         allowAcknowledgment: this.allowAcknowledgment,
+    //         allowClear: this.allowClear,
+    //         displayDetails: true
+    //       }
+    //     }).afterClosed().subscribe(
+    //     (res) => {
+    //       if (res) {
+    //         this.subscription.update();
+    //       }
+    //     }
+    //   );
+    // }
   }
 
   private ackAlarm($event: Event, alarm: AlarmDataInfo) {

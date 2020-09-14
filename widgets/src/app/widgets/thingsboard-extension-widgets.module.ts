@@ -10,11 +10,12 @@ import { ExampleModule } from './components/example/example.module';
 import { SharedModule } from '@shared/public-api';
 import { HomeComponentsModule } from '@home/components/public-api';
 import { ExampleMap } from './components/map/example-map.component';
-import { CustomAlarmsTableWidgetModule } from "./components/alarm/custom-alarms-table-widget.module";
+import { CustomAlarmsTableWidgetComponent } from './components/alarm/custom-alarms-table-widget.component';
 
 @NgModule({
   declarations: [
-    ExampleMap
+    ExampleMap,
+    CustomAlarmsTableWidgetComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +25,7 @@ import { CustomAlarmsTableWidgetModule } from "./components/alarm/custom-alarms-
   exports: [
     ExampleMap,
     ExampleModule,
-    CustomAlarmsTableWidgetModule
+    CustomAlarmsTableWidgetComponent
   ]
 })
 export class ThingsboardExtensionWidgetsModule {

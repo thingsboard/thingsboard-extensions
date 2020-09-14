@@ -25,11 +25,9 @@ import { Marker } from './markers';
 import { Observable, of } from 'rxjs';
 // import { Polyline } from './polyline';
 // import { Polygon } from './polygon';
-import { createLoadingDiv, parseData } from './maps-utils';
+import { createLoadingDiv, parseData, safeExecute } from './maps-utils';
 // import { WidgetContext } from '@home/models/widget-component.models';
 import { isDefinedAndNotNull, isString } from '@core/public-api';
-import { Inject } from '@angular/core';
-import { safeExecute } from './maps-utils';
 
 
 export default abstract class LeafletMap {
