@@ -1,5 +1,5 @@
 ///
-/// Copyright © 2020 ThingsBoard
+/// Copyright © 2021 ThingsBoard, Inc.
 ///
 
 export * from './widgets/thingsboard-extension-widgets.module';

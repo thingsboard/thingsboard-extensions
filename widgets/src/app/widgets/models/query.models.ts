@@ -193,6 +193,7 @@ export interface KeyFilterPredicateInfo {
 
 export interface KeyFilter {
   key: EntityKey;
+  valueType: EntityKeyValueType;
   predicate: KeyFilterPredicate;
 }
 

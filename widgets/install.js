@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 ThingsBoard
+ * Copyright © 2021 ThingsBoard, Inc.
  */
 const fse = require('fs-extra');
 const path = require('path');

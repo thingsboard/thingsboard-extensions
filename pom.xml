@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2020 ThingsBoard
+    Copyright © 2021 ThingsBoard, Inc.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,7 +16,7 @@
 
     <properties>
         <main.dir>${basedir}</main.dir>
-        <thingsboard.version>3.0.0PE</thingsboard.version>
+        <thingsboard.version>3.2.1PE</thingsboard.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.3</logback.version>
@@ -95,14 +95,11 @@
                     <configuration>
                         <header>${main.dir}/license-header-template.txt</header>
                         <properties>
-                            <owner>ThingsBoard</owner>
+                            <owner>ThingsBoard, Inc.</owner>
                         </properties>
                         <excludes>
                             <exclude>**/.env</exclude>
-                            <exclude>**/.eslintrc</exclude>
-                            <exclude>**/.babelrc</exclude>
                             <exclude>**/.gradle/**</exclude>
-                            <exclude>**/nightwatch</exclude>
                             <exclude>**/README</exclude>
                             <exclude>**/LICENSE</exclude>
                             <exclude>**/banner.txt</exclude>
@@ -116,12 +113,15 @@
                             <exclude>src/main/scripts/windows/**</exclude>
                             <exclude>dist/**</exclude>
                             <exclude>builders/static-serve/index.js</exclude>
+                            <exclude>src/.browserslistrc</exclude>
+                            <exclude>**/yarn.lock</exclude>
                         </excludes>
                         <mapping>
                             <proto>JAVADOC_STYLE</proto>
                             <cql>DOUBLEDASHES_STYLE</cql>
                             <scss>JAVADOC_STYLE</scss>
                             <jsx>SLASHSTAR_STYLE</jsx>
+                            <tsx>SLASHSTAR_STYLE</tsx>
                             <conf>SCRIPT_STYLE</conf>
                             <gradle>JAVADOC_STYLE</gradle>
                         </mapping>

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 ThingsBoard
+ * Copyright © 2021 ThingsBoard, Inc.
  */
 const STATIC_SERVE_CONFIG = {
   '/static/thingsboard-extension-widgets.js': {

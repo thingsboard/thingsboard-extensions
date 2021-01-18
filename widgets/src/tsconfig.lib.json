@@ -5,15 +5,11 @@
     "target": "es5",
     "declaration": true,
     "inlineSources": true,
-    "types": ["node", "jquery", "flot", "tooltipster", "tinycolor2", "js-beautify", "jstree", "raphael", "canvas-gauges"],
-    "skipLibCheck": true,
-    "emitDecoratorMetadata": false,
-    "experimentalDecorators": true,
-    "importHelpers": true,
+    "types": ["node", "jquery", "flot", "tooltipster", "tinycolor2", "js-beautify", "jstree", "raphael", "canvas-gauges", "mousetrap"],
     "lib": [
-      "es2019",
+      "dom",
       "es2018",
-      "dom"
+      "es2019"
     ]
   },
   "angularCompilerOptions": {
@@ -25,6 +21,7 @@
     "enableIvy": false
   },
   "exclude": [
+    "src/test.ts",
     "**/*.spec.ts"
   ]
 }

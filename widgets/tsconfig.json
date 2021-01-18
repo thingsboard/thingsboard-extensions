@@ -1,5 +1,5 @@
 {
-  "compileOnSave": true,
+  "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
@@ -8,7 +8,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "module": "es2015",
+    "allowUmdGlobalAccess": true,
+    "module": "es2020",
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es5",
@@ -22,8 +23,8 @@
       "node_modules/thingsboard/src/typings/split.js.typings.d.ts"
     ],
     "lib": [
-      "es2019",
       "es2018",
+      "es2019",
       "dom"
     ],
     "paths": {
@@ -41,7 +42,22 @@
       "@core/*": ["node_modules/thingsboard/src/app/core/*"],
       "@shared/*": ["node_modules/thingsboard/src/app/shared/*"],
       "@modules/*": ["node_modules/thingsboard/src/app/modules/*"],
-      "@home/*": ["node_modules/thingsboard/src/app/modules/home/*"]
+      "@home/*": ["node_modules/thingsboard/src/app/modules/home/*"],
+      "ace": [
+        "node_modules/ace-builds/src-noconflict/ace.js"
+      ],
+      "jquery": [
+        "node_modules/jquery/dist/jquery.min.js"
+      ],
+      "jquery.terminal": [
+        "node_modules/jquery.terminal/js/jquery.terminal.js"
+      ],
+      "tooltipster": [
+        "node_modules/tooltipster/dist/js/tooltipster.bundle.min.js"
+      ],
+      "jstree": [
+        "node_modules/jstree/dist/jstree.min.js"
+      ]
     }
   }
 }

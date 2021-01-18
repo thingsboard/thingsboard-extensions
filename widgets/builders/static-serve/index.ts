@@ -1,5 +1,5 @@
 ///
-/// Copyright © 2020 ThingsBoard
+/// Copyright © 2021 ThingsBoard, Inc.
 ///
 
 import { BuilderContext, BuilderOutput, createBuilder } from '@angular-devkit/architect';
