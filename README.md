@@ -15,7 +15,7 @@ static/thingsboard-extension-widgets.js
 
 You also need to update the local UI TB settings. You need to replace the proxy settings in the file ui-ngx/proxy.conf.js with:
 ```
-"/static": {
+"/static/widgets": {
     "target": "http://localhost:5000",
     "secure": false,
 }
@@ -25,7 +25,7 @@ You also need to update the local UI TB settings. You need to replace the proxy 
 
 In widgets library create a new widget. In the resources tab of the widget editor add this file:
 ```
-static/thingsboard-extension-widgets.js
+static/widgets/thingsboard-extension-widgets.js
 ```
 
 ## Build project
