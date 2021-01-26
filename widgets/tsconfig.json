@@ -11,6 +11,7 @@
     "allowUmdGlobalAccess": true,
     "module": "es2020",
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "importHelpers": true,
     "target": "es5",
     "jsx": "react",
