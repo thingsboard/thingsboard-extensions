@@ -1,0 +1,86 @@
+<!--
+
+    Copyright © 2021 ThingsBoard, Inc.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>thingsboard-extension</artifactId>
+        <groupId>com.thingsboard.extension</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>tb-node</artifactId>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+        <dockerfile.name>Dockerfile</dockerfile.name>
+        <repository>oyurov/prosegur</repository>
+        <pkg.user>thingsboard</pkg.user>
+        <pkg.name>thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar</pkg.name>
+        <extension.folder>/usr/share/thingsboard/extenstions</extension.folder>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>copy-docker-config</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>copy-resources</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.basedir}</outputDirectory>
+                                <resources>
+                                    <resource>
+                                        <directory>${project.parent.basedir}/widgets/target/</directory>
+                                        <includes>
+                                            <include>thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar</include>
+                                        </includes>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>${dockerfile-maven-version}</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <contextDirectory>${project.basedir}</contextDirectory>
+                    <dockerfile>${dockerfile.name}</dockerfile>
+                    <repository>${repository}</repository>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <EXTENSION_FOLDER>${extension.folder}</EXTENSION_FOLDER>
+                        <PKG_USER>${pkg.user}</PKG_USER>
+                        <PKG_NAME>${pkg.name}</PKG_NAME>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
