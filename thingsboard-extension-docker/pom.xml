@@ -20,6 +20,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <main.dir>${basedir}/..</main.dir>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+        <tb.edition>thingsboard/tb-postgres</tb.edition>
         <dockerfile.name>Dockerfile</dockerfile.name>
         <docker.repo>thingsboard</docker.repo>
         <docker.name>${artifactId}</docker.name>
@@ -82,6 +83,7 @@
                         <EXTENSION_FOLDER>${extension.folder}</EXTENSION_FOLDER>
                         <PKG_USER>${pkg.user}</PKG_USER>
                         <PKG_NAME>${pkg.name}</PKG_NAME>
+                        <TB_EDITION>${tb.edition}</TB_EDITION>
                     </buildArgs>
                 </configuration>
             </plugin>

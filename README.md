@@ -46,3 +46,25 @@ sudo cp thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar /usr/share/thingsboard/
 sudo chown thingsboard:thingsboard /usr/share/thingsboard/extensions/thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar
 sudo service thingsboard restart
 ```
+
+## Build docker image with custom extension
+Before building the docker image you have to choose the proper TB version, by default it has been set to latest 
+ThingsBoard CE.
+<br>
+An example of setting version:
+<br>
+CE:
+```
+thingsboard/tb-postgres
+```
+PE:
+```
+store/thingsboard/tb-pe-node:3.2.2PE
+```
+
+To build a docker image with a custom extension inside, you need to specify the repository name, the image name and 
+ThingsBoard version by executing following command:
+
+```
+mvn clean install -Ddockerfile.skip=false -Ddocker.repo=thingsboard -Ddocker.name=thingsboard-extension-docker -Dtb.edition=thingsboard/tb-postgres
+```

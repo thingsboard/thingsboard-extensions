@@ -2,7 +2,9 @@
 # Copyright © 2021 ThingsBoard, Inc.
 #
 
-FROM store/thingsboard/tb-pe-node:3.2.1PE
+ARG TB_EDITION
+
+FROM ${TB_EDITION}
 
 ARG EXTENSION_FOLDER
 ARG PKG_NAME
