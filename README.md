@@ -55,7 +55,7 @@ An example of setting version:
 <br>
 CE:
 ```
-thingsboard/tb-postgres
+thingsboard/tb-node:3.2.2
 ```
 PE:
 ```
