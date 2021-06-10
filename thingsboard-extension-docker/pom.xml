@@ -13,16 +13,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tb-node</artifactId>
+    <artifactId>thingsboard-extension-docker</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <main.dir>${basedir}/..</main.dir>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
         <dockerfile.name>Dockerfile</dockerfile.name>
-        <repository>oyurov/prosegur</repository>
+        <docker.repo>thingsboard</docker.repo>
+        <docker.name>${artifactId}</docker.name>
         <pkg.user>thingsboard</pkg.user>
-        <pkg.name>thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar</pkg.name>
+        <pkg.name>${parent.artifactId}-widgets-${parent.version}.jar</pkg.name>
         <extension.folder>/usr/share/thingsboard/extenstions</extension.folder>
         <dockerfile.skip>true</dockerfile.skip>
     </properties>
@@ -46,7 +48,7 @@
                                     <resource>
                                         <directory>${project.parent.basedir}/widgets/target/</directory>
                                         <includes>
-                                            <include>thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar</include>
+                                            <include>${pkg.name}</include>
                                         </includes>
                                     </resource>
                                 </resources>
@@ -74,7 +76,7 @@
                     <skip>${dockerfile.skip}</skip>
                     <contextDirectory>${project.basedir}</contextDirectory>
                     <dockerfile>${dockerfile.name}</dockerfile>
-                    <repository>${repository}</repository>
+                    <repository>${docker.repo}/${docker.name}</repository>
                     <tag>${project.version}</tag>
                     <buildArgs>
                         <EXTENSION_FOLDER>${extension.folder}</EXTENSION_FOLDER>
