@@ -24,6 +24,7 @@
         <pkg.user>thingsboard</pkg.user>
         <pkg.name>thingsboard-extension-widgets-1.0.0-SNAPSHOT.jar</pkg.name>
         <extension.folder>/usr/share/thingsboard/extenstions</extension.folder>
+        <dockerfile.skip>true</dockerfile.skip>
     </properties>
 
     <build>
@@ -70,6 +71,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <skip>${dockerfile.skip}</skip>
                     <contextDirectory>${project.basedir}</contextDirectory>
                     <dockerfile>${dockerfile.name}</dockerfile>
                     <repository>${repository}</repository>
