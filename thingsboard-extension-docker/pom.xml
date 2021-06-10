@@ -20,7 +20,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <main.dir>${basedir}/..</main.dir>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <tb.edition>thingsboard/tb-postgres</tb.edition>
+        <tb.edition>thingsboard/tb-node:3.2.2</tb.edition>
         <dockerfile.name>Dockerfile</dockerfile.name>
         <docker.repo>thingsboard</docker.repo>
         <docker.name>${artifactId}</docker.name>
@@ -78,7 +78,7 @@
                     <contextDirectory>${project.basedir}</contextDirectory>
                     <dockerfile>${dockerfile.name}</dockerfile>
                     <repository>${docker.repo}/${docker.name}</repository>
-                    <tag>${project.version}</tag>
+                    <tag>${parent.version}</tag>
                     <buildArgs>
                         <EXTENSION_FOLDER>${extension.folder}</EXTENSION_FOLDER>
                         <PKG_USER>${pkg.user}</PKG_USER>

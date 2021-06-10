@@ -48,7 +48,7 @@ sudo service thingsboard restart
 ```
 
 ## Build docker image with custom extension
-Before building the docker image you have to choose the proper TB version, by default it has been set to latest 
+Before building the docker image you have to choose the proper TB version, by default it has been set to 3.2.2 
 ThingsBoard CE.
 <br>
 An example of setting version:
@@ -66,5 +66,42 @@ To build a docker image with a custom extension inside, you need to specify the 
 ThingsBoard version by executing following command:
 
 ```
-mvn clean install -Ddockerfile.skip=false -Ddocker.repo=thingsboard -Ddocker.name=thingsboard-extension-docker -Dtb.edition=thingsboard/tb-postgres
+mvn clean install -Ddockerfile.skip=false -Ddocker.repo=thingsboard -Ddocker.name=thingsboard-extension-docker -Dtb.edition=thingsboard/tb-node:3.2.2
 ```
+
+To run the built image, please follow our official guides. <br>
+CE:
+```
+https://thingsboard.io/docs/user-guide/install/cluster/docker-compose-setup/
+```
+PE:
+```
+https://thingsboard.io/docs/user-guide/install/pe/cluster/docker-compose-setup/
+```
+Once the guides successfully passed, please do the following. <br>
+In case of CE you have to change the used image within docker-compose.yml to your local one. <br>
+Open the docker-compose.yml:
+
+```
+nano docker-compose.yml
+```
+
+Under tb-core1 & tb-core2 you will see:
+```
+image: "${DOCKER_REPO}/${TB_NODE_DOCKER_NAME}:${TB_VERSION}"
+```
+change it to 
+```
+image: "YOUR_REPOSITORY_NAME/YOUR_IMAGE_NAME/YOUR_VERSION"
+```
+where <b><YOUR_VERSION></b> by default is <b>1.0.0-SNAPSHOT</b>. <br> It can be configured within parent pom.xml file 
+in tag version.
+
+In case of PE you have to perform the same steps as for CE, but to change the docker image 
+within docker-compose.yml that locates within your installation type folder. <br> E.g. if you choose basic/monolith 
+installation type then
+the proper docker-compose.yml will be located at your_docker_directory/monolith/docker-compose.yml under 
+<b>tb-monolith</b> property. <br>
+For advanced installation type is the same as for CE and located under tb-core1 & tb-core2. 
+
+Once the docker-compose.yml file has been updated, please restart ThingsBoard regard to our official guides. 
