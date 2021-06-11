@@ -68,6 +68,12 @@ ThingsBoard version by executing following command:
 ```
 mvn clean install -Ddockerfile.skip=false -Ddocker.repo=thingsboard -Ddocker.name=thingsboard-extension-docker -Dtb.edition=thingsboard/tb-node:3.2.2
 ```
+where
+```
+-Ddocker.repo= - the repository name in your dockerhub
+-Ddocker.name= - the name of your image
+-Dtb.edition=  - your ThingsBoard edititon (CE/PE) chosen from the example above
+```
 
 To run the built image, please follow our official guides. <br>
 CE:
@@ -79,7 +85,7 @@ PE:
 https://thingsboard.io/docs/user-guide/install/pe/cluster/docker-compose-setup/
 ```
 Once the guides successfully passed, please do the following. <br>
-In case of CE you have to change the used image within docker-compose.yml to your local one. <br>
+In case you use CE you have to change the used image within docker-compose.yml to your local one. <br>
 Open the docker-compose.yml:
 
 ```
@@ -97,8 +103,8 @@ image: "YOUR_REPOSITORY_NAME/YOUR_IMAGE_NAME/YOUR_VERSION"
 where <b><YOUR_VERSION></b> by default is <b>1.0.0-SNAPSHOT</b>. <br> It can be configured within parent pom.xml file 
 in tag version.
 
-In case of PE you have to perform the same steps as for CE, but to change the docker image 
-within docker-compose.yml that locates within your installation type folder. <br> E.g. if you choose basic/monolith 
+In case you use PE you have to perform the same steps as for CE, but to change the docker image 
+within docker-compose.yml that is located within your installation type folder. <br> E.g. if you choose basic/monolith 
 installation type then
 the proper docker-compose.yml will be located at your_docker_directory/monolith/docker-compose.yml under 
 <b>tb-monolith</b> property. <br>
