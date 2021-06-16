@@ -66,7 +66,7 @@ To build a docker image with a custom extension inside, you need to specify the 
 ThingsBoard version by executing following command:
 
 ```
-mvn clean install -Ddockerfile.skip=false -Ddocker.repo=thingsboard -Ddocker.name=thingsboard-extension-docker -Dtb.edition=thingsboard/tb-node:3.2.2
+mvn license:format clean install -Ddockerfile.skip=false -Ddocker.repo=thingsboard -Ddocker.name=thingsboard-extension-docker -Dtb.edition=thingsboard/tb-node:3.2.2
 ```
 where
 ```
@@ -80,6 +80,11 @@ CE:
 ```
 https://thingsboard.io/docs/user-guide/install/cluster/docker-compose-setup/
 ```
+
+<b>NOTE:</b> Don't forget to do
+<b>git checkout v3.2.2</b> <br>
+Otherwise, you will hit the error messages related to the unreleased features
+
 PE:
 ```
 https://thingsboard.io/docs/user-guide/install/pe/cluster/docker-compose-setup/
@@ -98,7 +103,7 @@ image: "${DOCKER_REPO}/${TB_NODE_DOCKER_NAME}:${TB_VERSION}"
 ```
 change it to 
 ```
-image: "YOUR_REPOSITORY_NAME/YOUR_IMAGE_NAME/YOUR_VERSION"
+image: "thingsboard/thingsboard-extension-docker:1.0.0-SNAPSHOT"
 ```
 where <b><YOUR_VERSION></b> by default is <b>1.0.0-SNAPSHOT</b>. <br> It can be configured within parent pom.xml file 
 in tag version.
