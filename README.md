@@ -5,10 +5,10 @@ Extension ThingsBoard Platform
  
 ```
 cd ${TB_EXTENSION_WORK_DIR}/widgets
-mvn clean install -P npm-start
+mvn clean install -P yarn-start
 ```
 
-In widgets library create a new widget. In the resources tab of the widget editor add this file:
+In widgets library create a new widget. In the resources tab of the widget editor add this file path:
 ```
 static/widgets/thingsboard-extension-widgets.js
 ```
