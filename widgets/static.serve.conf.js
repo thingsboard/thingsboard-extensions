@@ -3,10 +3,10 @@
  */
 const STATIC_SERVE_CONFIG = {
   '/static/widgets/thingsboard-extension-widgets.js': {
-    'target': 'dist/widget-extension/bundles/thingsboard-extension-widgets.umd.js'
+    'target': 'dist/widget-extension/fesm2015/thingsboard-extension-widgets.js'
   },
   '/static/widgets/thingsboard-extension-widgets.umd.js.map': {
-    'target': `dist/widget-extension/bundles/thingsboard-extension-widgets.umd.js.map`
+    'target': `dist/widget-extension/fesm2015/thingsboard-extension-widgets.js.map`
   }
 }
 

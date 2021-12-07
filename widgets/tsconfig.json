@@ -3,30 +3,25 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "allowUmdGlobalAccess": true,
-    "module": "es2020",
     "moduleResolution": "node",
-    "skipLibCheck": true,
     "importHelpers": true,
-    "target": "es5",
+    "skipLibCheck": true,
+    "target": "es2017",
+    "module": "es2020",
     "jsx": "react",
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/thingsboard/src/typings/rawloader.typings.d.ts",
-      "node_modules/thingsboard/src/typings/jquery.typings.d.ts",
-      "node_modules/thingsboard/src/typings/jquery.flot.typings.d.ts",
-      "node_modules/thingsboard/src/typings/jquery.jstree.typings.d.ts",
-      "node_modules/thingsboard/src/typings/split.js.typings.d.ts"
-    ],
+    "allowSyntheticDefaultImports": true,
     "lib": [
-      "es2018",
-      "es2019",
+      "es2020",
       "dom"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
     ],
     "paths": {
       "@angular/*": [
@@ -60,5 +55,12 @@
         "node_modules/jstree/dist/jstree.min.js"
       ]
     }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "fullTemplateTypeCheck": false,
+    "strictTemplates": false
   }
 }

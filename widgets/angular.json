@@ -15,11 +15,19 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "tsConfig": "src/tsconfig.lib.json",
             "project": "src/ng-package.json"
-          }
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "src/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "src/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@tb/custom-builder:static-serve",

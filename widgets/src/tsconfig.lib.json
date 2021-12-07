@@ -1,24 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "rootDirs": ["app", "../node_modules/thingsboard/src"],
     "outDir": "../out-tsc/lib",
-    "target": "es5",
     "declaration": true,
-    "inlineSources": true,
-    "types": ["node", "jquery", "flot", "tooltipster", "tinycolor2", "js-beautify", "jstree", "raphael", "canvas-gauges", "mousetrap"],
-    "lib": [
-      "dom",
-      "es2018",
-      "es2019"
-    ]
-  },
-  "angularCompilerOptions": {
-    "skipTemplateCodegen": true,
-    "strictMetadataEmit": true,
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true,
-    "enableResourceInlining": true,
-    "enableIvy": false
+    "declarationMap": true,
+    "inlineSources": true
   },
   "exclude": [
     "src/test.ts",
