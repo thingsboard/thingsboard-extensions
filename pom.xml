@@ -24,6 +24,7 @@
 
     <modules>
         <module>widgets</module>
+        <module>thingsboard-extension-docker</module>
     </modules>
 
     <profiles>
