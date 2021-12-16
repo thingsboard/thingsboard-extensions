@@ -9,9 +9,14 @@
     "ng": "ng",
     "start": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve",
     "build": "ng build && node install.js",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prepare": "patch-package",
+    "postinstall": "ngcc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "primeng": "~12.2.3",
+    "primeicons": "~5.0.0"
+  },
   "devDependencies": {
     "@angular-devkit/build-angular": "^12.2.13",
     "@angular/animations": "^12.2.13",
@@ -50,12 +55,15 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "~4.0.1",
     "karma-jasmine-html-reporter": "^1.7.0",
-    "ng-packagr": "~12.2.5",
+    "ng-packagr": "12.2.6",
     "ngrx-store-freeze": "^0.2.4",
+    "patch-package": "^6.4.7",
+    "postinstall-prepare": "^2.0.0",
     "prettier": "^2.5.0",
     "protractor": "~7.0.0",
     "rxjs": "~6.6.7",
     "raw-loader": "^4.0.2",
+    "rollup-plugin-terser": "^7.0.2",
     "thingsboard": "file:./target/git-tmp/thingsboard/ui-ngx",
     "ts-node": "^10.4.0",
     "tslib": "^2.3.1",

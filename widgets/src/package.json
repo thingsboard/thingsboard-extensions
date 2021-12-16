@@ -9,6 +9,7 @@
     "@angular/material": "^12.2.13",
     "@angular/router": "^12.2.13",
     "@ngrx/store": "^12.5.1",
-    "@ngx-translate/core": "^13.0.0"
+    "@ngx-translate/core": "^13.0.0",
+    "rxjs": "~6.6.7"
   }
 }
