@@ -20,7 +20,7 @@ function projectRoot() {
 }
 
 function sourcePackage() {
-  return path.join(projectRoot(), 'dist', 'widget-extension', 'fesm2015', 'thingsboard-extension-widgets.js');
+  return path.join(projectRoot(), 'dist', 'widget-extension', 'system', 'thingsboard-extension-widgets.js');
 }
 
 function targetPackage() {

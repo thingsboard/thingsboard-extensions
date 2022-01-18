@@ -1,5 +1,5 @@
 diff --git a/node_modules/ng-packagr/lib/flatten/rollup.js b/node_modules/ng-packagr/lib/flatten/rollup.js
-index c9b5dc4..7b99689 100644
+index c9b5dc4..46e88d7 100644
 --- a/node_modules/ng-packagr/lib/flatten/rollup.js
 +++ b/node_modules/ng-packagr/lib/flatten/rollup.js
 @@ -4,18 +4,35 @@ exports.rollupBundleFile = void 0;
@@ -78,3 +78,85 @@ index c9b5dc4..7b99689 100644
      return true;
  }
  //# sourceMappingURL=rollup.js.map
+\ No newline at end of file
+diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts
+index f9f61da..94790cb 100644
+--- a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts
++++ b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts
+@@ -10,6 +10,8 @@ export interface DestinationFiles {
+     fesm2015: string;
+     /** Absolute path of this entry point `ESM2015` module */
+     esm2015: string;
++    /** Absolute path of this entry point `SystemJS` module */
++    system: string;
+     /** Absolute path of this entry point `UMD` bundle */
+     umd: string;
+ }
+diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
+index 2540f39..0630d00 100644
+--- a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
++++ b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
+@@ -77,6 +77,7 @@ class NgEntryPoint {
+             declarations: pathJoinWithDest(secondaryDir, `${flatModuleFile}.d.ts`),
+             esm2015: pathJoinWithDest('esm2015', secondaryDir, `${flatModuleFile}.js`),
+             fesm2015: pathJoinWithDest('fesm2015', `${flatModuleFile}.js`),
++            system: pathJoinWithDest('system', `${flatModuleFile}.js`),
+             umd: pathJoinWithDest('bundles', `${flatModuleFile}.umd.js`),
+         };
+     }
+diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
+index ef9b0a3..179a823 100644
+--- a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
++++ b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
+@@ -18,7 +18,7 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
+         prev[ep.moduleId] = ep.umdId;
+         return prev;
+     }, {});
+-    const { fesm2015, esm2015, umd } = destinationFiles;
++    const { fesm2015, esm2015, system, umd } = destinationFiles;
+     const opts = {
+         sourceRoot: tsConfig.options.sourceRoot,
+         amd: { id: ngEntryPoint.amdId },
+@@ -33,6 +33,19 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
+         discardStdin: false,
+     });
+     try {
++        spinner.start('Bundling to SystemJS');
++        const rollupSystemJsCache = await rollup_1.rollupBundleFile({
++          ...opts,
++          moduleName: null, // ngEntryPoint.moduleId,
++          format: 'system',
++          dest: system,
++          cache: cache.rollupSystemJsCache,
++        });
++        spinner.succeed();
++        if (options.watch) {
++          cache.rollupSystemJsCache = rollupSystemJsCache;
++          return;
++        }
+         spinner.start('Bundling to FESM2015');
+         const rollupFESMCache = await rollup_1.rollupBundleFile({
+             ...opts,
+@@ -42,10 +55,6 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
+             cache: cache.rollupFESMCache,
+         });
+         spinner.succeed();
+-        if (options.watch) {
+-            cache.rollupFESMCache = rollupFESMCache;
+-            return;
+-        }
+         spinner.start('Bundling to UMD');
+         await rollup_1.rollupBundleFile({
+             ...opts,
+diff --git a/node_modules/ng-packagr/lib/ng-package/nodes.d.ts b/node_modules/ng-packagr/lib/ng-package/nodes.d.ts
+index 096eac6..bd56904 100644
+--- a/node_modules/ng-packagr/lib/ng-package/nodes.d.ts
++++ b/node_modules/ng-packagr/lib/ng-package/nodes.d.ts
+@@ -36,6 +36,7 @@ export declare class EntryPointNode extends Node {
+         analysesSourcesFileCache: FileCache;
+         moduleResolutionCache: ts.ModuleResolutionCache;
+         rollupFESMCache?: RollupCache;
++        rollupSystemJsCache?: RollupCache;
+         stylesheetProcessor?: StylesheetProcessor | ivy.StylesheetProcessor;
+         oldNgtscProgram?: NgtscProgram;
+         oldBuilder?: ts.EmitAndSemanticDiagnosticsBuilderProgram;
