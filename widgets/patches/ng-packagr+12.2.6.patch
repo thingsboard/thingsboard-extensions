@@ -93,7 +93,7 @@ index f9f61da..94790cb 100644
      umd: string;
  }
 diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
-index 2540f39..0630d00 100644
+index 2540f39..7ed83c9 100644
 --- a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
 +++ b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
 @@ -77,6 +77,7 @@ class NgEntryPoint {
@@ -105,7 +105,7 @@ index 2540f39..0630d00 100644
          };
      }
 diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
-index ef9b0a3..179a823 100644
+index ef9b0a3..b29670f 100644
 --- a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
 +++ b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
 @@ -18,7 +18,7 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
@@ -117,10 +117,11 @@ index ef9b0a3..179a823 100644
      const opts = {
          sourceRoot: tsConfig.options.sourceRoot,
          amd: { id: ngEntryPoint.amdId },
-@@ -33,6 +33,19 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
+@@ -33,7 +33,20 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
          discardStdin: false,
      });
      try {
+-        spinner.start('Bundling to FESM2015');
 +        spinner.start('Bundling to SystemJS');
 +        const rollupSystemJsCache = await rollup_1.rollupBundleFile({
 +          ...opts,
@@ -134,9 +135,10 @@ index ef9b0a3..179a823 100644
 +          cache.rollupSystemJsCache = rollupSystemJsCache;
 +          return;
 +        }
-         spinner.start('Bundling to FESM2015');
++        /* spinner.start('Bundling to FESM2015');
          const rollupFESMCache = await rollup_1.rollupBundleFile({
              ...opts,
+             moduleName: ngEntryPoint.moduleId,
 @@ -42,10 +55,6 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
              cache: cache.rollupFESMCache,
          });
@@ -148,6 +150,15 @@ index ef9b0a3..179a823 100644
          spinner.start('Bundling to UMD');
          await rollup_1.rollupBundleFile({
              ...opts,
+@@ -55,7 +64,7 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
+             dest: umd,
+             transform: downlevel_plugin_1.downlevelCodeWithTsc,
+         });
+-        spinner.succeed();
++        spinner.succeed();*/
+     }
+     catch (error) {
+         spinner.fail();
 diff --git a/node_modules/ng-packagr/lib/ng-package/nodes.d.ts b/node_modules/ng-packagr/lib/ng-package/nodes.d.ts
 index 096eac6..bd56904 100644
 --- a/node_modules/ng-packagr/lib/ng-package/nodes.d.ts
