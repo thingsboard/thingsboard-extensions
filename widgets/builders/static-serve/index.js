@@ -1,6 +1,6 @@
 "use strict";
 ///
-/// Copyright © 2020 ThingsBoard
+/// Copyright © 2021 ThingsBoard, Inc.
 ///
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -49,7 +49,15 @@ function createServer(options, context) {
     for (const path of Object.keys(staticServeConfig)) {
         const route = staticServeConfig[path];
         app.get(path, (req, res) => {
-            res.sendFile(path_1.resolve(context.workspaceRoot, route.target));
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
+            if (path.endsWith('*')) {
+                const target = req.params[0];
+                res.sendFile(path_1.resolve(context.workspaceRoot, route.target + target));
+            }
+            else {
+                res.sendFile(path_1.resolve(context.workspaceRoot, route.target));
+            }
         });
     }
     /* app.get(options.path, (req, res) => {
