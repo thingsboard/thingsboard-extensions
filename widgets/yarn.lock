@@ -5092,6 +5092,28 @@ klona@^2.0.4:
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.5.tgz#d166574d90076395d9963aa7a928fabb8d76afbc"
   integrity sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==
 
+leaflet-polylinedecorator@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/leaflet-polylinedecorator/-/leaflet-polylinedecorator-1.6.0.tgz#9ef79fd1b5302d67b72efe959a8ecd2553f27266"
+  integrity sha1-nvef0bUwLWe3Lv6Vmo7NJVPycmY=
+  dependencies:
+    leaflet-rotatedmarker "^0.2.0"
+
+leaflet-rotatedmarker@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/leaflet-rotatedmarker/-/leaflet-rotatedmarker-0.2.0.tgz#4467f49f98d1bfd56959bd9c6705203dd2601277"
+  integrity sha1-RGf0n5jRv9VpWb2cZwUgPdJgEnc=
+
+leaflet.markercluster@^1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.5.3.tgz#9cdb52a4eab92671832e1ef9899669e80efc4056"
+  integrity sha512-vPTw/Bndq7eQHjLBVlWpnGeLa3t+3zGiuM7fJwCkiMFq+nmRuG3RI3f7f4N4TDX7T4NpbAXpR2+NTRSEGfCSeA==
+
+leaflet@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.7.1.tgz#10d684916edfe1bf41d688a3b97127c0322a2a19"
+  integrity sha512-/xwPEBidtg69Q3HlqPdU3DnrXQOvQU/CCHA1tcDQVzOwm91YMYaILjNp7L4Eaw5Z4sOYdbBz6koWyibppd8Zqw==
+
 less-loader@10.0.1:
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/less-loader/-/less-loader-10.0.1.tgz#c05aaba68d00400820275f21c2ad87cb9fa9923f"
@@ -8150,7 +8172,7 @@ text-table@0.2.0:
 
 "thingsboard@git://github.com/thingsboard/thingsboard-pe-ui-types.git#release/3.3.3":
   version "3.3.3"
-  resolved "git://github.com/thingsboard/thingsboard-pe-ui-types.git#ae44f39770cb31b76f0560a50cf5f5c383e8386f"
+  resolved "git://github.com/thingsboard/thingsboard-pe-ui-types.git#edddc9240a2f2103adf22a2f9e706c66ad484aa7"
   dependencies:
     "@angular/animations" "^12.2.13"
     "@angular/cdk" "^12.2.13"
@@ -8179,6 +8201,9 @@ text-table@0.2.0:
     "@types/tooltipster" "^0.0.31"
     angular-gridster2 "~12.1.1"
     angular2-hotkeys "^2.4.0"
+    leaflet "^1.7.1"
+    leaflet-polylinedecorator "^1.6.0"
+    leaflet.markercluster "^1.5.3"
     ngx-clipboard "^14.0.2"
     ngx-color-picker "^11.0.0"
     ngx-daterangepicker-material "^5.0.1"
