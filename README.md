@@ -1,32 +1,47 @@
 Extension ThingsBoard Platform
 =====================
+## ThingsBoard Dependencies
+To add some of ThingsBoard dependencies imports to your "extension" Angular component,
+please use this import structure:
+
+```
+import { <dependency> } from '<TB-module>/public-api';
+```
+"TB-module" - any of the following modules: 
+```
+@app/*
+@core/*
+@shared/*
+@modules/*
+@home/*
+```
+"dependency" - name of dependency/type located in "TB-module".
+Refer to [modules-map](https://github.com/thingsboard/thingsboard-pe-ui-types/blob/master/src/app/modules/common/modules-map.ts)
+to see what you can use.
+
+Example: 
+
+```
+import { WidgetConfig } from '@shared/public-api';
+```
+## External Dependencies
+In case you want to use your own dependencies package from the npm registry (unless you have specified another one in your package.json), you can easily add them to yarn packet manager running the next command:
+```
+yarn add <package-name>
+```
+If it's not the npm/yarn registry, and you want to add it in another way, please refer to [yarn docs](https://classic.yarnpkg.com/en/docs/cli/add).
 
 ## Run project in development mode
- 
 ```
 cd ${TB_EXTENSION_WORK_DIR}/widgets
 mvn clean install -P yarn-start
 ```
+In widgets library create a new widget and in the resources tab of the widget editor add this file path:
 
-In widgets library create a new widget. In the resources tab of the widget editor add this file path:
 ```
-static/widgets/thingsboard-extension-widgets.js
+http://localhost:5000/static/widgets/thingsboard-extension-widgets.js
 ```
-
-You also need to update the local UI TB settings. You need to replace the proxy settings in the file ui-ngx/proxy.conf.js with:
-```
-"/static/widgets": {
-    "target": "http://localhost:5000",
-    "secure": false,
-}
-```
-
-## Run project in production mode
-
-In widgets library create a new widget. In the resources tab of the widget editor add this file:
-```
-static/widgets/thingsboard-extension-widgets.js
-```
+You must also check "Is module"
 
 ## Build project
 
@@ -47,6 +62,14 @@ sudo chown thingsboard:thingsboard /usr/share/thingsboard/extensions/thingsboard
 sudo service thingsboard restart
 ```
 
+## Run project in production mode
+
+In widgets library create a new widget. In the resources tab of the widget editor add this file path:
+```
+static/widgets/thingsboard-extension-widgets.js
+```
+You must also check "Is module"
+
 ## Build docker image with custom extension
 Before building the docker image you have to choose the proper TB version, by default it has been set to 3.3.2 
 ThingsBoard CE.
@@ -55,11 +78,11 @@ An example of setting version:
 <br>
 CE:
 ```
-thingsboard/tb-node:3.3.2
+thingsboard/tb-node:3.3.3
 ```
 PE:
 ```
-store/thingsboard/tb-pe-node:3.3.2PE
+store/thingsboard/tb-pe-node:3.3.3PE
 ```
 
 To build a docker image with a custom extension inside, you need to specify the repository name, the image name and 
@@ -82,7 +105,7 @@ https://thingsboard.io/docs/user-guide/install/cluster/docker-compose-setup/
 ```
 
 <b>NOTE:</b> Don't forget to do
-<b>git checkout v3.3.2</b> <br>
+<b>git checkout v3.3.3</b> <br>
 Otherwise, you will hit the error messages related to the unreleased features
 
 PE:
