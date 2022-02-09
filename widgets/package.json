@@ -12,8 +12,8 @@
     "postinstall": "ngcc"
   },
   "dependencies": {
-    "primeng": "~12.2.3",
-    "primeicons": "~5.0.0"
+    "primeicons": "~5.0.0",
+    "primeng": "~12.2.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^12.2.13",
@@ -35,6 +35,7 @@
     "@ngx-translate/core": "~13.0.0",
     "@tb/custom-builder": "file:./builders",
     "codelyzer": "^6.0.2",
+    "leaflet": "^1.7.1",
     "ng-packagr": "12.2.6",
     "ngrx-store-freeze": "^0.2.4",
     "patch-package": "^6.4.7",
