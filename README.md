@@ -29,6 +29,12 @@ In case you want to use your own dependencies package from the npm registry (unl
 ```
 yarn add <package-name>
 ```
+
+Example: 
+
+```
+yarn add lodash
+```
 If it's not the npm/yarn registry, and you want to add it in another way, please refer to [yarn docs](https://classic.yarnpkg.com/en/docs/cli/add).
 
 ## Run project in development mode
