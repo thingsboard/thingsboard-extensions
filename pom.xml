@@ -16,7 +16,7 @@
 
     <properties>
         <main.dir>${basedir}</main.dir>
-        <thingsboard.version>3.3.3PE</thingsboard.version>
+        <thingsboard.version>3.3.4</thingsboard.version>
         <slf4j.version>1.7.32</slf4j.version>
         <logback.version>1.2.6</logback.version>
         <surfire.version>2.19.1</surfire.version>

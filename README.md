@@ -77,18 +77,18 @@ static/widgets/thingsboard-extension-widgets.js
 You must also check "Is module"
 
 ## Build docker image with custom extension
-Before building the docker image you have to choose the proper TB version, by default it has been set to 3.3.2 
+Before building the docker image you have to choose the proper TB version, by default it has been set to 3.3.4 
 ThingsBoard CE.
 <br>
 An example of setting version:
 <br>
 CE:
 ```
-thingsboard/tb-node:3.3.3
+thingsboard/tb-node:3.3.4
 ```
 PE:
 ```
-store/thingsboard/tb-pe-node:3.3.3PE
+store/thingsboard/tb-pe-node:3.3.4.1PE
 ```
 
 To build a docker image with a custom extension inside, you need to specify the repository name, the image name and 
@@ -111,7 +111,7 @@ https://thingsboard.io/docs/user-guide/install/cluster/docker-compose-setup/
 ```
 
 <b>NOTE:</b> Don't forget to do
-<b>git checkout v3.3.3</b> <br>
+<b>git checkout v3.3.4</b> <br>
 Otherwise, you will hit the error messages related to the unreleased features
 
 PE:
