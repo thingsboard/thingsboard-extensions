@@ -1,8 +1,8 @@
 diff --git a/node_modules/ng-packagr/lib/flatten/rollup.js b/node_modules/ng-packagr/lib/flatten/rollup.js
-index c9b5dc4..46e88d7 100644
+index c9b5dc4..d18826c 100644
 --- a/node_modules/ng-packagr/lib/flatten/rollup.js
 +++ b/node_modules/ng-packagr/lib/flatten/rollup.js
-@@ -4,18 +4,35 @@ exports.rollupBundleFile = void 0;
+@@ -4,18 +4,36 @@ exports.rollupBundleFile = void 0;
  const rollup = require("rollup");
  const plugin_node_resolve_1 = require("@rollup/plugin-node-resolve");
  const sourcemaps = require("rollup-plugin-sourcemaps");
@@ -13,6 +13,7 @@ index c9b5dc4..46e88d7 100644
  const umd_module_id_strategy_1 = require("./umd-module-id-strategy");
  const path = require("path");
 +const fs = require('fs');
++const os = require('os');
 +
  /** Runs rollup over the given entry file, writes a bundle file. */
  async function rollupBundleFile(opts) {
@@ -23,7 +24,7 @@ index c9b5dc4..46e88d7 100644
 +    const regMatch = reg.exec(data);
 +    const modulesStr = regMatch[1];
 +    const externalModuleIds = [];
-+    modulesStr.split(',\n').forEach(
++    modulesStr.split(',' + os.EOL).forEach(
 +      (line) => {
 +        const moduleId = line.trim().split(":")[0].replaceAll("'", "").trim();
 +        if (moduleId.length) {
@@ -39,7 +40,7 @@ index c9b5dc4..46e88d7 100644
          inlineDynamicImports: false,
          cache: opts.cache,
          input: opts.entry,
-@@ -29,6 +46,8 @@ async function rollupBundleFile(opts) {
+@@ -29,6 +47,8 @@ async function rollupBundleFile(opts) {
              // @ts-ignore
              sourcemaps(),
              { transform: opts.transform },
@@ -48,7 +49,7 @@ index c9b5dc4..46e88d7 100644
          ],
          onwarn: warning => {
              if (typeof warning === 'string') {
-@@ -52,6 +71,7 @@ async function rollupBundleFile(opts) {
+@@ -52,6 +72,7 @@ async function rollupBundleFile(opts) {
          format: opts.format,
          amd: opts.amd,
          file: opts.dest,
@@ -56,7 +57,7 @@ index c9b5dc4..46e88d7 100644
          banner: '',
          globals: moduleId => umd_module_id_strategy_1.umdModuleIdStrategy(moduleId, opts.umdModuleIds || {}),
          sourcemap: true,
-@@ -59,9 +79,10 @@ async function rollupBundleFile(opts) {
+@@ -59,9 +80,10 @@ async function rollupBundleFile(opts) {
      return bundle.cache;
  }
  exports.rollupBundleFile = rollupBundleFile;
@@ -68,7 +69,7 @@ index c9b5dc4..46e88d7 100644
      if (moduleId.startsWith('.') || moduleId.startsWith('/') || path.isAbsolute(moduleId)) {
          // if it's either 'absolute', marked to embed, starts with a '.' or '/' or is the umd bundle and is tslib
          return false;
-@@ -69,6 +90,9 @@ function isExternalDependency(moduleId, format) {
+@@ -69,6 +91,9 @@ function isExternalDependency(moduleId, format) {
      if (format === 'umd' && moduleId.startsWith('tslib')) {
          return false;
      }
@@ -105,7 +106,7 @@ index 2540f39..7ed83c9 100644
          };
      }
 diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
-index ef9b0a3..b29670f 100644
+index ef9b0a3..ef81b6f 100644
 --- a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
 +++ b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
 @@ -18,7 +18,7 @@ const writeBundlesTransform = (options) => transform_1.transformFromPromise(asyn
