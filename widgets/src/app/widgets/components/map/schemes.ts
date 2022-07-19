@@ -1,5 +1,5 @@
 ///
-/// Copyright © 2021 ThingsBoard, Inc.
+/// Copyright © 2022 ThingsBoard, Inc.
 ///
 
 export const googleMapSettingsSchema =

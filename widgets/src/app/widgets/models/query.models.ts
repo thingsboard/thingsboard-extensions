@@ -1,5 +1,5 @@
 ///
-/// Copyright © 2021 ThingsBoard, Inc.
+/// Copyright © 2022 ThingsBoard, Inc.
 ///
 
 import { AlarmInfo, AlarmSearchStatus, AlarmSeverity, DataKey, DataKeyType, EntityId } from '@shared/public-api';
