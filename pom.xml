@@ -16,9 +16,9 @@
 
     <properties>
         <main.dir>${basedir}</main.dir>
-        <thingsboard.version>3.3.4</thingsboard.version>
+        <thingsboard.version>3.4.0</thingsboard.version>
         <slf4j.version>1.7.32</slf4j.version>
-        <logback.version>1.2.6</logback.version>
+        <logback.version>1.2.10</logback.version>
         <surfire.version>2.19.1</surfire.version>
     </properties>
 
@@ -53,11 +53,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>3.2.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
