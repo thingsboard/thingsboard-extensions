@@ -92,6 +92,7 @@
                         <properties>
                             <owner>ThingsBoard, Inc.</owner>
                         </properties>
+                        <skip>true</skip>
                         <excludes>
                             <exclude>**/.env</exclude>
                             <exclude>**/.gradle/**</exclude>
