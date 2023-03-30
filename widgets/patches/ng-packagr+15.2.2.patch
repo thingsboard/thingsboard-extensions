@@ -11,14 +11,14 @@ index ac71efa..f00dda4 100644
      cache?: rollup.RollupCache;
      cacheDirectory?: string | false;
 diff --git a/node_modules/ng-packagr/lib/flatten/rollup.js b/node_modules/ng-packagr/lib/flatten/rollup.js
-index e2f50a6..e06eeac 100644
+index e2f50a6..3bf4f25 100644
 --- a/node_modules/ng-packagr/lib/flatten/rollup.js
 +++ b/node_modules/ng-packagr/lib/flatten/rollup.js
 @@ -31,26 +31,42 @@ const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
  const plugin_node_resolve_1 = __importDefault(require("@rollup/plugin-node-resolve"));
  const path = __importStar(require("path"));
  const rollup = __importStar(require("rollup"));
-+const terser = require("rollup-plugin-terser");
++const terser = require("@rollup/plugin-terser");
  const cache_1 = require("../utils/cache");
  const log = __importStar(require("../utils/log"));
  const downlevel_plugin_1 = require("./downlevel-plugin");
@@ -55,7 +55,7 @@ index e2f50a6..e06eeac 100644
              (0, plugin_json_1.default)(),
 -            (0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache),
              opts.downlevel ? (0, downlevel_plugin_1.downlevelCodeWithTscPlugin)() : undefined,
-+            terser.terser()
++            terser()
          ],
          onwarn: warning => {
              switch (warning.code) {
@@ -128,7 +128,7 @@ index e74d3f2..e984344 100644
      }
      $get(key) {
 diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
-index 3881c28..7dcfd6b 100644
+index 3881c28..1b47a79 100644
 --- a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
 +++ b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
 @@ -15,26 +15,30 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
@@ -244,3 +244,4 @@ index 3881c28..7dcfd6b 100644
  });
  exports.writeBundlesTransform = writeBundlesTransform;
  //# sourceMappingURL=write-bundles.transform.js.map
+\ No newline at end of file
