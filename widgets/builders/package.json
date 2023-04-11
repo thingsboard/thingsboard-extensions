@@ -15,11 +15,11 @@
     "ng-packagr": "15.2.2"
   },
   "devDependencies": {
-    "@angular-devkit/core": "^15.2.4",
-    "@angular-devkit/architect": "^0.1502.4",
-    "@angular-devkit/build-angular": "^15.2.4",
-    "@angular/compiler": "^15.2.4",
-    "@angular/compiler-cli": "^15.2.4",
+    "@angular-devkit/core": "^15.2.5",
+    "@angular-devkit/architect": "^0.1502.5",
+    "@angular-devkit/build-angular": "^15.2.5",
+    "@angular/compiler": "^15.2.6",
+    "@angular/compiler-cli": "^15.2.6",
     "ng-packagr": "^15.2.2",
     "tslib": "^2.5.0",
     "tsickle": "^0.46.3",

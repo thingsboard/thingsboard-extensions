@@ -11,13 +11,14 @@ index ac71efa..f00dda4 100644
      cache?: rollup.RollupCache;
      cacheDirectory?: string | false;
 diff --git a/node_modules/ng-packagr/lib/flatten/rollup.js b/node_modules/ng-packagr/lib/flatten/rollup.js
-index e2f50a6..3bf4f25 100644
+index e2f50a6..89f84d9 100644
 --- a/node_modules/ng-packagr/lib/flatten/rollup.js
 +++ b/node_modules/ng-packagr/lib/flatten/rollup.js
-@@ -31,26 +31,42 @@ const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
+@@ -31,26 +31,44 @@ const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
  const plugin_node_resolve_1 = __importDefault(require("@rollup/plugin-node-resolve"));
  const path = __importStar(require("path"));
  const rollup = __importStar(require("rollup"));
++const commonJs = require("@rollup/plugin-commonjs");
 +const terser = require("@rollup/plugin-terser");
  const cache_1 = require("../utils/cache");
  const log = __importStar(require("../utils/log"));
@@ -54,12 +55,13 @@ index e2f50a6..3bf4f25 100644
              (0, plugin_node_resolve_1.default)(),
              (0, plugin_json_1.default)(),
 -            (0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache),
++            commonJs(),
              opts.downlevel ? (0, downlevel_plugin_1.downlevelCodeWithTscPlugin)() : undefined,
 +            terser()
          ],
          onwarn: warning => {
              switch (warning.code) {
-@@ -71,11 +87,12 @@ async function rollupBundleFile(opts) {
+@@ -71,11 +89,12 @@ async function rollupBundleFile(opts) {
      // Output the bundle to disk
      const output = await bundle.write({
          name: opts.moduleName,
@@ -75,7 +77,7 @@ index e2f50a6..3bf4f25 100644
          banner: '',
          sourcemap: true,
      });
-@@ -90,13 +107,16 @@ async function rollupBundleFile(opts) {
+@@ -90,13 +109,16 @@ async function rollupBundleFile(opts) {
      };
  }
  exports.rollupBundleFile = rollupBundleFile;
