@@ -1652,6 +1652,13 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@iplab/ngx-color-picker@^15.0.2":
+  version "15.0.2"
+  resolved "https://registry.yarnpkg.com/@iplab/ngx-color-picker/-/ngx-color-picker-15.0.2.tgz#856bf2571378e792e5e42b566ac1aa79a9262763"
+  integrity sha512-wum0Hg4Ky/6mhvzolEpFpjGckOjN8L2nkXvy3mWUVclFHP9MZqqgpJaxghtax7/tMdEWQnwQI3PYsNyKfF15ug==
+  dependencies:
+    tslib "^2.3.0"
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
@@ -7148,13 +7155,6 @@ ngx-clipboard@^15.1.0:
     ngx-window-token ">=6.0.0"
     tslib "^2.0.0"
 
-ngx-color-picker@^14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/ngx-color-picker/-/ngx-color-picker-14.0.0.tgz#4587f517ac5683a705d4e55cd0939afa91faa853"
-  integrity sha512-w28zx2DyVpIJeNsTB3T2LUI4Ed/Ujf5Uhxuh0dllputfpxXwZG9ocSJM/0L67+fxA3UnfvvXVZNUX1Ny5nZIIw==
-  dependencies:
-    tslib "^2.3.0"
-
 ngx-daterangepicker-material@^6.0.4:
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/ngx-daterangepicker-material/-/ngx-daterangepicker-material-6.0.4.tgz#4e2432698ded28021a5fc0b0025dd1e0a3a13412"
@@ -8901,7 +8901,7 @@ text-table@0.2.0, text-table@^0.2.0:
 
 "thingsboard@https://github.com/thingsboard/thingsboard-ui-types.git#develop/3.5":
   version "3.5.0"
-  resolved "https://github.com/thingsboard/thingsboard-ui-types.git#46187256374c1971d39b5a08af4c8f9d34a64fb5"
+  resolved "https://github.com/thingsboard/thingsboard-ui-types.git#d24cba8d451f7887f9aad3798d28943ea0a8b9f6"
   dependencies:
     "@angular/animations" "^15.2.5"
     "@angular/cdk" "^15.2.5"
@@ -8914,6 +8914,7 @@ text-table@0.2.0, text-table@^0.2.0:
     "@angular/router" "^15.2.5"
     "@flowjs/flow.js" "^2.14.1"
     "@flowjs/ngx-flow" "~0.6.0"
+    "@iplab/ngx-color-picker" "^15.0.2"
     "@mat-datetimepicker/core" "~11.0.3"
     "@ngrx/store" "^15.4.0"
     "@ngx-translate/core" "^14.0.0"
@@ -8931,7 +8932,6 @@ text-table@0.2.0, text-table@^0.2.0:
     leaflet-polylinedecorator "^1.6.0"
     leaflet.markercluster "^1.5.3"
     ngx-clipboard "^15.1.0"
-    ngx-color-picker "^14.0.0"
     ngx-daterangepicker-material "^6.0.4"
     ngx-drag-drop "^15.0.1"
     ngx-flowchart "https://github.com/thingsboard/ngx-flowchart.git#release/2.0.0"
