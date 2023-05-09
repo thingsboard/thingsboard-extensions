@@ -16,7 +16,7 @@
 
     <properties>
         <main.dir>${basedir}</main.dir>
-        <thingsboard.version>3.4.0</thingsboard.version>
+        <thingsboard.version>3.5.0</thingsboard.version>
         <slf4j.version>1.7.32</slf4j.version>
         <logback.version>1.2.10</logback.version>
         <surfire.version>2.19.1</surfire.version>
@@ -47,7 +47,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
