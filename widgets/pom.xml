@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2022 ThingsBoard, Inc.
+    Copyright © 2023 ThingsBoard, Inc.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -44,7 +44,7 @@
                         </goals>
                         <configuration>
                             <nodeVersion>v16.15.1</nodeVersion>
-                            <yarnVersion>v1.22.17</yarnVersion>
+                            <yarnVersion>v1.22.19</yarnVersion>
                         </configuration>
                     </execution>
                     <execution>

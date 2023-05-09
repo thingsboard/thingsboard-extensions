@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
+            "tsConfig": "src/tsconfig.lib.json",
             "project": "src/ng-package.json"
           },
           "configurations": {
@@ -37,13 +38,24 @@
             "project": "src/ng-package.json",
             "staticServeConfig": "static.serve.conf.js"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "widget-extension",
   "cli": {
     "packageManager": "yarn",
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

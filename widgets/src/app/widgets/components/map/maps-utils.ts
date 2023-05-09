@@ -1,5 +1,5 @@
 ///
-/// Copyright © 2022 ThingsBoard, Inc.
+/// Copyright © 2023 ThingsBoard, Inc.
 ///
 
 import { DatasourceData } from '@shared/public-api';

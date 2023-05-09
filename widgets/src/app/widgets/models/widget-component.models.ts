@@ -1,5 +1,5 @@
 ///
-/// Copyright © 2022 ThingsBoard, Inc.
+/// Copyright © 2023 ThingsBoard, Inc.
 ///
 
 import {
@@ -132,7 +132,7 @@ export interface WidgetContext {
 
   ngZone?: NgZone;
 
-  store?: Store<AppState>;
+  store: Store<AppState>;
 
   rxjs: any;
 
