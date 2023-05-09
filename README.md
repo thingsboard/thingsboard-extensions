@@ -77,7 +77,7 @@ static/widgets/thingsboard-extension-widgets.js
 You must also check "Is module"
 
 ## Build docker image with custom extension
-Before building the docker image you have to choose the proper TB version, by default it has been set to 3.4.0 
+Before building the docker image you have to choose the proper TB version, by default it has been set to 3.5.0 
 ThingsBoard CE.
 <br>
 An example of setting version:
