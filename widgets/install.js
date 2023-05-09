@@ -24,5 +24,5 @@ function sourcePackage() {
 }
 
 function targetPackage() {
-  return path.join(projectRoot(), 'target', 'generated-resources', 'public', 'static', 'thingsboard-extension-widgets.js');
+  return path.join(projectRoot(), 'target', 'generated-resources', 'public', 'static', 'widgets', 'thingsboard-extension-widgets.js');
 }
