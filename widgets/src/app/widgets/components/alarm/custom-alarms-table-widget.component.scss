@@ -1,5 +1,5 @@
 /**
- * Copyright © 2022 ThingsBoard, Inc.
+ * Copyright © 2023 ThingsBoard, Inc.
  */
 :host {
   width: 100%;
@@ -8,8 +8,8 @@
     .table-container {
       position: relative;
     }
-    .mat-table {
-      .mat-row {
+    .mat-mdc-table {
+      .mat-mdc-row {
         &.invisible {
           visibility: hidden;
         }

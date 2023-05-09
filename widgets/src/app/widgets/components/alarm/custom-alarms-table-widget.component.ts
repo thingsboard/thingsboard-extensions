@@ -1,5 +1,5 @@
 ///
-/// Copyright © 2022 ThingsBoard, Inc.
+/// Copyright © 2023 ThingsBoard, Inc.
 ///
 
 import {
@@ -45,9 +45,9 @@ import {
   WidgetConfig
 } from '@shared/public-api';
 import { Store } from '@ngrx/store';
+import { AppState } from '@core/core.state';
 import {
   AlarmService,
-  AppState,
   createLabelFromDatasource,
   deepClone,
   DialogService,
@@ -69,7 +69,6 @@ import {
   CellContentInfo,
   CellStyleInfo,
   constructTableCssString,
-  DisplayColumn,
   EntityColumn,
   entityDataSortOrderFromString,
   findColumnByEntityKey,
@@ -83,7 +82,7 @@ import {
   TableWidgetSettings,
   widthStyle
 } from './table-widget.models';
-import { ConnectedPosition, Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { Overlay } from '@angular/cdk/overlay';
 import { DatePipe } from '@angular/common';
 // import { AlarmDetailsDialogComponent, AlarmDetailsDialogData } from './alarm-details-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -95,7 +94,6 @@ import {
   entityDataPageLinkSortDirection,
   KeyFilter
 } from '../../models/query.models';
-import { ComponentPortal, PortalInjector } from "@angular/cdk/portal";
 
 interface AlarmsTableWidgetSettings extends TableWidgetSettings {
   alarmsTitle: string;
@@ -117,7 +115,7 @@ interface AlarmWidgetActionDescriptor extends WidgetActionDescriptor {
 const cssjs = (window as any).ccsjs;
 
 @Component({
-  selector: 'custom-alarms-table-widget',
+  selector: 'tb-custom-alarms-table-widget',
   templateUrl: './custom-alarms-table-widget.component.html',
   styleUrls: ['./custom-alarms-table-widget.component.scss', './table-widget.scss']
 })

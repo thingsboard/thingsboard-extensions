@@ -12,7 +12,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "skipLibCheck": true,
-    "target": "es2017",
+    "target": "ES2022",
     "module": "es2020",
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
@@ -33,12 +33,24 @@
       "widget-extension-config/*": [
         "dist/widget-extension/*"
       ],
-      "@env/*": ["node_modules/thingsboard/src/environments/*"],
-      "@app/*": ["node_modules/thingsboard/src/app/*"],
-      "@core/*": ["node_modules/thingsboard/src/app/core/*"],
-      "@shared/*": ["node_modules/thingsboard/src/app/shared/*"],
-      "@modules/*": ["node_modules/thingsboard/src/app/modules/*"],
-      "@home/*": ["node_modules/thingsboard/src/app/modules/home/*"],
+      "@env/*": [
+        "node_modules/thingsboard/src/environments/*"
+      ],
+      "@app/*": [
+        "node_modules/thingsboard/src/app/*"
+      ],
+      "@core/*": [
+        "node_modules/thingsboard/src/app/core/*"
+      ],
+      "@shared/*": [
+        "node_modules/thingsboard/src/app/shared/*"
+      ],
+      "@modules/*": [
+        "node_modules/thingsboard/src/app/modules/*"
+      ],
+      "@home/*": [
+        "node_modules/thingsboard/src/app/modules/home/*"
+      ],
       "ace": [
         "node_modules/ace-builds/src-noconflict/ace.js"
       ],
@@ -54,7 +66,8 @@
       "jstree": [
         "node_modules/jstree/dist/jstree.min.js"
       ]
-    }
+    },
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
