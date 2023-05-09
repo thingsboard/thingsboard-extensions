@@ -1,0 +1,249 @@
+diff --git a/node_modules/ng-packagr/lib/flatten/rollup.d.ts b/node_modules/ng-packagr/lib/flatten/rollup.d.ts
+index ac71efa..f00dda4 100644
+--- a/node_modules/ng-packagr/lib/flatten/rollup.d.ts
++++ b/node_modules/ng-packagr/lib/flatten/rollup.d.ts
+@@ -11,6 +11,7 @@ export interface RollupOptions {
+     entryName: string;
+     dir: string;
+     sourceRoot: string;
++    format?: string;
+     downlevel?: boolean;
+     cache?: rollup.RollupCache;
+     cacheDirectory?: string | false;
+diff --git a/node_modules/ng-packagr/lib/flatten/rollup.js b/node_modules/ng-packagr/lib/flatten/rollup.js
+index e2f50a6..89f84d9 100644
+--- a/node_modules/ng-packagr/lib/flatten/rollup.js
++++ b/node_modules/ng-packagr/lib/flatten/rollup.js
+@@ -31,26 +31,44 @@ const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
+ const plugin_node_resolve_1 = __importDefault(require("@rollup/plugin-node-resolve"));
+ const path = __importStar(require("path"));
+ const rollup = __importStar(require("rollup"));
++const commonJs = require("@rollup/plugin-commonjs");
++const terser = require("@rollup/plugin-terser");
+ const cache_1 = require("../utils/cache");
+ const log = __importStar(require("../utils/log"));
+ const downlevel_plugin_1 = require("./downlevel-plugin");
+ const file_loader_plugin_1 = require("./file-loader-plugin");
++const fs = require('fs');
++const os = require('os');
+ /** Runs rollup over the given entry file, writes a bundle file. */
+ async function rollupBundleFile(opts) {
+     var _a;
+     log.debug(`rollup (v${rollup.VERSION}) ${opts.entry} to ${opts.dir}`);
+     const cacheDirectory = opts.cacheDirectory;
+     // Create the bundle
++    const data = fs.readFileSync(path.join(__dirname, '../../../thingsboard/src/app/modules/common/modules-map.ts'), 'utf8');
++    const reg = /private modulesMap: {\[key: string\]: any} = {([^;]*)};/gsm;
++    const regMatch = reg.exec(data);
++    const modulesStr = regMatch[1];
++    const externalModuleIds = [];
++    modulesStr.split(',' + os.EOL).forEach(
++      (line) => {
++        const moduleId = line.trim().split(":")[0].replaceAll("'", "").trim();
++        if (moduleId.length) {
++          externalModuleIds.push(moduleId);
++        }
++      }
++    );
+     const bundle = await rollup.rollup({
+         context: 'this',
+-        external: moduleId => isExternalDependency(moduleId),
++        external: moduleId => isExternalDependency(moduleId, externalModuleIds),
+         cache: (_a = opts.cache) !== null && _a !== void 0 ? _a : (cacheDirectory ? await (0, cache_1.readCacheEntry)(cacheDirectory, opts.cacheKey) : undefined),
+         input: opts.entry,
+         plugins: [
+             (0, plugin_node_resolve_1.default)(),
+             (0, plugin_json_1.default)(),
+-            (0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache),
++            commonJs(),
+             opts.downlevel ? (0, downlevel_plugin_1.downlevelCodeWithTscPlugin)() : undefined,
++            terser()
+         ],
+         onwarn: warning => {
+             switch (warning.code) {
+@@ -71,11 +89,12 @@ async function rollupBundleFile(opts) {
+     // Output the bundle to disk
+     const output = await bundle.write({
+         name: opts.moduleName,
+-        format: 'es',
++        format: opts.format || 'es',
+         dir: opts.dir,
+         inlineDynamicImports: false,
+-        chunkFileNames: opts.entryName + '-[name]-[hash].mjs',
+-        entryFileNames: opts.entryName + '.mjs',
++        chunkFileNames: opts.entryName + '-[name]-[hash]' + (opts.entryExt || '.mjs'),
++        entryFileNames: opts.entryName + (opts.entryExt || '.mjs'),
++        compact: true,
+         banner: '',
+         sourcemap: true,
+     });
+@@ -90,13 +109,16 @@ async function rollupBundleFile(opts) {
+     };
+ }
+ exports.rollupBundleFile = rollupBundleFile;
+-function isExternalDependency(moduleId) {
++function isExternalDependency(moduleId, externalModuleIds) {
+     // more information about why we don't check for 'node_modules' path
+     // https://github.com/rollup/rollup-plugin-node-resolve/issues/110#issuecomment-350353632
+     if (moduleId.startsWith('.') || moduleId.startsWith('/') || path.isAbsolute(moduleId)) {
+         // if it's either 'absolute', marked to embed, starts with a '.' or '/' or is the umd bundle and is tslib
+         return false;
+     }
++    if (externalModuleIds.indexOf(moduleId) === -1) {
++      return false;
++    }
+     return true;
+ }
+ //# sourceMappingURL=rollup.js.map
+diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts
+index 2d9468e..13d8349 100644
+--- a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts
++++ b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.d.ts
+@@ -10,12 +10,16 @@ export interface DestinationFiles {
+     fesm2015: string;
+     /** Absolute path of this entry point `ESM2020` module */
+     esm2020: string;
++    /** Absolute path of this entry point `SystemJS` module */
++    system: string;
+     /** Sub path of entrypoint distributable. */
+     directory: string;
+     /** Absolute path of this entry point `FESM2020` directory */
+     fesm2020Dir: string;
+     /** Absolute path of this entry point `FESM2015` directory */
+     fesm2015Dir: string;
++    /** Absolute path of this entry point `SystemJS` directory */
++    systemDir: string;
+ }
+ /**
+  * An entry point - quoting Angular Package Format - is:
+diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
+index e74d3f2..e984344 100644
+--- a/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
++++ b/node_modules/ng-packagr/lib/ng-package/entry-point/entry-point.js
+@@ -105,6 +105,8 @@ class NgEntryPoint {
+             fesm2015: pathJoinWithDest('fesm2015', `${flatModuleFile}.mjs`),
+             fesm2020Dir: pathJoinWithDest('fesm2020'),
+             fesm2015Dir: pathJoinWithDest('fesm2015'),
++            systemDir: pathJoinWithDest('system'),
++            system: pathJoinWithDest('system', `${flatModuleFile}.js`)
+         };
+     }
+     $get(key) {
+diff --git a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
+index 3881c28..1b47a79 100644
+--- a/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
++++ b/node_modules/ng-packagr/lib/ng-package/entry-point/write-bundles.transform.js
+@@ -15,26 +15,30 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+     const entryPoint = graph.find((0, nodes_1.isEntryPointInProgress)());
+     const { destinationFiles, entryPoint: ngEntryPoint, tsConfig } = entryPoint.data;
+     const cache = entryPoint.cache;
+-    const { fesm2020Dir, fesm2015Dir, esm2020 } = destinationFiles;
++    const { fesm2020Dir, fesm2015Dir, esm2020, systemDir, system } = destinationFiles;
+     const spinner = (0, ora_1.default)({
+         hideCursor: false,
+         discardStdin: false,
+     });
+-    const key = await (0, cache_1.generateKey)(ngEntryPoint.moduleId, esm2020, fesm2020Dir, fesm2015Dir, tsConfig.options.compilationMode);
+-    const hash = await (0, cache_1.generateKey)([...cache.outputCache.values()].map(({ version }) => version).join(':'));
+     const cacheDirectory = options.cacheEnabled && options.cacheDirectory;
++    const key = await (0, cache_1.generateKey)(ngEntryPoint.moduleId, esm2020, systemDir, tsConfig.options.compilationMode);
++    const hash = await (0, cache_1.generateKey)([...cache.outputCache.values()].map(({ version }) => version).join(':'));
+     if (cacheDirectory) {
+         const cacheResult = await (0, cache_1.readCacheEntry)(options.cacheDirectory, key);
+         if ((cacheResult === null || cacheResult === void 0 ? void 0 : cacheResult.hash) === hash) {
+             try {
+-                spinner.start('Writing FESM bundles');
++                spinner.start('Writing SystemJS bundles');
+                 await Promise.all([(0, fs_1.mkdir)(fesm2020Dir, { recursive: true }), (0, fs_1.mkdir)(fesm2015Dir, { recursive: true })]);
++                await (0, fs_1.mkdir)(systemDir, { recursive: true });
+                 for (const file of cacheResult.fesm2020) {
+                     await (0, fs_1.writeFile)((0, path_1.join)(fesm2020Dir, file.fileName), file.type === 'asset' ? file.source : file.code);
+                 }
+                 for (const file of cacheResult.fesm2015) {
+                     await (0, fs_1.writeFile)((0, path_1.join)(fesm2015Dir, file.fileName), file.type === 'asset' ? file.source : file.code);
+                 }
++                for (const file of cacheResult.system) {
++                  await (0, fs_1.writeFile)((0, path_1.join)(systemDir, file.fileName), file.type === 'asset' ? file.source : file.code);
++                }
+                 spinner.succeed('Writing FESM bundles');
+             }
+             catch (error) {
+@@ -44,13 +48,15 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+             return;
+         }
+     }
+-    async function generateFESM(rollupCache, dir, downlevel) {
++    /*
++    async function generateFESM(rollupCache, dir, format, downlevel) {
+         const { cache: rollupFESMCache, files } = await (0, rollup_1.rollupBundleFile)({
+             sourceRoot: tsConfig.options.sourceRoot,
+             entry: esm2020,
+             entryName: ngEntryPoint.flatModuleFile,
+             moduleName: ngEntryPoint.moduleId,
+             dir,
++            format,
+             downlevel,
+             cache: rollupCache,
+             cacheDirectory,
+@@ -58,7 +64,7 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+             cacheKey: await (0, cache_1.generateKey)(esm2020, dir, ngEntryPoint.moduleId, tsConfig.options.compilationMode),
+         });
+         return {
+-            /** The map contents are in an asset file type, which makes storing the map in the cache as redudant. */
++            // The map contents are in an asset file type, which makes storing the map in the cache as redudant.
+             files: files.map(f => {
+                 if (f.type === 'chunk') {
+                     f.map = null;
+@@ -73,7 +79,7 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+     };
+     try {
+         spinner.start('Generating FESM2020');
+-        const { rollupCache, files } = await generateFESM(cache.rollupFESM2020Cache, fesm2020Dir, false);
++        const { rollupCache, files } = await generateFESM(cache.rollupFESM2020Cache, fesm2020Dir, 'es', false);
+         cache.rollupFESM2020Cache = rollupCache;
+         fesmCache.fesm2020 = files;
+         spinner.succeed();
+@@ -84,7 +90,7 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+     }
+     try {
+         spinner.start('Generating FESM2015');
+-        const { rollupCache, files } = await generateFESM(cache.rollupFESM2015Cache, fesm2015Dir, true);
++        const { rollupCache, files } = await generateFESM(cache.rollupFESM2015Cache, fesm2015Dir, 'es', true);
+         cache.rollupFESM2015Cache = rollupCache;
+         fesmCache.fesm2015 = files;
+         spinner.succeed();
+@@ -95,7 +101,33 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+     }
+     if (cacheDirectory) {
+         await (0, cache_1.saveCacheEntry)(cacheDirectory, key, JSON.stringify(fesmCache));
++    } */
++  try {
++        spinner.start('Generating SystemJS');
++        const { cache: rollupSystemJsCache, files } = await (0, rollup_1.rollupBundleFile)({
++        sourceRoot: tsConfig.options.sourceRoot,
++        entry: esm2020,
++        entryName: ngEntryPoint.flatModuleFile,
++        entryExt: '.js',
++        moduleName: null, // ngEntryPoint.moduleId,
++        format: 'system',
++        dir: systemDir,
++        downlevel: false,
++        cache: cache.rollupSystemJsCache,
++        cacheDirectory,
++        fileCache: cache.outputCache,
++        cacheKey: await (0, cache_1.generateKey)(esm2020, systemDir, ngEntryPoint.moduleId, tsConfig.options.compilationMode),
++      });
++      spinner.succeed();
++      if (options.watch) {
++        cache.rollupSystemJsCache = rollupSystemJsCache;
++      }
++    }
++    catch (error) {
++      spinner.fail();
++      throw error;
+     }
++
+ });
+ exports.writeBundlesTransform = writeBundlesTransform;
+ //# sourceMappingURL=write-bundles.transform.js.map
+\ No newline at end of file
