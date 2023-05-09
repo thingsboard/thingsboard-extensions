@@ -111,6 +111,10 @@
                             <exclude>builders/static-serve/index.js</exclude>
                             <exclude>src/.browserslistrc</exclude>
                             <exclude>**/yarn.lock</exclude>
+                            <exclude>**/.yarnrc</exclude>
+                            <exclude>**/.npmrc</exclude>
+                            <exclude>**/.gitattributes</exclude>
+                            <exclude>**/.angular/**</exclude>
                             <exclude>**/*.raw</exclude>
                             <exclude>**/*.patch</exclude>
                         </excludes>
