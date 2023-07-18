@@ -112,7 +112,7 @@ interface AlarmWidgetActionDescriptor extends WidgetActionDescriptor {
   clear?: boolean;
 }
 
-const cssjs = (window as any).ccsjs;
+const cssjs = (window as any).cssjs;
 
 @Component({
   selector: 'tb-custom-alarms-table-widget',
