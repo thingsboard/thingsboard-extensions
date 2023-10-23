@@ -1,7 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "rootDirs": ["app", "../node_modules/thingsboard/src"],
+    "rootDirs": [
+      "app", "../node_modules/thingsboard/src"],
     "outDir": "../out-tsc/lib",
     "declaration": true,
     "declarationMap": true,
