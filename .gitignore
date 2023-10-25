@@ -16,8 +16,13 @@ speed-measure-plugin*.json
 
 # IDEs and editors
 /.idea
+*/.idea/**
+.idea/**
+.idea
 .project
+*/.project
 .classpath
+*/.classpath
 .c9/
 *.launch
 .settings/
@@ -45,3 +50,30 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+*.toDelete
+output/**
+*.class
+*~
+*.iml
+*.log
+*.log.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]
+.cache/**
+target/
+**/target
+build/
+**/build
+tmp_deb_control/
+tmp_rpm_control/
+tmp_sh/
+.gwt/
+/bin
+bin/
+**/dependency-reduced-pom.xml
+pom.xml.versionsBackup
+**/.gradle
+**/local.properties
+**/Californium.properties
+**/.env
+.instance_id
+rebuild-docker.sh
