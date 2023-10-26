@@ -64,6 +64,7 @@ ${TB_EXTENSION_WORK_DIR}/target/generated-resources/public/static/widgets/things
 
 ## Deploy project to customer server
 
+<<<<<<< HEAD
 You have two options for deploying extensions:
 1) Deploying using our UI. You can find all information about it in our [documentation](https://thingsboard.io/docs/user-guide/contribution/widgets-development/#thingsboard-extensions)
 2) Manual deploying. In this case you should use this [branch](https://github.com/thingsboard/thingsboard-extensions/tree/release-3.6-server) of **Thingsboard extensions**
