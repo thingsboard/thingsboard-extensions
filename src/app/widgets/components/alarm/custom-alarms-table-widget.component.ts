@@ -94,6 +94,7 @@ import {
   entityDataPageLinkSortDirection,
   KeyFilter
 } from '../../models/query.models';
+import { AlarmInfo } from '@shared/models/alarm.models';
 
 interface AlarmsTableWidgetSettings extends TableWidgetSettings {
   alarmsTitle: string;
@@ -721,7 +722,7 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
         ).subscribe((res) => {
           if (res) {
             if (res) {
-              const tasks: Observable<void>[] = [];
+              const tasks: Observable<AlarmInfo>[] = [];
               for (const alarmId of alarmIds) {
                 tasks.push(this.alarmService.ackAlarm(alarmId));
               }
@@ -777,7 +778,7 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
         ).subscribe((res) => {
           if (res) {
             if (res) {
-              const tasks: Observable<void>[] = [];
+              const tasks: Observable<AlarmInfo>[] = [];
               for (const alarmId of alarmIds) {
                 tasks.push(this.alarmService.clearAlarm(alarmId));
               }
