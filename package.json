@@ -19,7 +19,9 @@
   },
   "dependencies": {
     "primeicons": "~6.0.1",
-    "primeng": "~15.3.0"
+    "moment": "^2.29.4",
+    "primeng": "~15.3.0",
+    "chart.js": "3.3.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.2.5",
@@ -33,6 +35,7 @@
     "@angular/cli": "^15.2.5",
     "@angular/common": "^15.2.6",
     "@angular/compiler": "^15.2.6",
+    "@juggle/resize-observer": "^3.4.0",
     "@angular/compiler-cli": "^15.2.6",
     "@angular/core": "^15.2.6",
     "@angular/flex-layout": "^15.0.0-beta.42",
@@ -61,7 +64,7 @@
     "protractor": "~7.0.0",
     "raw-loader": "^4.0.2",
     "rxjs": "~7.8.0",
-    "thingsboard": "https://github.com/thingsboard/thingsboard-pe-ui-types.git#release/3.6",
+    "thingsboard": "https://github.com/kalutkaz/thingsboard-pe-ui-types#testing",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
     "typescript": "~4.9.5",

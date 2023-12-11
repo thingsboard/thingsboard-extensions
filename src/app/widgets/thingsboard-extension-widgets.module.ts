@@ -6,16 +6,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import addCustomWidgetLocale from './locale/custom-widget-locale.constant';
-import { ExampleModule } from './components/example/example.module';
+import { ExamplesModule } from './components/examples/examples.module';
 import { SharedModule } from '@shared/public-api';
 import { HomeComponentsModule } from '@home/components/public-api';
-import { ExampleMap } from './components/map/example-map.component';
-import { CustomAlarmsTableWidgetComponent } from './components/alarm/custom-alarms-table-widget.component';
 
 @NgModule({
   declarations: [
-    ExampleMap,
-    CustomAlarmsTableWidgetComponent
   ],
   imports: [
     CommonModule,
@@ -23,9 +19,7 @@ import { CustomAlarmsTableWidgetComponent } from './components/alarm/custom-alar
     SharedModule
   ],
   exports: [
-    ExampleMap,
-    ExampleModule,
-    CustomAlarmsTableWidgetComponent
+    ExamplesModule,
   ]
 })
 export class ThingsboardExtensionWidgetsModule {

@@ -1734,9 +1734,9 @@
     tslib "^2.2.0"
 
 "@fullcalendar/angular@^6.1.5":
-  version "6.1.7"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/angular/-/angular-6.1.7.tgz#a3206c9a46343532cd25570c53d92a241359d886"
-  integrity sha512-qjRWcow1t4OsK7JTDDlMw9nEsy43uHyBllPv3zv25ecL4+YGFDuT++UL66vuwO1ylKtlod8Cf398uG8WzNa83g==
+  version "6.1.9"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/angular/-/angular-6.1.9.tgz#b2e7b9f6bbc4983dc5cc2dcb305752d0618ec5da"
+  integrity sha512-cN91zGQEGM9s6VnD+2jNdHomAGHJIGSMBR0ts5gJC0FIRCuLtjDxiZN4kNfRWxx7NJiSLm+NCKijo6317pGhsw==
   dependencies:
     tslib "^2.3.0"
 
@@ -1842,6 +1842,11 @@
   dependencies:
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
+
+"@juggle/resize-observer@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
+  integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.4"
@@ -3961,6 +3966,11 @@ chardet@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
+
+chart.js@3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-3.3.2.tgz#667f3a0b6371b9719d8949c04a5bcbaec0d8c615"
+  integrity sha512-H0hSO7xqTIrwxoACqnSoNromEMfXvfuVnrbuSt2TuXfBDDofbnto4zuZlRtRvC73/b37q3wGAWZyUU41QPvNbA==
 
 chokidar@3.5.3, "chokidar@>=3.0.0 <4.0.0", chokidar@^3.0.0, chokidar@^3.5.3:
   version "3.5.3"
@@ -7153,6 +7163,11 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 mousetrap@^1.6.5:
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/mousetrap/-/mousetrap-1.6.5.tgz#8a766d8c272b08393d5f56074e0b5ec183485bf9"
@@ -9011,9 +9026,9 @@ text-table@0.2.0, text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-"thingsboard@https://github.com/thingsboard/thingsboard-pe-ui-types.git#release/3.6":
-  version "3.6.0"
-  resolved "https://github.com/thingsboard/thingsboard-pe-ui-types.git#7f28e6c9808fff35ce746de74c50ee7999881044"
+"thingsboard@https://github.com/kalutkaz/thingsboard-pe-ui-types#testing":
+  version "3.5.1"
+  resolved "https://github.com/kalutkaz/thingsboard-pe-ui-types#f619fb6385d972cb15a9f208a44bcd85abdb543a"
   dependencies:
     "@angular/animations" "^15.2.9"
     "@angular/cdk" "^15.2.9"
