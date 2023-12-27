@@ -20,7 +20,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <main.dir>${basedir}/..</main.dir>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <tb.edition>thingsboard/tb-node:3.6.0</tb.edition>
+        <tb.edition>thingsboard/tb-node:3.6.2</tb.edition>
         <dockerfile.name>Dockerfile</dockerfile.name>
         <docker.repo>thingsboard</docker.repo>
         <docker.name>${artifactId}</docker.name>

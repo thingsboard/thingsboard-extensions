@@ -26,6 +26,7 @@ import {
 import {
   AlarmDataInfo,
   alarmFields,
+  AlarmInfo,
   AlarmSearchStatus,
   alarmSeverityColors,
   alarmSeverityTranslations,
@@ -589,7 +590,7 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
     if (alarm && key) {
       const contentInfo = this.contentsInfo[key.def];
       const value = getAlarmValue(alarm, key);
-      let content = '';
+      let content: string;
       if (contentInfo.useCellContentFunction && contentInfo.cellContentFunction) {
         try {
           content = contentInfo.cellContentFunction(value, alarm, this.ctx);
@@ -721,7 +722,7 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
         ).subscribe((res) => {
           if (res) {
             if (res) {
-              const tasks: Observable<void>[] = [];
+              const tasks: Observable<AlarmInfo>[] = [];
               for (const alarmId of alarmIds) {
                 tasks.push(this.alarmService.ackAlarm(alarmId));
               }
@@ -777,7 +778,7 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
         ).subscribe((res) => {
           if (res) {
             if (res) {
-              const tasks: Observable<void>[] = [];
+              const tasks: Observable<AlarmInfo>[] = [];
               for (const alarmId of alarmIds) {
                 tasks.push(this.alarmService.clearAlarm(alarmId));
               }
