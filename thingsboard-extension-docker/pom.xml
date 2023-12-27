@@ -26,7 +26,7 @@
         <docker.name>${artifactId}</docker.name>
         <pkg.user>thingsboard</pkg.user>
         <pkg.name>${parent.artifactId}-widgets-${parent.version}.jar</pkg.name>
-        <extension.folder>/usr/share/thingsboard/extenstions</extension.folder>
+        <extension.folder>/usr/share/thingsboard/extensions</extension.folder>
         <dockerfile.skip>true</dockerfile.skip>
     </properties>
 
