@@ -26,6 +26,7 @@ import {
 import {
   AlarmDataInfo,
   alarmFields,
+  AlarmInfo,
   AlarmSearchStatus,
   alarmSeverityColors,
   alarmSeverityTranslations,
@@ -590,7 +591,7 @@ export class CustomAlarmsTableWidgetComponent extends PageComponent implements O
     if (alarm && key) {
       const contentInfo = this.contentsInfo[key.def];
       const value = getAlarmValue(alarm, key);
-      let content = '';
+      let content: string;
       if (contentInfo.useCellContentFunction && contentInfo.cellContentFunction) {
         try {
           content = contentInfo.cellContentFunction(value, alarm, this.ctx);
