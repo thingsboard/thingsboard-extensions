@@ -17,6 +17,7 @@
 
 import { WidgetContext } from '@home/models/widget-component.models';
 import {
+    CancelAnimationFrame,
     createLabelFromDatasource,
     deepClone,
     formattedDataFormDatasourceData,
@@ -26,11 +27,15 @@ import {
     isEqual,
     isNumber,
     isNumeric,
-    isUndefined
+    isUndefined,
+    IWidgetSubscription,
+    UtilsService,
+    WidgetSubscriptionOptions
 } from '@core/public-api';
-import { IWidgetSubscription, WidgetSubscriptionOptions } from '@core/public-api';
 import {
+    AggregationType,
     DataKey,
+    DataKeyType,
     Datasource,
     DatasourceData,
     DatasourceType,
@@ -43,7 +48,6 @@ import {
     TbFlotHoverInfo,
     TbFlotKeySettings,
     TbFlotLatestKeySettings,
-    TbFlotPlotAxis,
     TbFlotPlotDataSeries,
     TbFlotPlotItem,
     TbFlotSeries,
@@ -56,14 +60,24 @@ import {
 } from '@home/components/public-api';
 import * as moment_ from 'moment';
 import tinycolor from 'tinycolor2';
-import { AggregationType } from '@shared/public-api';
-import { CancelAnimationFrame } from '@core/public-api';
-import { UtilsService } from '@core/public-api';
-import { DataKeyType } from '@shared/public-api';
 import { BehaviorSubject } from 'rxjs';
 import Timeout = NodeJS.Timeout;
 
 const moment = moment_;
+
+interface test extends TbFlotSeries {
+    lines?: any,
+    points?: any,
+    curvedLines?: any,
+    color?: any,
+    highlightColor?: any,
+    xaxis?: any,
+    stack?: any
+}
+
+interface test2 extends TbFlotAxisOptions {
+    show?: any
+}
 
 export class TbFlot {
 
@@ -75,11 +89,11 @@ export class TbFlot {
     private tooltip: JQuery<any>;
 
     private readonly yAxisTickFormatter: TbFlotTicksFormatterFunction;
-    private readonly yaxis: TbFlotAxisOptions;
-    private readonly xaxis: TbFlotAxisOptions;
+    private readonly yaxis;
+    private readonly xaxis;
     private yaxes: Array<TbFlotAxisOptions>;
 
-    private readonly options: JQueryPlotOptions;
+    private readonly options;
     private subscription: IWidgetSubscription;
     private $element: JQuery<any>;
 
@@ -102,7 +116,7 @@ export class TbFlot {
     private labelPatternsSourcesData: DatasourceData[];
 
     private plotInited = false;
-    private plot: JQueryPlot;
+    private plot;
 
     private createPlotTimeoutHandle: Timeout;
     private updateTimeoutHandle: Timeout;
@@ -414,7 +428,7 @@ export class TbFlot {
         }
 
         for (let i = 0; i < this.subscription.data.length; i++) {
-            const series = this.subscription.data[i] as TbFlotSeries;
+            const series = this.subscription.data[i] as test;
             const keySettings = series.dataKey.settings;
             series.dataKey.tooltipValueFormatFunction = tooltipValueFormatFunction;
             if (keySettings.tooltipValueFormatter && keySettings.tooltipValueFormatter.length) {
@@ -481,7 +495,7 @@ export class TbFlot {
 
             if (this.yaxis) {
                 const units = series.dataKey.units && series.dataKey.units.length ? series.dataKey.units : this.trackUnits;
-                let yaxis: TbFlotAxisOptions;
+                let yaxis: test2;
                 if (keySettings.showSeparateAxis) {
                     yaxis = this.createYAxis(keySettings, units);
                     this.yaxes.push(yaxis);
@@ -732,7 +746,7 @@ export class TbFlot {
 
     public updateSeriesColor(color: string) {
         if (this.subscription?.data?.length) {
-            const series = this.subscription.data[0] as TbFlotSeries;
+            const series = this.subscription.data[0] as test;
             series.dataKey.color = color;
             series.color = color;
             series.highlightColor = tinycolor(color).setAlpha(.75).toRgbString();
@@ -838,9 +852,9 @@ export class TbFlot {
             const height = this.$element.height();
             if (width && height) {
                 if (this.chartType === 'pie' && this.animatedPie) {
-                    this.plot = $.plot(this.$element, this.pieData, this.options) as JQueryPlot;
+                    this.plot = $.plot(this.$element, this.pieData, this.options);
                 } else {
-                    this.plot = $.plot(this.$element, this.subscription.data, this.options) as JQueryPlot;
+                    this.plot = $.plot(this.$element, this.subscription.data, this.options);
                 }
                 this.updateYMinMax();
             } else {
@@ -1269,7 +1283,7 @@ export class TbFlot {
         return content;
     }
 
-    private formatYAxisTicks(value: number, axis?: TbFlotPlotAxis): string {
+    private formatYAxisTicks(value: number, axis?: any): string {
         if (this.settings.yaxis && this.settings.yaxis.showLabels === false) {
             return '';
         }
@@ -1321,7 +1335,7 @@ export class TbFlot {
         this.$element.unbind('plotclick', this.flotClickHandler);
     }
 
-    private onFlotHover(e: any, pos: JQueryPlotPoint, item: TbFlotPlotItem) {
+    private onFlotHover(e: any, pos: any, item: TbFlotPlotItem) {
         if (!this.plot || !this.tooltip) {
             return;
         }
@@ -1388,7 +1402,7 @@ export class TbFlot {
         }
     }
 
-    private onFlotSelect(e: any, ranges: JQueryPlotSelectionRanges) {
+    private onFlotSelect(e: any, ranges: any) {
         if (!this.plot) {
             return;
         }
@@ -1420,16 +1434,16 @@ export class TbFlot {
         this.isMouseInteraction = false;
     }
 
-    private onFlotClick(e: any, pos: JQueryPlotPoint, item: TbFlotPlotItem) {
+    private onFlotClick(e: any, pos: any, item: TbFlotPlotItem) {
         if (!this.plot) {
             return;
         }
         this.onPieSliceClick(e, item);
     }
 
-    private getHoverInfo(seriesList: TbFlotPlotDataSeries[], pos: JQueryPlotPoint): TbFlotHoverInfo[] {
+    private getHoverInfo(seriesList: TbFlotPlotDataSeries[], pos: any): TbFlotHoverInfo[] {
         let i: number;
-        let series: TbFlotPlotDataSeries;
+        let series;
         let hoverIndex: number;
         let hoverDistance: number;
         let minDistance: number;
@@ -1524,7 +1538,7 @@ export class TbFlot {
         return results;
     }
 
-    private findHoverIndexFromData(posX: number, series: TbFlotPlotDataSeries): number {
+    private findHoverIndexFromData(posX: number, series: any): number {
         let lower = 0;
         let upper = series.data.length - 1;
         let middle: number;
@@ -1544,7 +1558,7 @@ export class TbFlot {
         }
     }
 
-    private findHoverIndexFromDataPoints(posX: number, series: TbFlotPlotDataSeries, last: number): number {
+    private findHoverIndexFromDataPoints(posX: number, series: any, last: number): number {
         const ps = series.datapoints.pointsize;
         const initial = last * ps;
         const len = series.datapoints.points.length;

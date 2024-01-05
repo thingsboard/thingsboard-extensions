@@ -3,3 +3,4 @@
 ///
 
 export * from './examples/public-api';
+export * from './resources/public-api';

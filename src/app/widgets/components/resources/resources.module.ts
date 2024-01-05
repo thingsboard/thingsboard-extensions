@@ -9,7 +9,8 @@ import { ResourceFlotWidgetComponent } from './chart/resource-flot-widget.compon
 
 @NgModule({
     declarations: [
-        ResourseAlarmsTableWidgetComponent
+        ResourseAlarmsTableWidgetComponent,
+        ResourceFlotWidgetComponent
     ],
     imports: [
         CommonModule,
@@ -19,7 +20,8 @@ import { ResourceFlotWidgetComponent } from './chart/resource-flot-widget.compon
         HomeComponentsModule
     ],
     exports: [
-        ResourseAlarmsTableWidgetComponent
+        ResourseAlarmsTableWidgetComponent,
+        ResourceFlotWidgetComponent
     ]
 })
 
