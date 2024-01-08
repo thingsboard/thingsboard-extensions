@@ -26,7 +26,6 @@ import {
 import {
   AlarmDataInfo,
   alarmFields,
-  AlarmInfo,
   AlarmSearchStatus,
   alarmSeverityColors,
   alarmSeverityTranslations,

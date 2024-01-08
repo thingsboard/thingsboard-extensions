@@ -59,7 +59,7 @@ yarn build
 
 You can find the compiled file at the following path:
 ```
-${TB_EXTENSION_WORK_DIR}/target/generated-resources/public/static/widgets/thingsboard-extension-widgets.js
+${TB_EXTENSION_WORK_DIR}/target/generated-resources/thingsboard-extension-widgets.js
 ```
 
 ## Deploy project to customer server
