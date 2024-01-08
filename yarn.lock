@@ -1787,6 +1787,11 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
+"@jcubic/lily@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@jcubic/lily/-/lily-0.3.0.tgz#00b229aab69fe094a57fd37f27d32dd4f380c1d1"
+  integrity sha512-4z6p4jLGSthc8gQ7wu4nHfGYn/IgCKFr+7hjuf80VdXUs7sm029mZGGDpS8sb29PVZWUBvMMTBCVGFhH2nN4Vw==
+
 "@jridgewell/gen-mapping@^0.1.0":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.1.1.tgz#e5d2e450306a9491e3bd77e323e38d7aff315996"
@@ -2885,6 +2890,13 @@
   dependencies:
     "@types/sizzle" "*"
 
+"@types/jquery@^3.5.14":
+  version "3.5.29"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.29.tgz#3c06a1f519cd5fc3a7a108971436c00685b5dcea"
+  integrity sha512-oXQQC9X9MOPRrMhPHHOsXqeQDnWeCDT3PelUIg/Oy8FAbzSZtFHRjc7IpbfFVmpLtJ+UOoywpRsuO5Jxjybyeg==
+  dependencies:
+    "@types/sizzle" "*"
+
 "@types/js-beautify@^1.13.3":
   version "1.13.3"
   resolved "https://registry.yarnpkg.com/@types/js-beautify/-/js-beautify-1.13.3.tgz#53839bb5b766d0fb45e87386100bb3bcbb7dca9d"
@@ -3461,6 +3473,11 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
   integrity sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==
   dependencies:
     color-convert "^2.0.1"
+
+ansidec@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/ansidec/-/ansidec-0.3.4.tgz#e12d267d6b1f122d2da5b98fe0de1f98d14ac62b"
+  integrity sha512-Ydgbey4zqUmmNN2i2OVeVHXig3PxHRbok2X6B2Sogmb92JzZUFfTL806dT7os6tBL1peXItfeFt76CP3zsoXUg==
 
 anymatch@~3.1.2:
   version "3.1.3"
@@ -5528,6 +5545,14 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
   integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
 
+"flot.curvedlines@https://github.com/MichaelZinsmaier/CurvedLines.git#master":
+  version "1.1.1"
+  resolved "https://github.com/MichaelZinsmaier/CurvedLines.git#22ed1fc2a6ccafc816c2d07b36027cc123825c4b"
+
+"flot@https://github.com/thingsboard/flot.git#0.9-work":
+  version "0.9.0-alpha"
+  resolved "https://github.com/thingsboard/flot.git#c2734540477d8b261d04ee18d4d38af3b0ecb81b"
+
 follow-redirects@^1.0.0:
   version "1.15.2"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
@@ -5602,6 +5627,11 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
+
+fsevents@^2.3.2:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 fsevents@~2.3.2:
   version "2.3.2"
@@ -6538,6 +6568,26 @@ jest-worker@^27.4.5:
     "@types/node" "*"
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
+
+jquery.terminal@^2.35.3:
+  version "2.37.2"
+  resolved "https://registry.yarnpkg.com/jquery.terminal/-/jquery.terminal-2.37.2.tgz#705223424a336e965f6a496f27aea5a71f797753"
+  integrity sha512-1mZLE1TumJDBcgC9ZSKqQTdENioVGZh68PNFk/TQ90EYxtQyEcxzQX5VCRNBnsB6pmyRLopL4u3I2NGbCFrcuw==
+  dependencies:
+    "@jcubic/lily" "^0.3.0"
+    "@types/jquery" "^3.5.14"
+    ansidec "^0.3.4"
+    iconv-lite "^0.6.3"
+    jquery "^3.6.0"
+    prismjs "^1.27.0"
+    wcwidth "^1.0.1"
+  optionalDependencies:
+    fsevents "^2.3.2"
+
+jquery@^3.6.0, jquery@^3.6.3:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.7.1.tgz#083ef98927c9a6a74d05a6af02806566d16274de"
+  integrity sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==
 
 js-sdsl@^4.1.4:
   version "4.4.0"
@@ -8002,7 +8052,7 @@ primeng@~15.3.0:
   dependencies:
     tslib "^2.3.0"
 
-prismjs@^1.28.0:
+prismjs@^1.27.0, prismjs@^1.28.0:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.29.0.tgz#f113555a8fa9b57c35e637bba27509dcf802dd12"
   integrity sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==
@@ -9026,9 +9076,9 @@ text-table@0.2.0, text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-"thingsboard@https://github.com/kalutkaz/thingsboard-pe-ui-types#testing":
-  version "3.5.1"
-  resolved "https://github.com/kalutkaz/thingsboard-pe-ui-types#f619fb6385d972cb15a9f208a44bcd85abdb543a"
+"thingsboard@https://github.com/thingsboard/thingsboard-pe-ui-types.git#release/3.6":
+  version "3.6.0"
+  resolved "https://github.com/thingsboard/thingsboard-pe-ui-types.git#7f28e6c9808fff35ce746de74c50ee7999881044"
   dependencies:
     "@angular/animations" "^15.2.9"
     "@angular/cdk" "^15.2.9"
@@ -9085,6 +9135,11 @@ tiny-emitter@^2.0.0:
   resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
   integrity sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==
 
+tinycolor2@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.6.0.tgz#f98007460169b0263b97072c5ae92484ce02d09e"
+  integrity sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==
+
 "tinymce@^6.0.0 || ^5.5.0":
   version "6.4.1"
   resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-6.4.1.tgz#9c28f798074668d53371805fb6f1c68e582a4549"
@@ -9127,6 +9182,11 @@ toidentifier@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
+
+tooltipster@^4.2.8:
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/tooltipster/-/tooltipster-4.2.8.tgz#ad1970dd71ad853034e64e3fdd1745f7f3485071"
+  integrity sha512-Znmbt5UMzaiFCRlVaRtfRZYQqxrmNlj1+3xX/aT0OiA3xkQZhXYGbLJmZPigx0YiReYZpO7Lm2XKbUxXsiU/pg==
 
 tough-cookie@~2.5.0:
   version "2.5.0"
