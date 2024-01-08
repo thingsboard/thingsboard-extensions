@@ -7,7 +7,7 @@ please use this import structure:
 ```
 import { <dependency> } from '<TB-module>/public-api';
 ```
-"TB-module" - any of the following modules: 
+"TB-module" - any of the following modules:
 ```
 @app/*
 @core/*
@@ -19,7 +19,7 @@ import { <dependency> } from '<TB-module>/public-api';
 Refer to [modules-map](https://github.com/thingsboard/thingsboard-pe-ui-types/blob/master/src/app/modules/common/modules-map.ts)
 to see what you can use.
 
-Example: 
+Example:
 
 ```
 import { WidgetConfig } from '@shared/public-api';
@@ -30,7 +30,7 @@ In case you want to use your own dependencies package from the npm registry (unl
 yarn add <package-name>
 ```
 
-Example: 
+Example:
 
 ```
 yarn add lodash
@@ -59,12 +59,11 @@ yarn build
 
 You can find the compiled file at the following path:
 ```
-${TB_EXTENSION_WORK_DIR}/target/generated-resources/public/static/widgets/thingsboard-extension-widgets.js
+${TB_EXTENSION_WORK_DIR}/target/generated-resources/thingsboard-extension-widgets.js
 ```
 
 ## Deploy project to customer server
 
-<<<<<<< HEAD
 You have two options for deploying extensions:
 1) Deploying using our UI. You can find all information about it in our [documentation](https://thingsboard.io/docs/user-guide/contribution/widgets-development/#thingsboard-extensions)
 2) Manual deploying. In this case you should use this [branch](https://github.com/thingsboard/thingsboard-extensions/tree/release-3.6-server) of **Thingsboard extensions**
