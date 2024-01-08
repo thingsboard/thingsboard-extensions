@@ -26,7 +26,6 @@ import {
 import {
   AlarmDataInfo,
   alarmFields,
-  AlarmInfo,
   AlarmSearchStatus,
   alarmSeverityColors,
   alarmSeverityTranslations,
@@ -95,6 +94,7 @@ import {
   entityDataPageLinkSortDirection,
   KeyFilter
 } from '../../models/query.models';
+import { AlarmInfo } from '@shared/models/alarm.models';
 
 interface AlarmsTableWidgetSettings extends TableWidgetSettings {
   alarmsTitle: string;
