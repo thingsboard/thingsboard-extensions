@@ -21,13 +21,9 @@
     "chart.js": "3.3.2",
     "flot": "https://github.com/thingsboard/flot.git#0.9-work",
     "flot.curvedlines": "https://github.com/MichaelZinsmaier/CurvedLines.git#master",
-    "jquery": "^3.6.3",
-    "jquery.terminal": "^2.35.3",
     "moment": "^2.29.4",
-    "primeicons": "~6.0.1",
     "primeng": "~15.3.0",
-    "tinycolor2": "^1.6.0",
-    "tooltipster": "^4.2.8"
+    "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "15.2.10",
@@ -57,9 +53,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@tb/custom-builder": "file:./builders",
     "@types/flot": "^0.0.32",
-    "@types/jquery": "^3.5.16",
     "@types/tinycolor2": "^1.4.3",
-    "@types/tooltipster": "^0.0.31",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "eslint": "^8.56.0",
