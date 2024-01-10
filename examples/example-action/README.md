@@ -5,7 +5,7 @@ You can find code base [here](../../src/examples/example-action).
 
 Thingsboard platform supports actions that have been created in the widget extension.
 
-This example adds an entity to the table. The same logic you can be found in Custom action (with HTML template):
+This example adds an entity to the table. The same logic can be found in Custom action (with HTML template):
 
 ![img.png](../images/example-action-images/action-example.png)
 
@@ -20,7 +20,7 @@ http://localhost:5000/static/widgets/thingsboard-extension-widgets.js
 
 ![img.png](../images/example-action-images/action-resource-tab.png)
 
-- Call our component in on the HTML tab. Logic is completely the same as for any other Angular component:
+- Call our component in the HTML tab. Logic is completely the same as for any other Angular component:
 ```html
 <tb-add-entity-action [ctx]="ctx" [dialogRef] = "dialogRef"></tb-add-entity-action>
 ```
