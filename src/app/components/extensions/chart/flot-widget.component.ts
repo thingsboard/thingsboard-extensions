@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { WidgetContext } from '@home/models/widget-component.models';
 import { ChartType, TbFlotSettings } from '@home/components/public-api';
-import { TbFlot } from './resource-flot-widget';
+import { TbFlot } from './flot-widget';
 import {
     defaultLegendConfig,
     LegendConfig,
@@ -12,12 +12,12 @@ import {
 import { isDefinedAndNotNull } from '@core/public-api';
 
 @Component({
-    selector: 'tb-resource-flot-widget',
-    templateUrl: './resource-flot-widget.component.html',
+    selector: 'tb-ext-flot-widget',
+    templateUrl: './flot-widget.component.html',
     styleUrls: []
 })
 
-export class ResourceFlotWidgetComponent implements OnInit {
+export class FlotWidgetComponent implements OnInit {
 
     @ViewChild('flotElement', {static: true}) flotElement: ElementRef;
 

@@ -138,11 +138,11 @@ interface AlarmWidgetActionDescriptor extends TableCellButtonActionDescriptor {
 }
 
 @Component({
-  selector: 'tb-resource-alarms-table-widget',
-  templateUrl: './resource-alarms-table-widget.component.html',
-  styleUrls: ['./resource-alarms-table-widget.component.scss', '../table-widget.scss']
+  selector: 'tb-ext-alarms-table-widget',
+  templateUrl: './alarms-table-widget.component.html',
+  styleUrls: ['./alarms-table-widget.component.scss', '../table-widget.scss']
 })
-export class ResourseAlarmsTableWidgetComponent extends PageComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AlarmsTableWidgetComponent extends PageComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   @Input()

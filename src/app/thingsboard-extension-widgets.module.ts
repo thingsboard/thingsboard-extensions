@@ -7,12 +7,9 @@ import { TranslateService } from '@ngx-translate/core';
 import addCustomWidgetLocale from './locale/custom-widget-locale.constant';
 
 @NgModule({
-  declarations: [
-  ],
-  imports: [
-  ],
-  exports: [
-  ]
+  declarations: [],
+  imports: [],
+  exports: []
 })
 export class ThingsboardExtensionWidgetsModule {
 

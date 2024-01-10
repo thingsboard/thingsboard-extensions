@@ -1,24 +1,26 @@
 Action example
 =====================
 
+You can find code base [here](../../src/examples/example-action).
+
 Thingsboard platform supports actions that have been created in the widget extension.
 
-This example adds an entity to the table. The same logic you can find in Custom action (with HTML template):
+This example adds an entity to the table. The same logic you can be found in Custom action (with HTML template):
 
 ![img.png](../images/example-action-images/action-example.png)
 
-To add custom action from widget extensions you need to do the next steps:
+To add custom action from widget extensions you need to follow the next steps:
 
 - Create 'Custom action (with HTML template)' and in the resources tab
-of the action editor enter your resource file name(you can find information how to add resource file into system [here](https://thingsboard.io/docs/user-guide/contribution/widgets-development/#thingsBoard-extensions)).
-  For this example we run extensions in development mode so we will use the development path to get our resources:
+of the action editor, enter your resource file name(you can find information on how to add a resource file into the system [here](https://thingsboard.io/docs/user-guide/contribution/widgets-development/#thingsBoard-extensions)).
+  For this example, we run extensions in development mode, so we will use the development path to get our resources:
 ```
 http://localhost:5000/static/widgets/thingsboard-extension-widgets.js
 ```
 
 ![img.png](../images/example-action-images/action-resource-tab.png)
 
-- Call our component on the HTML tab. Logic completely the same as for any other Angular component:
+- Call our component in on the HTML tab. Logic is completely the same as for any other Angular component:
 ```html
 <tb-add-entity-action [ctx]="ctx" [dialogRef] = "dialogRef"></tb-add-entity-action>
 ```
@@ -45,6 +47,6 @@ function AddEntityDialogController(instance) {
 
 ![img.png](../images/example-action-images/action-js-tab.png)
 
-After these steps action integration is complete:
+After these steps, the action integration is complete:
 
 ![img.png](../images/example-action-images/action-work.png)
