@@ -5,11 +5,11 @@ import { ColorSettings, WidgetSettings, WidgetSettingsComponent, constantColor }
 import { AppState } from '@core/core.state';
 
 interface KeySettings {
-    showIcon: boolean,
-    iconSize: number,
-    iconSizeUnit: string,
-    icon: string,
-    iconColor: ColorSettings
+    showIcon: boolean;
+    iconSize: number;
+    iconSizeUnit: string;
+    icon: string;
+    iconColor: ColorSettings;
 }
 
 @Component({
@@ -26,13 +26,13 @@ export class DataKeySettingsComponent extends WidgetSettingsComponent {
         iconSizeUnit: 'px',
         icon: 'thermostat',
         iconColor: constantColor('#5469FF')
-    }
-    
+    };
+
     public keySettingsForm: FormGroup;
-    
+
     constructor(protected store: Store<AppState>,
                 private fb: FormBuilder) {
-        super(store)
+        super(store);
     }
     protected settingsForm(): FormGroup {
         return this.keySettingsForm;
@@ -49,7 +49,7 @@ export class DataKeySettingsComponent extends WidgetSettingsComponent {
             iconSize: [settings.iconSize, []],
             iconSizeUnit: [settings.iconSizeUnit, []],
             iconColor: [settings.iconColor, []]
-        })
+        });
     }
 
 }

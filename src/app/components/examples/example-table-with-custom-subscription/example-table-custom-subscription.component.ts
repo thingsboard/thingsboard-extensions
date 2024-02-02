@@ -3,6 +3,7 @@ import { WidgetContext } from '@home/models/widget-component.models';
 import { WidgetSubscriptionOptions, formatValue } from '@core/public-api';
 import { AliasFilterType, DataKeyType, Datasource, EntityType, widgetType } from '@shared/public-api';
 import { BooleanOperation, EntityKeyType, EntityKeyValueType, FilterPredicateType } from '@shared/public-api';
+import { DatasourceType } from '@shared/models/widget.models';
 
 @Component({
     selector: 'tb-example-table-custom-subscription',
@@ -19,12 +20,12 @@ export class ExampleTableCustomSubscriptionComponent implements OnInit {
     ngOnInit(): void {
         const datasources: Datasource[] = [
             {
-                type: "entity",
+                type: DatasourceType.entity,
                 dataKeys: [
                     {
                         decimals: 0,
-                        label: "Temperature",
-                        name: "temperature",
+                        label: 'Temperature',
+                        name: 'temperature',
                         settings: {},
                         type: DataKeyType.attribute
                     }
@@ -37,7 +38,7 @@ export class ExampleTableCustomSubscriptionComponent implements OnInit {
                 keyFilters: [
                     {
                         key: {
-                            key: "active",
+                            key: 'active',
                             type: EntityKeyType.ATTRIBUTE
                         },
                         predicate: {
@@ -55,7 +56,7 @@ export class ExampleTableCustomSubscriptionComponent implements OnInit {
 
         const options: WidgetSubscriptionOptions = {
             type: widgetType.latest,
-            datasources: datasources,
+            datasources,
             callbacks:
                 {
                     onDataUpdated: () => {

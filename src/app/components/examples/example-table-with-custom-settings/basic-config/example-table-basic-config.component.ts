@@ -5,7 +5,7 @@ import { WidgetConfigComponentData } from '@home/models/widget-component.models'
 import { AppState } from '@core/public-api';
 import { Store } from '@ngrx/store';
 import { WidgetConfigComponent } from '@home/components/widget/widget-config.component';
-import { DataKey, Datasource, EntityType } from '@shared/public-api';
+import { DataKey, Datasource } from '@shared/public-api';
 
 @Component({
     selector: 'tb-example-table-basic-config',
@@ -17,7 +17,6 @@ export class ExampleTableBasicConfigComponent extends BasicWidgetConfigComponent
 
     public exampleTableConfigForm: FormGroup;
     public basicMode = this.basicMode;
-    public allowedEntityTypes: EntityType[] = [EntityType.ASSET, EntityType.DEVICE];
 
     public get datasource(): Datasource | null {
         const datasources: Datasource[] = this.exampleTableConfigForm.get('datasources').value;

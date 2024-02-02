@@ -4,11 +4,11 @@ import { ColorProcessor, ColorSettings, ComponentStyle, DataKey, Font, constantC
 import { formatValue, isDefinedAndNotNull } from '@core/public-api';
 
 interface ExampleTableSettings {
-   columnHeight: number,
-   valueColor: ColorSettings,
-   keyColor: ColorSettings,
-   keyFont: Font,
-   valueFont: Font
+   columnHeight: number;
+   valueColor: ColorSettings;
+   keyColor: ColorSettings;
+   keyFont: Font;
+   valueFont: Font;
 }
 
 export const valueDefaultSettings: ExampleTableSettings = {
@@ -31,7 +31,7 @@ export const valueDefaultSettings: ExampleTableSettings = {
       weight: '500',
       lineHeight: '100%'
    }
-}
+};
 
 enum FormatKey {
    DECIMALS = 'decimals',

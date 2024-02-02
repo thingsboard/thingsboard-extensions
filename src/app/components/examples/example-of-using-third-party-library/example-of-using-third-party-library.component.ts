@@ -42,7 +42,7 @@ export class ExampleOfUsingThirdPartyLibraryComponent implements OnInit {
         data: [],
         backgroundColor: []
       }]
-    }
+    };
 
     for (const key of this.ctx.data) {
       if (key.data.length) {

@@ -1,17 +1,17 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
-    AttributeScope,
-    EntitySearchDirection,
-    EntityType,
-    PageComponent,
-    RelationTypeGroup
+  AttributeScope,
+  EntitySearchDirection,
+  EntityType,
+  PageComponent,
+  RelationTypeGroup
 } from '@shared/public-api';
 import { AppState } from '@core/core.state';
 import { Store } from '@ngrx/store';
 import { WidgetContext } from '@home/models/widget-component.models';
 import { DialogRef } from '@angular/cdk/dialog';
-import { AssetService, AttributeService, deepClone, DeviceService, EntityRelationService } from '@core/public-api';
+import { AssetService, AttributeService, DeviceService, EntityRelationService } from '@core/public-api';
 import { Asset } from '@shared/models/asset.models';
 import { Device } from '@shared/models/device.models';
 import { forkJoin, mergeMap, Observable, of, Subject, takeUntil } from 'rxjs';
