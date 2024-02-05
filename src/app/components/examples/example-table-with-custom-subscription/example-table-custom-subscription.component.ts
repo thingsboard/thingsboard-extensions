@@ -3,7 +3,7 @@ import { WidgetContext } from '@home/models/widget-component.models';
 import { WidgetSubscriptionOptions, formatValue } from '@core/public-api';
 import { AliasFilterType, DataKeyType, Datasource, EntityType, widgetType } from '@shared/public-api';
 import { BooleanOperation, EntityKeyType, EntityKeyValueType, FilterPredicateType } from '@shared/public-api';
-import { DatasourceType } from '@shared/models/widget.models';
+import { DatasourceType } from '@shared/public-api';
 
 @Component({
     selector: 'tb-example-table-custom-subscription',
