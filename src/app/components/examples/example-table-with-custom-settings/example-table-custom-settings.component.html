@@ -1,0 +1,18 @@
+<div class="table">
+    <div class="header">
+       {{entityName}}
+    </div>
+    <div class="content">
+        <div class="content-column" [ngStyle]="{'height': columnHeight + 'px'}" *ngFor="let key of tableValues | keyvalue">
+            <div class="content-key">
+                <tb-icon *ngIf="key.value.icon.showIcon" [style]="key.value.icon.iconStyles" [style.color]="key.value.icon.iconColor.color">
+                    {{ key.value.icon.icon }}
+                </tb-icon>
+                <div class="key" [style]="keyStyle"  [style.color]="keyColor.color">
+                    {{key.key}}
+                </div>
+            </div>
+            <div [style]="valueStyle" [style.color]="valueColor.color">{{key.value.data}}</div>
+        </div>
+    </div>
+</div>

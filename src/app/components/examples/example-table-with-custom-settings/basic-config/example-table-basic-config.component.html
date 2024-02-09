@@ -1,0 +1,22 @@
+<div [formGroup]="exampleTableConfigForm">
+    <tb-datasources
+            [configMode]="basicMode"
+            hideDataKeys
+            formControlName="datasources">
+    </tb-datasources>
+    <tb-data-keys-panel
+            panelTitle="Columns"
+            addKeyTitle="Add column"
+            keySettingsTitle="Column settings"
+            removeKeyTitle="Remove column"
+            noKeysText="No columns configured"
+            hideDataKeyColor
+            [datasourceType]="datasource?.type"
+            [deviceId]="datasource?.deviceId"
+            [entityAliasId]="datasource?.entityAliasId"
+            formControlName="columns">
+    </tb-data-keys-panel>
+    <tb-widget-actions-panel
+            formControlName="actions">
+    </tb-widget-actions-panel>
+</div>

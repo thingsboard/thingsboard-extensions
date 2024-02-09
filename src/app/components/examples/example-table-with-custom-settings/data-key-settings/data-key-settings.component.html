@@ -1,0 +1,20 @@
+<div [formGroup]="keySettingsForm">
+    <div class="tb-form-row">
+        <mat-slide-toggle class="mat-slide fixed-title-width" formControlName="showIcon">
+            Icon
+        </mat-slide-toggle>
+        <div fxFlex fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+            <mat-form-field appearance="outline" class="flex number" subscriptSizing="dynamic">
+                <input matInput type="number" min="0" formControlName="iconSize" placeholder="Set">
+            </mat-form-field>
+            <tb-css-unit-select fxFlex formControlName="iconSizeUnit"></tb-css-unit-select>
+            <tb-material-icon-select asBoxInput
+                                     iconClearButton
+                                     [color]="keySettingsForm.get('iconColor').value?.color"
+                                     formControlName="icon">
+            </tb-material-icon-select>
+            <tb-color-settings formControlName="iconColor" settingsKey="Icon">
+            </tb-color-settings>
+        </div>
+    </div>
+</div>
