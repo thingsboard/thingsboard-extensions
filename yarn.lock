@@ -1637,9 +1637,9 @@
     tslib "^2.2.0"
 
 "@fullcalendar/angular@^6.1.5":
-  version "6.1.9"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/angular/-/angular-6.1.9.tgz#b2e7b9f6bbc4983dc5cc2dcb305752d0618ec5da"
-  integrity sha512-cN91zGQEGM9s6VnD+2jNdHomAGHJIGSMBR0ts5gJC0FIRCuLtjDxiZN4kNfRWxx7NJiSLm+NCKijo6317pGhsw==
+  version "6.1.7"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/angular/-/angular-6.1.7.tgz#a3206c9a46343532cd25570c53d92a241359d886"
+  integrity sha512-qjRWcow1t4OsK7JTDDlMw9nEsy43uHyBllPv3zv25ecL4+YGFDuT++UL66vuwO1ylKtlod8Cf398uG8WzNa83g==
   dependencies:
     tslib "^2.3.0"
 
@@ -1745,11 +1745,6 @@
   dependencies:
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
-
-"@juggle/resize-observer@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
-  integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.4"
@@ -5434,14 +5429,6 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
   integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
 
-"flot.curvedlines@https://github.com/MichaelZinsmaier/CurvedLines.git#master":
-  version "1.1.1"
-  resolved "https://github.com/MichaelZinsmaier/CurvedLines.git#22ed1fc2a6ccafc816c2d07b36027cc123825c4b"
-
-"flot@https://github.com/thingsboard/flot.git#0.9-work":
-  version "0.9.0-alpha"
-  resolved "https://github.com/thingsboard/flot.git#c2734540477d8b261d04ee18d4d38af3b0ecb81b"
-
 follow-redirects@^1.0.0:
   version "1.15.2"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
@@ -7072,11 +7059,6 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-moment@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
-  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
-
 mousetrap@^1.6.5:
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/mousetrap/-/mousetrap-1.6.5.tgz#8a766d8c272b08393d5f56074e0b5ec183485bf9"
@@ -7899,10 +7881,15 @@ pretty-bytes@^5.3.0:
   resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-5.6.0.tgz#356256f643804773c82f64723fe78c92c62beaeb"
   integrity sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==
 
-primeng@~15.3.0:
-  version "15.3.0"
-  resolved "https://registry.yarnpkg.com/primeng/-/primeng-15.3.0.tgz#ee98b52fd5ab3315f677260d0225cee3bc4423e6"
-  integrity sha512-vfNPk+KV5Bihu7vU+KYY4eTKmh3V+CPLt9l7kSuCqx02UAtDWHN579BS1AXrQleoUcg4G63/tvuI7JEuiRF0FQ==
+primeicons@~6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/primeicons/-/primeicons-6.0.1.tgz#431fa7c79825934eefd62087d8e1faa6a9e376ad"
+  integrity sha512-KDeO94CbWI4pKsPnYpA1FPjo79EsY9I+M8ywoPBSf9XMXoe/0crjbUK7jcQEDHuc0ZMRIZsxH3TYLv4TUtHmAA==
+
+primeng@~15.4.21-lts:
+  version "15.4.21-lts"
+  resolved "https://registry.yarnpkg.com/primeng/-/primeng-15.4.21-lts.tgz#7ba2bd37168fe67169e95054494bbec8b26b6c1f"
+  integrity sha512-0asZ5sxkpaM6hMSEgzaTb3dudqZbvMy3csKvDgHFF37WK536DZFJz/+o/lJdpJWbh4LORrY871uK8APR5k0Ufg==
   dependencies:
     tslib "^2.3.0"
 
@@ -8995,11 +8982,6 @@ tiny-emitter@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
   integrity sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==
-
-tinycolor2@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.6.0.tgz#f98007460169b0263b97072c5ae92484ce02d09e"
-  integrity sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==
 
 "tinymce@^6.0.0 || ^5.5.0":
   version "6.8.2"

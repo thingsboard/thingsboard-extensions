@@ -22,8 +22,9 @@
     "flot": "https://github.com/thingsboard/flot.git#0.9-work",
     "flot.curvedlines": "https://github.com/MichaelZinsmaier/CurvedLines.git#master",
     "moment": "^2.29.4",
-    "primeng": "~15.3.0",
-    "tinycolor2": "^1.6.0"
+    "tinycolor2": "^1.6.0",
+    "primeicons": "~6.0.1",
+    "primeng": "~15.4.21-lts"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "15.2.10",
@@ -46,14 +47,11 @@
     "@angular/platform-browser": "^15.2.10",
     "@angular/platform-browser-dynamic": "^15.2.10",
     "@angular/router": "^15.2.10",
-    "@juggle/resize-observer": "^3.4.0",
     "@ngrx/store": "^15.4.0",
     "@ngx-translate/core": "~14.0.0",
     "@rollup/plugin-commonjs": "^24.1.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@tb/custom-builder": "file:./builders",
-    "@types/flot": "^0.0.32",
-    "@types/tinycolor2": "^1.4.3",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "eslint": "^8.56.0",
