@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  height: 100%;
+
+  .table {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 10px;
+
+    .header {
+      font-weight: 500;
+      font-size: 30px;
+      line-height: 36px;
+      color: #757575;
+    }
+
+    .content {
+      border: 1px solid #0000001E;
+      border-radius: 4px;
+      overflow: auto;
+
+      .content-column {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0 15px;
+        align-items: center;
+
+        .content-key {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          .key {
+            letter-spacing: 0.4px;
+          }
+        }
+      }
+
+      .content-column:not(:last-child){
+        border-bottom: 1px solid #0000001E;
+      }
+    }
+  }
+}

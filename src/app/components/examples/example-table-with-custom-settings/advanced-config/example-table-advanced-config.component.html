@@ -1,0 +1,31 @@
+<div class="advanced-config" [formGroup]="exampleTableConfigForm">
+    <div class="row">
+        <mat-form-field class="flex-1">
+            <mat-label>Column height</mat-label>
+            <input matInput type="number" formControlName="columnHeight"/>
+            <mat-error *ngIf="exampleTableConfigForm.get('columnHeight').hasError('required')">
+                Column height is required
+            </mat-error>
+        </mat-form-field>
+        <div class="tb-form-row space-between flex-1">
+            <div>Key</div>
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+                <tb-font-settings formControlName="keyFont"
+                                  [previewText]="valuePreviewFn">
+                </tb-font-settings>
+                <tb-color-settings formControlName="keyColor" settingsKey="Key">
+                </tb-color-settings>
+            </div>
+        </div>
+        <div class="tb-form-row space-between flex-1">
+            <div>Value</div>
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+                <tb-font-settings formControlName="valueFont"
+                                  [previewText]="valuePreviewFn">
+                </tb-font-settings>
+                <tb-color-settings formControlName="valueColor" settingsKey="Value">
+                </tb-color-settings>
+            </div>
+        </div>
+    </div>
+</div>

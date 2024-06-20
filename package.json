@@ -1,7 +1,7 @@
 {
   "name": "thingsboard-extension-widgets",
   "private": true,
-  "version": "3.7.0",
+  "version": "3.6.2",
   "description": "ThingsBoard Extension Widgets",
   "scripts": {
     "ng": "ng",
@@ -18,11 +18,16 @@
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
   "dependencies": {
+    "chart.js": "3.3.2",
+    "flot": "https://github.com/thingsboard/flot.git#0.9-work",
+    "flot.curvedlines": "https://github.com/MichaelZinsmaier/CurvedLines.git#master",
+    "moment": "^2.29.4",
+    "tinycolor2": "^1.6.0",
     "primeicons": "~6.0.1",
     "primeng": "~15.4.21-lts"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "15.2.11",
+    "@angular-devkit/build-angular": "15.2.10",
     "@angular-eslint/builder": "15.2.1",
     "@angular-eslint/eslint-plugin": "15.2.1",
     "@angular-eslint/eslint-plugin-template": "15.2.1",
@@ -30,7 +35,7 @@
     "@angular-eslint/template-parser": "15.2.1",
     "@angular/animations": "^15.2.10",
     "@angular/cdk": "^15.2.9",
-    "@angular/cli": "^15.2.11",
+    "@angular/cli": "^15.2.10",
     "@angular/common": "^15.2.10",
     "@angular/compiler": "^15.2.10",
     "@angular/compiler-cli": "^15.2.10",
@@ -49,7 +54,7 @@
     "@tb/custom-builder": "file:./builders",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "eslint": "^8.57.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-import": "latest",
     "eslint-plugin-jsdoc": "latest",
     "eslint-plugin-prefer-arrow": "latest",
@@ -61,7 +66,7 @@
     "protractor": "~7.0.0",
     "raw-loader": "^4.0.2",
     "rxjs": "~7.8.0",
-    "thingsboard": "https://github.com/thingsboard/thingsboard-pe-ui-types.git#release/3.7",
+    "thingsboard": "https://github.com/thingsboard/thingsboard-pe-ui-types.git#release/3.6.2",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
     "typescript": "~4.9.5",
