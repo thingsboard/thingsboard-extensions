@@ -16,6 +16,11 @@
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
   "dependencies": {
+    "chart.js": "3.3.2",
+    "flot": "https://github.com/thingsboard/flot.git#0.9-work",
+    "flot.curvedlines": "https://github.com/MichaelZinsmaier/CurvedLines.git#master",
+    "moment": "^2.30.1",
+    "tinycolor2": "^1.6.0",
     "primeicons": "~7.0.0",
     "primeng": "~17.18.11"
   },
