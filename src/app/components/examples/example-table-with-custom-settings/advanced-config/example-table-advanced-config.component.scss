@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  height: 100%;
+
+  .advanced-config {
+    display: flex;
+    flex-direction: column;
+
+    .row {
+      flex-direction: row;
+      display: flex;
+      gap: 16px;
+    }
+    .flex-1 {
+      flex: 1;
+    }
+  }
+}
