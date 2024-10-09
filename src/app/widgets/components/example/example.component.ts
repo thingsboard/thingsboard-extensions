@@ -2,7 +2,7 @@
 /// Copyright © 2023 ThingsBoard, Inc.
 ///
 
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'tb-example',
@@ -15,11 +15,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   ],
   encapsulation: ViewEncapsulation.None
 })
-export class ExampleComponent implements OnInit {
+export class ExampleComponent {
 
   constructor() { }
-
-  ngOnInit() {
-  }
-
 }
