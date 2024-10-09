@@ -65,5 +65,8 @@
     "tslib": "^2.7.0",
     "typescript": "~5.5.4",
     "zone.js": "~0.14.10"
+  },
+  "resolutions": {
+    "tinymce": "6.8.4"
   }
 }
