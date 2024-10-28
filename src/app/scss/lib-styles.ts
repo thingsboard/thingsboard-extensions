@@ -19,13 +19,15 @@ class LibStylesEntryComponent {
 
 const addStyleFromComponent = (type: Type<any>, target: string)=> {
   const def: ɵComponentDef<any> = type[ɵNG_COMP_DEF];
-  const style = def.styles[0];
-  let targetStyle: HTMLStyleElement = document.getElementById(target) as any;
-  if (!targetStyle) {
-    targetStyle = document.createElement('style');
-    targetStyle.id = target;
-    const head = document.head || document.getElementsByTagName('head')[0];
-    head.appendChild(targetStyle);
+  if (def.styles?.length) {
+    const style = def.styles[0];
+    let targetStyle: HTMLStyleElement = document.getElementById(target) as any;
+    if (!targetStyle) {
+      targetStyle = document.createElement('style');
+      targetStyle.id = target;
+      const head = document.head || document.getElementsByTagName('head')[0];
+      head.appendChild(targetStyle);
+    }
+    targetStyle.innerHTML = style;
   }
-  targetStyle.innerHTML = style;
 }

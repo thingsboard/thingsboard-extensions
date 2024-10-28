@@ -47,7 +47,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     ChartModule,
     BasicWidgetConfigModule,
     WidgetConfigComponentsModule,
-    FlexLayoutModule.withConfig({addFlexToParent: false}),
+    FlexLayoutModule,
   ],
   exports: [
     ExampleTableComponent,
