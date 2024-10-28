@@ -11,14 +11,15 @@ index 15f81f1..501b08d 100644
      cacheDirectory?: string | false;
      fileCache: OutputFileCache;
 diff --git a/node_modules/ng-packagr/lib/flatten/rollup.js b/node_modules/ng-packagr/lib/flatten/rollup.js
-index 3c1f14d..d22ac75 100644
+index 3c1f14d..c011340 100644
 --- a/node_modules/ng-packagr/lib/flatten/rollup.js
 +++ b/node_modules/ng-packagr/lib/flatten/rollup.js
-@@ -30,9 +30,13 @@ exports.rollupBundleFile = rollupBundleFile;
+@@ -30,9 +30,14 @@ exports.rollupBundleFile = rollupBundleFile;
  const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
  const plugin_node_resolve_1 = __importDefault(require("@rollup/plugin-node-resolve"));
  const path = __importStar(require("path"));
 +const commonJs = require("@rollup/plugin-commonjs");
++const replace = require("@rollup/plugin-replace");
 +const terser = require("@rollup/plugin-terser");
  const cache_1 = require("../utils/cache");
  const log = __importStar(require("../utils/log"));
@@ -28,7 +29,7 @@ index 3c1f14d..d22ac75 100644
  let rollup;
  /** Runs rollup over the given entry file, writes a bundle file. */
  async function rollupBundleFile(opts) {
-@@ -41,12 +45,25 @@ async function rollupBundleFile(opts) {
+@@ -41,12 +46,25 @@ async function rollupBundleFile(opts) {
      log.debug(`rollup (v${rollup.VERSION}) ${opts.entry} to ${opts.dir}`);
      const cacheDirectory = opts.cacheDirectory;
      // Create the bundle
@@ -52,11 +53,11 @@ index 3c1f14d..d22ac75 100644
          cache: (_a = opts.cache) !== null && _a !== void 0 ? _a : (cacheDirectory ? await (0, cache_1.readCacheEntry)(cacheDirectory, opts.cacheKey) : undefined),
          input: opts.entry,
 -        plugins: [(0, plugin_node_resolve_1.default)(), (0, plugin_json_1.default)(), (0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache)],
-+        plugins: [(0, plugin_node_resolve_1.default)(), (0, plugin_json_1.default)(), commonJs(), terser()],
++        plugins: [(0, plugin_node_resolve_1.default)(), (0, plugin_json_1.default)(), replace({preventAssignment: true, 'process.env.NODE_ENV': '"production"'}), commonJs(), terser()],
          onwarn: warning => {
              switch (warning.code) {
                  case 'CIRCULAR_DEPENDENCY':
-@@ -66,12 +83,13 @@ async function rollupBundleFile(opts) {
+@@ -66,12 +84,13 @@ async function rollupBundleFile(opts) {
      // Output the bundle to disk
      const output = await bundle.write({
          name: opts.moduleName,
@@ -73,7 +74,7 @@ index 3c1f14d..d22ac75 100644
          banner: '',
          sourcemap: true,
      });
-@@ -98,13 +116,16 @@ async function ensureRollup() {
+@@ -98,13 +117,16 @@ async function ensureRollup() {
          log.debug(`rollup using wasm version.`);
      }
  }

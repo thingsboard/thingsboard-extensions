@@ -5,6 +5,8 @@
     "declarationMap": false
   },
   "angularCompilerOptions": {
-    "compilationMode": "partial"
+    "compilationMode": "experimental-local",
+    "supportTestBed": false,
+    "supportJitMode": false
   }
 }

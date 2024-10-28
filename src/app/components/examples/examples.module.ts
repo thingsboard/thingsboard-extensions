@@ -27,17 +27,18 @@ import {
 import {
   ExampleOfUsingThirdPartyLibraryComponent
 } from './example-of-using-third-party-library/example-of-using-third-party-library.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
-      ExampleTableComponent,
-      AddEntityComponent,
-      ExampleTableCustomSettingsComponent,
-      ExampleTableAdvancedConfigComponent,
-      ExampleTableBasicConfigComponent,
-      DataKeySettingsComponent,
-      ExampleTableCustomSubscriptionComponent,
-      ExampleOfUsingThirdPartyLibraryComponent
+    ExampleTableComponent,
+    AddEntityComponent,
+    ExampleTableCustomSettingsComponent,
+    ExampleTableAdvancedConfigComponent,
+    ExampleTableBasicConfigComponent,
+    DataKeySettingsComponent,
+    ExampleTableCustomSubscriptionComponent,
+    ExampleOfUsingThirdPartyLibraryComponent
   ],
   imports: [
     CommonModule,
@@ -45,17 +46,18 @@ import {
     HomeComponentsModule,
     ChartModule,
     BasicWidgetConfigModule,
-    WidgetConfigComponentsModule
+    WidgetConfigComponentsModule,
+    FlexLayoutModule.withConfig({addFlexToParent: false}),
   ],
   exports: [
-      ExampleTableComponent,
-      AddEntityComponent,
-      ExampleTableCustomSettingsComponent,
-      ExampleTableAdvancedConfigComponent,
-      ExampleTableBasicConfigComponent,
-      DataKeySettingsComponent,
-      ExampleTableCustomSubscriptionComponent,
-      ExampleOfUsingThirdPartyLibraryComponent
+    ExampleTableComponent,
+    AddEntityComponent,
+    ExampleTableCustomSettingsComponent,
+    ExampleTableAdvancedConfigComponent,
+    ExampleTableBasicConfigComponent,
+    DataKeySettingsComponent,
+    ExampleTableCustomSubscriptionComponent,
+    ExampleOfUsingThirdPartyLibraryComponent
   ]
 })
 
