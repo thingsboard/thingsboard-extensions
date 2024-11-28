@@ -1,9 +1,9 @@
-<div class="table">
+<div class="example-table flex-gap-2 flex flex-col">
     <div class="header">
         Active devices
     </div>
     <div class="content">
-        <div class="content-column" *ngFor="let key of tableValues | keyvalue">
+        <div class="content-column flex flex-row items-center justify-between" *ngFor="let key of tableValues | keyvalue">
             <div class="content-key">{{key.key}}</div>
             <div class="content-value">{{key.value}}</div>
         </div>

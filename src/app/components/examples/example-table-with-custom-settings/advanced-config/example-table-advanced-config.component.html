@@ -1,5 +1,5 @@
-<div class="advanced-config" [formGroup]="exampleTableConfigForm">
-    <div class="row">
+<div class="flex flex-col" [formGroup]="exampleTableConfigForm">
+    <div class="flex flex-row gap-2">
         <mat-form-field class="flex-1">
             <mat-label>Column height</mat-label>
             <input matInput type="number" formControlName="columnHeight"/>
@@ -9,7 +9,7 @@
         </mat-form-field>
         <div class="tb-form-row space-between flex-1">
             <div>Key</div>
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+            <div class="flex flex-row items-center gap-2">
                 <tb-font-settings formControlName="keyFont"
                                   [previewText]="valuePreviewFn">
                 </tb-font-settings>
@@ -19,7 +19,7 @@
         </div>
         <div class="tb-form-row space-between flex-1">
             <div>Value</div>
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="8px">
+            <div class="flex flex-row items-center gap-2">
                 <tb-font-settings formControlName="valueFont"
                                   [previewText]="valuePreviewFn">
                 </tb-font-settings>
