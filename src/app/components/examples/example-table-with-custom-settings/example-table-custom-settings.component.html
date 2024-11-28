@@ -1,10 +1,10 @@
-<div class="example-table flex-gap-2 flex flex-col">
+<div class="example-table gap-2 flex flex-col">
     <div class="header">
        {{entityName}}
     </div>
     <div class="content">
         <div class="content-column flex flex-row items-center justify-between" [ngStyle]="{'height': columnHeight + 'px'}" *ngFor="let key of tableValues | keyvalue">
-            <div class="flex-gap-2 flex items-center">
+            <div class="flex items-center gap-2">
                 <tb-icon *ngIf="key.value.icon.showIcon" [style]="key.value.icon.iconStyles" [style.color]="key.value.icon.iconColor.color">
                     {{ key.value.icon.icon }}
                 </tb-icon>
