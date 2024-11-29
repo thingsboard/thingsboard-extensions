@@ -8,7 +8,7 @@ import { valueDefaultSettings } from '../example-table-custom-settings.component
 @Component({
     selector: 'tb-example-table-advanced-config',
     templateUrl: './example-table-advanced-config.component.html',
-    styleUrls: ['./example-table-advanced-config.component.scss']
+    styleUrls: []
 })
 
 export class ExampleTableAdvancedConfigComponent extends WidgetSettingsComponent {
