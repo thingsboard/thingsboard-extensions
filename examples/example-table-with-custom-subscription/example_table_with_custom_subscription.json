@@ -1,5 +1,5 @@
 {
-  "fqn": "111",
+  "fqn": "example-table-custom-subscription",
   "name": "Example table with custom subscription",
   "deprecated": false,
   "image": null,
