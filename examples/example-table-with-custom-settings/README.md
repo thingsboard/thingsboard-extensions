@@ -1,7 +1,7 @@
 Custom widget example (table wight custom settings)
 =====================
 
-You can find code base [here](../../src/examples/example-table-with-custom-settings).
+You can find code base [here](../../src/app/components/examples/example-table-with-custom-settings).
 
 The main purpose of this example is to show you the custom settings feature. In the scope of this example, we will skip the steps of creating widgets and immediately start working with custom settings. 
 If you want to read about base widget-creating logic you should read the ```README``` file inside the ```example-table``` directory.

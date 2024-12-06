@@ -8,3 +8,5 @@ export * from './example-table-with-custom-settings/advanced-config/example-tabl
 export * from './example-table-with-custom-settings/data-key-settings/data-key-settings.component';
 export * from './example-table-with-custom-subscription/example-table-custom-subscription.component';
 export * from './example-of-using-third-party-library/example-of-using-third-party-library.component';
+export * from './example-chart/example-chart.component';
+export * from './example-chart/chart-settings/example-chart-settings.component';

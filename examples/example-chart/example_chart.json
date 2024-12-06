@@ -1,0 +1,32 @@
+{
+  "fqn": "_",
+  "name": "Example chart",
+  "deprecated": false,
+  "image": null,
+  "description": "",
+  "descriptor": {
+    "type": "timeseries",
+    "sizeX": 10,
+    "sizeY": 5,
+    "resources": [
+      {
+        "url": "http://localhost:5000/static/widgets/thingsboard-extension-widgets.js",
+        "isModule": true
+      }
+    ],
+    "templateHtml": "<tb-example-echart \n    [ctx]=\"ctx\" [widgetTitlePanel]=\"widgetTitlePanel\">\n</tb-example-echart>",
+    "templateCss": "",
+    "controllerScript": "self.onInit = function() {\n\n};\n\nself.onDataUpdated = function() {\n    self.ctx.$scope.echartExampleWidget.onDataUpdated();\n}\n\nself.onLatestDataUpdated = function() {\n\n}\n\nself.typeParameters = function() {\n    return {\n        maxDatasources: 1,\n        embedTitlePanel: true\n    };\n}\n",
+    "settingsSchema": "{}",
+    "dataKeySettingsSchema": "{}",
+    "latestDataKeySettingsSchema": "{}",
+    "settingsDirective": "tb-example-chart-settings",
+    "dataKeySettingsDirective": "",
+    "latestDataKeySettingsDirective": "",
+    "hasBasicMode": false,
+    "basicModeDirective": "tb-time-series-chart-basic-config",
+    "defaultConfig": "{\"datasources\":[{\"type\":\"function\",\"name\":\"function\",\"dataKeys\":[{\"name\":\"f(x)\",\"type\":\"function\",\"label\":\"First\",\"color\":\"#2196f3\",\"settings\":{\"showInLegend\":true,\"dataHiddenByDefault\":false,\"type\":\"line\",\"lineSettings\":{\"showLine\":true,\"step\":false,\"stepType\":\"start\",\"smooth\":false,\"lineType\":\"solid\",\"lineWidth\":2,\"showPoints\":false,\"showPointLabel\":false,\"pointLabelPosition\":\"top\",\"pointLabelFont\":{\"family\":\"Roboto\",\"size\":11,\"sizeUnit\":\"px\",\"style\":\"normal\",\"weight\":\"400\",\"lineHeight\":\"1\"},\"pointLabelColor\":\"rgba(0, 0, 0, 0.76)\",\"pointShape\":\"emptyCircle\",\"pointSize\":4,\"fillAreaSettings\":{\"type\":\"opacity\",\"opacity\":0.4,\"gradient\":{\"start\":100,\"end\":0}}},\"barSettings\":{\"showBorder\":false,\"borderWidth\":2,\"borderRadius\":0,\"showLabel\":false,\"labelPosition\":\"top\",\"labelFont\":{\"family\":\"Roboto\",\"size\":11,\"sizeUnit\":\"px\",\"style\":\"normal\",\"weight\":\"400\",\"lineHeight\":\"1\"},\"labelColor\":\"rgba(0, 0, 0, 0.76)\",\"backgroundSettings\":{\"type\":\"none\",\"opacity\":0.4,\"gradient\":{\"start\":100,\"end\":0}}}},\"_hash\":0.8587686344902596,\"funcBody\":\"var value = prevValue + Math.random() * 100 - 50;\\nvar multiplier = Math.pow(10, 2 || 0);\\nvar value = Math.round(value * multiplier) / multiplier;\\nif (value < -1000) {\\n\\tvalue = -1000;\\n} else if (value > 1000) {\\n\\tvalue = 1000;\\n}\\nreturn value;\",\"aggregationType\":null,\"units\":null,\"decimals\":null,\"usePostProcessing\":null,\"postFuncBody\":null},{\"name\":\"f(x)\",\"type\":\"function\",\"label\":\"Second\",\"color\":\"#FFC107\",\"settings\":{\"showInLegend\":true,\"dataHiddenByDefault\":false,\"type\":\"line\",\"lineSettings\":{\"showLine\":true,\"step\":false,\"stepType\":\"start\",\"smooth\":false,\"lineType\":\"solid\",\"lineWidth\":2,\"showPoints\":false,\"showPointLabel\":false,\"pointLabelPosition\":\"top\",\"pointLabelFont\":{\"family\":\"Roboto\",\"size\":11,\"sizeUnit\":\"px\",\"style\":\"normal\",\"weight\":\"400\",\"lineHeight\":\"1\"},\"pointLabelColor\":\"rgba(0, 0, 0, 0.76)\",\"pointShape\":\"emptyCircle\",\"pointSize\":4,\"fillAreaSettings\":{\"type\":\"none\",\"opacity\":0.4,\"gradient\":{\"start\":100,\"end\":0}}},\"barSettings\":{\"showBorder\":false,\"borderWidth\":2,\"borderRadius\":0,\"showLabel\":false,\"labelPosition\":\"top\",\"labelFont\":{\"family\":\"Roboto\",\"size\":11,\"sizeUnit\":\"px\",\"style\":\"normal\",\"weight\":\"400\",\"lineHeight\":\"1\"},\"labelColor\":\"rgba(0, 0, 0, 0.76)\",\"backgroundSettings\":{\"type\":\"none\",\"opacity\":0.4,\"gradient\":{\"start\":100,\"end\":0}}}},\"_hash\":0.3409583261715494,\"funcBody\":\"var value = prevValue + Math.random() * 100 - 50;\\nvar multiplier = Math.pow(10, 2 || 0);\\nvar value = Math.round(value * multiplier) / multiplier;\\nif (value < -1000) {\\n\\tvalue = -1000;\\n} else if (value > 1000) {\\n\\tvalue = 1000;\\n}\\nreturn value;\",\"decimals\":null,\"aggregationType\":null,\"usePostProcessing\":null,\"postFuncBody\":null}],\"alarmFilterConfig\":{\"statusList\":[\"ACTIVE\"]}}],\"timewindow\":{\"hideAggregation\":false,\"hideAggInterval\":false,\"hideTimezone\":false,\"selectedTab\":0,\"realtime\":{\"realtimeType\":0,\"interval\":1000,\"timewindowMs\":60000,\"quickInterval\":\"CURRENT_DAY\",\"hideInterval\":false,\"hideLastInterval\":false,\"hideQuickInterval\":false},\"history\":{\"historyType\":0,\"interval\":1000,\"timewindowMs\":60000,\"fixedTimewindow\":{\"startTimeMs\":1730986703630,\"endTimeMs\":1731073103630},\"quickInterval\":\"CURRENT_DAY\",\"hideInterval\":false,\"hideLastInterval\":false,\"hideFixedInterval\":false,\"hideQuickInterval\":false},\"aggregation\":{\"type\":\"NONE\",\"limit\":25000},\"timezone\":null},\"showTitle\":true,\"backgroundColor\":\"rgba(0, 0, 0, 0)\",\"color\":\"rgba(0, 0, 0, 0.87)\",\"padding\":\"0px\",\"settings\":{\"showLegend\":true,\"legendConfig\":{\"position\":\"top\",\"sortDataKeys\":true,\"showMin\":true,\"showMax\":true,\"showAvg\":true,\"showTotal\":true,\"showLatest\":true}},\"title\":\"Line chart\",\"dropShadow\":true,\"enableFullscreen\":true,\"titleStyle\":null,\"mobileHeight\":null,\"configMode\":\"advanced\",\"actions\":{},\"showTitleIcon\":false,\"titleIcon\":\"thermostat\",\"iconColor\":\"#1F6BDD\",\"useDashboardTimewindow\":false,\"displayTimewindow\":true,\"titleFont\":{\"size\":16,\"sizeUnit\":\"px\",\"family\":\"Roboto\",\"weight\":\"500\",\"style\":\"normal\",\"lineHeight\":\"24px\"},\"titleColor\":\"rgba(0, 0, 0, 0.87)\",\"titleTooltip\":\"\",\"widgetStyle\":{},\"widgetCss\":\"\",\"pageSize\":1024,\"units\":\"\",\"decimals\":null,\"noDataDisplayMessage\":\"\",\"timewindowStyle\":{\"showIcon\":false,\"iconSize\":\"24px\",\"icon\":null,\"iconPosition\":\"left\",\"font\":{\"size\":12,\"sizeUnit\":\"px\",\"family\":\"Roboto\",\"weight\":\"400\",\"style\":\"normal\",\"lineHeight\":\"16px\"},\"color\":\"rgba(0, 0, 0, 0.38)\",\"displayTypePrefix\":true},\"margin\":\"0px\",\"borderRadius\":\"0px\",\"iconSize\":\"0px\"}"
+  },
+  "scada": false,
+  "tags": null
+}

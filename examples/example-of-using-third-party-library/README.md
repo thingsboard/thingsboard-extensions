@@ -1,6 +1,6 @@
 Custom widget example (chart from third-party library)
 =====================
-You can find code base [here](../../src/examples/example-of-using-third-party-library).
+You can find code base [here](../../src/app/components/examples/example-of-using-third-party-library).
 
 This widget demonstrates the ability to use any third-party library in your widget development.
 This widget uses ```<p-chart>``` from [primeng](https://primeng.org):
