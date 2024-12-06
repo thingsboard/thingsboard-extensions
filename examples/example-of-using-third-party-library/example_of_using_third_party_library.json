@@ -1,5 +1,5 @@
 {
-  "fqn": "tset",
+  "fqn": "example-third-party-library",
   "name": "Example of using third-party library",
   "deprecated": false,
   "image": null,

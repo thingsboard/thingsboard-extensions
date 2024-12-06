@@ -28,6 +28,10 @@ import {
   ExampleOfUsingThirdPartyLibraryComponent
 } from './example-of-using-third-party-library/example-of-using-third-party-library.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { ExampleChartComponent } from './example-chart/example-chart.component';
+import {
+  ExampleChartSettingsComponent
+} from './example-chart/chart-settings/example-chart-settings.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +42,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     ExampleTableBasicConfigComponent,
     DataKeySettingsComponent,
     ExampleTableCustomSubscriptionComponent,
-    ExampleOfUsingThirdPartyLibraryComponent
+    ExampleOfUsingThirdPartyLibraryComponent,
+    ExampleChartComponent,
+    ExampleChartSettingsComponent
   ],
   imports: [
     CommonModule,
@@ -57,7 +63,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     ExampleTableBasicConfigComponent,
     DataKeySettingsComponent,
     ExampleTableCustomSubscriptionComponent,
-    ExampleOfUsingThirdPartyLibraryComponent
+    ExampleOfUsingThirdPartyLibraryComponent,
+    ExampleChartComponent,
+    ExampleChartSettingsComponent
   ]
 })
 

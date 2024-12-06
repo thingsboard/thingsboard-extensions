@@ -1,7 +1,7 @@
 Custom widget example (table)
 =====================
 
-You can find code base [here](../../src/examples/example-table).
+You can find code base [here](../../src/app/components/examples/example-table).
 
 The main purpose of this example is to show you the basic logic of creating custom widgets.
 For this, we will use the simple custom table that shows the list of key-value pairs:
