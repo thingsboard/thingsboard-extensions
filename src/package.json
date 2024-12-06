@@ -10,7 +10,6 @@
     "@angular/router": "18.2.6",
     "@ngrx/store": "^18.0.2",
     "@ngx-translate/core": "^15.0.0",
-    "rxjs": "~7.8.1",
-    "echarts": "https://github.com/thingsboard/echarts/archive/5.5.0-TB.tar.gz"
+    "rxjs": "~7.8.1"
   }
 }
