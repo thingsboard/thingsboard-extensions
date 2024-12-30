@@ -1,8 +1,8 @@
-diff --git a/node_modules/@angular/compiler-cli/bundles/chunk-YKXBB7OE.js b/node_modules/@angular/compiler-cli/bundles/chunk-YKXBB7OE.js
-index 95068e7..13ee01e 100755
---- a/node_modules/@angular/compiler-cli/bundles/chunk-YKXBB7OE.js
-+++ b/node_modules/@angular/compiler-cli/bundles/chunk-YKXBB7OE.js
-@@ -14011,7 +14011,7 @@ var ComponentDecoratorHandler = class {
+diff --git a/node_modules/@angular/compiler-cli/bundles/chunk-APDLWLLW.js b/node_modules/@angular/compiler-cli/bundles/chunk-APDLWLLW.js
+index 4ad0857..70a3035 100755
+--- a/node_modules/@angular/compiler-cli/bundles/chunk-APDLWLLW.js
++++ b/node_modules/@angular/compiler-cli/bundles/chunk-APDLWLLW.js
+@@ -14026,7 +14026,7 @@ var ComponentDecoratorHandler = class {
      const def = compileComponentFromMetadata(meta, pool, makeBindingParser2());
      const inputTransformFields = compileInputTransformFields(analysis.inputs);
      const classMetadata = analysis.classMetadata !== null ? compileComponentClassMetadata(analysis.classMetadata, perComponentDeferredDeps).toStmt() : null;
@@ -11,12 +11,12 @@ index 95068e7..13ee01e 100755
      const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
      return compileResults(fac, def, classMetadata, "\u0275cmp", inputTransformFields, deferrableImports, debugInfo);
    }
-@@ -14052,7 +14052,7 @@ var ComponentDecoratorHandler = class {
+@@ -14067,7 +14067,7 @@ var ComponentDecoratorHandler = class {
      const def = compileComponentFromMetadata(meta, pool, makeBindingParser2());
      const inputTransformFields = compileInputTransformFields(analysis.inputs);
      const classMetadata = analysis.classMetadata !== null ? compileComponentClassMetadata(analysis.classMetadata, deferrableTypes).toStmt() : null;
 -    const debugInfo = analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
-+    const debugInfo = null; // analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
++    const debugInfo = null;//analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
      const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
      return compileResults(fac, def, classMetadata, "\u0275cmp", inputTransformFields, deferrableImports, debugInfo);
    }
