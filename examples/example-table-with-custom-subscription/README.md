@@ -1,7 +1,7 @@
 Custom widget example (table wight with custom subscription)
 =====================
 
-You can find code base [here](../../src/examples/example-table-with-custom-subscription).
+You can find code base [here](../../src/app/components/examples/example-table-with-custom-subscription).
 
 This widget shows the temperature key for all active devices:
 
