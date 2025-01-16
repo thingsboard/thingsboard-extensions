@@ -1,3 +1,6 @@
+///
+/// Copyright © 2025 ThingsBoard, Inc.
+///
 // TODO: remove after 4.0 typing update
 // @ts-ignore
 import { XAXisOption, YAXisOption } from 'echarts/types/dist/shared';
