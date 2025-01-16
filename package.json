@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "chart.js": "3.3.2",
-    "echarts": "https://github.com/thingsboard/echarts/archive/5.5.0-TB.tar.gz",
     "flot": "https://github.com/thingsboard/flot.git#0.9-work",
     "flot.curvedlines": "https://github.com/MichaelZinsmaier/CurvedLines.git#master",
     "moment": "^2.30.1",
