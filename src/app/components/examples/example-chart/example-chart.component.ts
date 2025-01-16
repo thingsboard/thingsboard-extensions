@@ -5,32 +5,33 @@ import {
   Input,
   OnInit,
   Renderer2,
-  SecurityContext,
   TemplateRef,
   ViewChild
 } from '@angular/core';
+// TODO: remove after 4.0 typing update
+// @ts-ignore
 import * as echarts from 'echarts/core';
+// TODO: remove after 4.0 typing update
+// @ts-ignore
 import { EChartsOption, SeriesOption } from 'echarts';
 import { WidgetContext } from '@home/models/widget-component.models';
-import { BarChart, CustomChart, LineChart, PieChart, RadarChart } from 'echarts/charts';
-import {
-  DataZoomComponent,
-  GridComponent,
-  MarkLineComponent,
-  PolarComponent,
-  RadarComponent,
-  TooltipComponent,
-  VisualMapComponent
-} from 'echarts/components';
-import { LabelLayout } from 'echarts/features';
-import { CanvasRenderer, SVGRenderer } from 'echarts/renderers';
 import { LegendConfig, LegendData, LegendKey, WidgetTimewindow } from '@shared/public-api';
+// TODO: remove after 4.0 typing update
+// @ts-ignore
 import { CallbackDataParams, XAXisOption, YAXisOption } from 'echarts/types/dist/shared';
 import { WidgetComponent } from '@home/components/widget/widget.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { formatValue, isDefinedAndNotNull } from '@core/public-api';
-import { calculateAxisSize, measureAxisNameSize } from '@home/components/public-api';
 import { ECharts } from '@home/components/widget/lib/chart/echarts-widget.models';
+// TODO: remove after 4.0 typing update
+// @ts-ignore
+import { calculateAxisSize, measureAxisNameSize, getValueElement, getLabelTextElement, getCircleElement, getLabelElement, getLabelValueElement, getTooltipElement, getTooltipDateElement } from '@home/components/public-api';
+import {
+  extensionEchartsModule,
+  getDefaultChartOptions,
+  getDefaultXAxis,
+  getDefaultYAxis
+} from '../../../shared/chart/public-api';
 
 @Component({
   selector: 'tb-example-echart',
@@ -67,7 +68,7 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
   //Core logic
   ngOnInit(): void {
     this.ctx.$scope.echartExampleWidget = this;
-    this.initEchart();
+    extensionEchartsModule.init();
     this.initLegend();
   }
 
@@ -77,55 +78,14 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
     });
     this.initResize();
 
-    this.xAxis = this.setupXAxis();
-    this.yAxis = this.setupYAxis();
+    this.xAxis = getDefaultXAxis(this.ctx.defaultSubscription.timeWindow.maxTime, this.ctx.defaultSubscription.timeWindow.minTime);
+    this.yAxis = getDefaultYAxis(value => formatValue(value, this.ctx.decimals,  this.ctx.units, false));
     this.option = {
-      ...this.setupAnimationSettings(),
+      ...getDefaultChartOptions(),
       formatter: (params: CallbackDataParams[]) => this.setupTooltipElement(params),
-      backgroundColor: "transparent",
-      darkMode: false,
-      tooltip: {
-        show: true,
-        trigger: 'axis',
-        confine: true,
-        padding: [8, 12],
-        appendTo: 'body',
-        textStyle: {
-          fontFamily: 'Roboto',
-          fontSize: 12,
-          fontWeight: 'normal',
-          lineHeight: 16
-        }
-      },
-      grid: [{
-        backgroundColor: null,
-        borderColor: "#ccc",
-        borderWidth: 1,
-        bottom: 45,
-        left: 5,
-        right: 5,
-        show: false,
-        top: 10
-      }],
       xAxis: [this.xAxis],
       yAxis: [this.yAxis],
       series: this.setupChartLines(),
-      dataZoom: [
-        {
-          type: 'inside',
-          disabled: false,
-          realtime: true,
-          filterMode:  'none'
-        },
-        {
-          type: 'slider',
-          show: true,
-          showDetail: false,
-          realtime: true,
-          filterMode: 'none',
-          bottom: 5
-        }
-      ]
     }
 
     this.myChart.setOption(this.option);
@@ -182,26 +142,6 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
     option.max = timeWindow.maxTime;
   };
 
-  private initEchart(): void {
-    echarts.use([
-      TooltipComponent,
-      GridComponent,
-      VisualMapComponent,
-      DataZoomComponent,
-      MarkLineComponent,
-      PolarComponent,
-      RadarComponent,
-      LineChart,
-      BarChart,
-      PieChart,
-      RadarChart,
-      CustomChart,
-      LabelLayout,
-      CanvasRenderer,
-      SVGRenderer
-    ]);
-  }
-
   private initLegend(): void {
     this.showLegend = this.ctx.settings.showLegend;
     if (this.showLegend) {
@@ -229,19 +169,11 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
   }
 
   private setupTooltipElement(params: CallbackDataParams[]): HTMLElement {
-    const tooltipElement: HTMLElement = this.renderer.createElement('div');
-    this.renderer.setStyle(tooltipElement, 'display', 'flex');
-    this.renderer.setStyle(tooltipElement, 'flex-direction', 'column');
-    this.renderer.setStyle(tooltipElement, 'align-items', 'flex-start');
-    this.renderer.setStyle(tooltipElement, 'gap', '16px');
+    const tooltipElement: HTMLElement = getTooltipElement(this.renderer, '16px');
     if (params.length) {
-      const tooltipItemsElement: HTMLElement = this.renderer.createElement('div');
-      this.renderer.setStyle(tooltipItemsElement, 'display', 'flex');
-      this.renderer.setStyle(tooltipItemsElement, 'flex-direction', 'column');
-      this.renderer.setStyle(tooltipItemsElement, 'align-items', 'flex-start');
-      this.renderer.setStyle(tooltipItemsElement, 'gap', '4px');
+      const tooltipItemsElement: HTMLElement = getTooltipElement(this.renderer, '4px');
 
-      this.renderer.appendChild(tooltipItemsElement, this.setTooltipDate(params));
+      this.renderer.appendChild(tooltipItemsElement, getTooltipDateElement(this.renderer, new Date(params[0].value[0]).toLocaleString('en-GB')));
 
       for (const [i, param] of params.entries()) {
         this.renderer.appendChild(tooltipItemsElement, this.constructTooltipSeriesElement(param, i));
@@ -253,74 +185,20 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
   }
 
   private constructTooltipSeriesElement(param: CallbackDataParams, index: number): HTMLElement {
-    const labelValueElement: HTMLElement = this.renderer.createElement('div');
-    this.renderer.setStyle(labelValueElement, 'display', 'flex');
-    this.renderer.setStyle(labelValueElement, 'flex-direction', 'row');
-    this.renderer.setStyle(labelValueElement, 'align-items', 'center');
-    this.renderer.setStyle(labelValueElement, 'align-self', 'stretch');
-    this.renderer.setStyle(labelValueElement, 'gap', '12px');
-    const labelElement: HTMLElement = this.renderer.createElement('div');
-    this.renderer.setStyle(labelElement, 'display', 'flex');
-    this.renderer.setStyle(labelElement, 'align-items', 'center');
-    this.renderer.setStyle(labelElement, 'gap', '8px');
-    this.renderer.appendChild(labelValueElement, labelElement);
-    const circleElement: HTMLElement = this.renderer.createElement('div');
-    this.renderer.setStyle(circleElement, 'width', '8px');
-    this.renderer.setStyle(circleElement, 'height', '8px');
-    this.renderer.setStyle(circleElement, 'border-radius', '50%');
-    this.renderer.setStyle(circleElement, 'background', param.color);
+    const labelValueElement: HTMLElement = getLabelValueElement(this.renderer);
+    const labelElement: HTMLElement = getLabelElement(this.renderer);
+    const circleElement: HTMLElement = getCircleElement(this.renderer, param.color);
     this.renderer.appendChild(labelElement, circleElement);
-    const labelTextElement: HTMLElement = this.renderer.createElement('div');
-    this.renderer.setProperty(labelTextElement, 'innerHTML', this.sanitizer.sanitize(SecurityContext.HTML, param.seriesName));
-    this.renderer.setStyle(labelTextElement, 'font-family', 'Roboto');
-    this.renderer.setStyle(labelTextElement, 'font-size', '12px');
-    this.renderer.setStyle(labelTextElement, 'font-style', 'normal');
-    this.renderer.setStyle(labelTextElement, 'font-weight', 400);
-    this.renderer.setStyle(labelTextElement, 'line-height', '16px');
-    this.renderer.setStyle(labelTextElement, 'color', 'rgba(0, 0, 0, 0.76)');
+    const labelTextElement: HTMLElement = getLabelTextElement(this.renderer, this.sanitizer, param.seriesName);
     this.renderer.appendChild(labelElement, labelTextElement);
     const decimals = isDefinedAndNotNull(this.ctx.data[index].dataKey.decimals) ?
       this.ctx.data[index].dataKey.decimals : this.ctx.decimals;
     const units = isDefinedAndNotNull(this.ctx.data[index].dataKey.units) ?
       this.ctx.data[index].dataKey.units : this.ctx.units;
     const value  = formatValue(param.value[1], decimals, units, false);
-    const valueElement: HTMLElement = this.renderer.createElement('div');
-    this.renderer.setProperty(valueElement, 'innerHTML', this.sanitizer.sanitize(SecurityContext.HTML, value));
-    this.renderer.setStyle(valueElement, 'flex', '1');
-    this.renderer.setStyle(valueElement, 'text-align', 'end');
-    this.renderer.setStyle(valueElement, 'font-family', 'Roboto');
-    this.renderer.setStyle(valueElement, 'font-size', '12px');
-    this.renderer.setStyle(valueElement, 'font-style', 'normal');
-    this.renderer.setStyle(valueElement, 'font-weight', 500);
-    this.renderer.setStyle(valueElement, 'line-height', '16px');
-    this.renderer.setStyle(valueElement, 'color', 'rgba(0, 0, 0, 0.76)');
+    const valueElement: HTMLElement = getValueElement(this.renderer, this.sanitizer, value);
     this.renderer.appendChild(labelValueElement, valueElement);
     return labelValueElement;
-  }
-
-  private setTooltipDate(params: CallbackDataParams[]): HTMLElement {
-    const dateElement: HTMLElement = this.renderer.createElement('div');
-    this.renderer.appendChild(dateElement, this.renderer.createText(new Date(params[0].value[0]).toLocaleString('en-GB')));
-    this.renderer.setStyle(dateElement, 'font-family', 'Roboto');
-    this.renderer.setStyle(dateElement, 'font-size', '11px');
-    this.renderer.setStyle(dateElement, 'font-style', 'normal');
-    this.renderer.setStyle(dateElement, 'font-weight', '400');
-    this.renderer.setStyle(dateElement, 'line-height', '16px');
-    this.renderer.setStyle(dateElement, 'color', 'rgba(0, 0, 0, 0.76)');
-    return dateElement
-  }
-
-  private setupAnimationSettings(): object {
-      return  {
-        animation: true,
-        animationDelay: 0,
-        animationDelayUpdate: 0,
-        animationDuration: 500,
-        animationDurationUpdate: 300,
-        animationEasing: "cubicOut",
-        animationEasingUpdate: "cubicOut",
-        animationThreshold: 2000
-      }
   }
 
   private setupChartLines(): SeriesOption[] {
@@ -344,106 +222,5 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
       })
     }
     return series;
-  }
-
-  private setupYAxis(): YAXisOption {
-    return {
-      type: 'value',
-      position: 'left',
-      mainType: 'yAxis',
-      id: 'yAxis',
-      offset: 0,
-      name: 'YAxis',
-      nameLocation: 'middle',
-      nameRotate: 90,
-      alignTicks: true,
-      scale: true,
-      show: true,
-      axisLabel: {
-        color: 'rgba(0, 0, 0, 0.54)',
-        fontFamily: 'Roboto',
-        fontSize: 12,
-        fontStyle: 'normal',
-        fontWeight: 400,
-        show: true,
-        formatter: (value: any) => {
-          return  formatValue(value, this.ctx.decimals,  this.ctx.units, false);
-        }
-      },
-      splitLine: {
-        show: true,
-      },
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: 'rgba(0, 0, 0, 0.54)'
-        }
-      },
-      axisTick: {
-        lineStyle: {
-          color: 'rgba(0, 0, 0, 0.54)'
-        },
-        show: true
-      },
-      nameTextStyle: {
-        color: 'rgba(0, 0, 0, 0.54)',
-        fontFamily: 'Roboto',
-        fontSize: 12,
-        fontStyle: 'normal',
-        fontWeight: 600
-      }
-    }
-  }
-
-  private setupXAxis(): XAXisOption {
-    return {
-      id: 'xAxis',
-      mainType: 'xAxis',
-      show: true,
-      type: 'time',
-      position: "bottom",
-      name: 'XAxis',
-      offset: 0,
-      nameLocation: 'middle',
-      max:  this.ctx.defaultSubscription.timeWindow.maxTime,
-      min:  this.ctx.defaultSubscription.timeWindow.minTime,
-      nameTextStyle: {
-        color: 'rgba(0, 0, 0, 0.54)',
-        fontStyle: 'normal',
-        fontWeight: 600,
-        fontFamily: 'Roboto',
-        fontSize: 12,
-      },
-      axisPointer: {
-        shadowStyle: {
-          color: 'rgba(210,219,238,0.2)'
-        }
-      },
-      splitLine: {
-        show: true
-      },
-      axisTick: {
-        show: true,
-        lineStyle: {
-          color: 'rgba(0, 0, 0, 0.54)'
-        }
-      },
-      axisLine: {
-        onZero: false,
-        show: true,
-        lineStyle: {
-          color: 'rgba(0, 0, 0, 0.54)'
-        }
-      },
-      axisLabel: {
-        color: 'rgba(0, 0, 0, 0.54)',
-        fontFamily: 'Roboto',
-        fontSize: 10,
-        fontStyle: 'normal',
-        fontWeight: 400,
-        show: true,
-        hideOverlap: true,
-      }
-    }
   }
 }
