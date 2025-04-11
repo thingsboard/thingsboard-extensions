@@ -27,7 +27,6 @@ import {
 import {
   ExampleOfUsingThirdPartyLibraryComponent
 } from './example-of-using-third-party-library/example-of-using-third-party-library.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { ExampleChartComponent } from './example-chart/example-chart.component';
 import {
   ExampleChartSettingsComponent
@@ -52,8 +51,7 @@ import {
     HomeComponentsModule,
     ChartModule,
     BasicWidgetConfigModule,
-    WidgetConfigComponentsModule,
-    FlexLayoutModule.withConfig({addFlexToParent: false}),
+    WidgetConfigComponentsModule
   ],
   exports: [
     ExampleTableComponent,
