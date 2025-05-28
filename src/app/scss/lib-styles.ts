@@ -13,8 +13,6 @@ export const addLibraryStyles = (target: string) => {
 })
 class LibStylesEntryComponent {
 
-  constructor() { }
-
 }
 
 const addStyleFromComponent = (type: Type<any>, target: string)=> {
