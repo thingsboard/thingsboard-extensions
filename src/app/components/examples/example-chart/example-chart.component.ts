@@ -24,11 +24,11 @@ import {
 } from 'echarts/components';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer, SVGRenderer } from 'echarts/renderers';
-import { LegendConfig, LegendData, LegendKey, WidgetTimewindow } from '@shared/public-api';
+import { LegendConfig, LegendData, LegendKey, ValueFormatProcessor, WidgetTimewindow } from '@shared/public-api';
 import { CallbackDataParams, XAXisOption, YAXisOption } from 'echarts/types/dist/shared';
 import { WidgetComponent } from '@home/components/widget/widget.component';
 import { DomSanitizer } from '@angular/platform-browser';
-import { formatValue, isDefinedAndNotNull } from '@core/public-api';
+import { isDefinedAndNotNull } from '@core/public-api';
 import { calculateAxisSize, measureAxisNameSize } from '@home/components/public-api';
 import { ECharts } from '@home/components/widget/lib/chart/echarts-widget.models';
 
@@ -51,6 +51,8 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
   private yAxis: YAXisOption;
   private option: EChartsOption;
 
+  private valueFormatter: ValueFormatProcessor;
+
   public legendConfig: LegendConfig;
   public legendClass: string;
   public legendData: LegendData;
@@ -63,10 +65,10 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
     public widgetComponent: WidgetComponent,
   ) {}
 
-
   //Core logic
   ngOnInit(): void {
     this.ctx.$scope.echartExampleWidget = this;
+    this.prepareValueFormat();
     this.initEchart();
     this.initLegend();
   }
@@ -143,7 +145,7 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
           name: ts,
           value: [
             ts,
-            value
+            this.valueFormatter.format(value)
           ]
         })
       }
@@ -228,6 +230,11 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
     this.myChart.resize();
   }
 
+  private prepareValueFormat() {
+    const units = this.ctx.units;
+    this.valueFormatter = ValueFormatProcessor.fromSettings(this.ctx.$injector, {units, decimals: this.ctx.decimals});
+  }
+
   private setupTooltipElement(params: CallbackDataParams[]): HTMLElement {
     const tooltipElement: HTMLElement = this.renderer.createElement('div');
     this.renderer.setStyle(tooltipElement, 'display', 'flex');
@@ -283,7 +290,8 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
       this.ctx.data[index].dataKey.decimals : this.ctx.decimals;
     const units = isDefinedAndNotNull(this.ctx.data[index].dataKey.units) ?
       this.ctx.data[index].dataKey.units : this.ctx.units;
-    const value  = formatValue(param.value[1], decimals, units, false);
+    const valueFormatter = ValueFormatProcessor.fromSettings(this.ctx.$injector, {units, decimals});
+    const value  = valueFormatter.format(param.value[1]);
     const valueElement: HTMLElement = this.renderer.createElement('div');
     this.renderer.setProperty(valueElement, 'innerHTML', this.sanitizer.sanitize(SecurityContext.HTML, value));
     this.renderer.setStyle(valueElement, 'flex', '1');
@@ -367,7 +375,7 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
         fontWeight: 400,
         show: true,
         formatter: (value: any) => {
-          return  formatValue(value, this.ctx.decimals,  this.ctx.units, false);
+          return this.valueFormatter.format(value);
         }
       },
       splitLine: {

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { WidgetContext } from '@home/models/widget-component.models';
-import { formatValue, isDefinedAndNotNull } from '@core/public-api';
-import { DataKey } from '@shared/public-api';
+import { isDefinedAndNotNull } from '@core/public-api';
+import { DataKey, ValueFormatProcessor } from '@shared/public-api';
 
 enum FormatKey {
    DECIMALS = 'decimals',
@@ -21,6 +21,8 @@ export class ExampleTableComponent implements OnInit {
    public tableValues: {[key: string]: any} = {};
    public entityName: string;
 
+   private mapFomatValue = new Map<string, ValueFormatProcessor>();
+
    ngOnInit(): void {
       this.ctx.$scope.exampleTableComponent = this;
       this.entityName = this.ctx.datasources[0].entityName;
@@ -30,12 +32,17 @@ export class ExampleTableComponent implements OnInit {
       for (const key of this.ctx.data) {
          if (key.data.length) {
             const rowName: string =  key.dataKey.label;
-            const rowValue: string = formatValue(
-                key.data[0][1],
-                this.getFormatInfo<number>(key.dataKey, FormatKey.DECIMALS),
-                this.getFormatInfo<string>(key.dataKey, FormatKey.UNITS),
-                false);
-            this.tableValues[rowName] = rowValue;
+            let valueFormat: ValueFormatProcessor;
+            if (this.mapFomatValue.has(rowName)) {
+              valueFormat = this.mapFomatValue.get(rowName);
+            } else {
+              valueFormat = ValueFormatProcessor.fromSettings(this.ctx.$injector, {
+                units: this.getFormatInfo<string>(key.dataKey, FormatKey.UNITS),
+                decimals: this.getFormatInfo<number>(key.dataKey, FormatKey.DECIMALS)
+              });
+              this.mapFomatValue.set(rowName, valueFormat);
+            }
+            this.tableValues[rowName] = valueFormat.format(key.data[0][1]);
          }
       }
       this.ctx.detectChanges();
