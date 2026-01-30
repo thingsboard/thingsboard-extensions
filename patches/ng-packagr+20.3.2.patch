@@ -1,0 +1,197 @@
+diff --git a/node_modules/ng-packagr/src/lib/flatten/rollup.d.ts b/node_modules/ng-packagr/src/lib/flatten/rollup.d.ts
+index 634d8c0..5c516a8 100644
+--- a/node_modules/ng-packagr/src/lib/flatten/rollup.d.ts
++++ b/node_modules/ng-packagr/src/lib/flatten/rollup.d.ts
+@@ -10,6 +10,7 @@ export interface RollupOptions {
+     entry: string;
+     entryName: string;
+     dir: string;
++    format?: string;
+     cache?: RollupCache;
+     cacheDirectory?: string | false;
+     fileCache: OutputFileCache;
+diff --git a/node_modules/ng-packagr/src/lib/flatten/rollup.js b/node_modules/ng-packagr/src/lib/flatten/rollup.js
+index 81d96de..264acc0 100644
+--- a/node_modules/ng-packagr/src/lib/flatten/rollup.js
++++ b/node_modules/ng-packagr/src/lib/flatten/rollup.js
+@@ -40,9 +40,14 @@ exports.rollupBundleFile = rollupBundleFile;
+ const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
+ const path = __importStar(require("path"));
+ const rollup_plugin_dts_1 = require("rollup-plugin-dts");
++const commonJs = require("@rollup/plugin-commonjs");
++const replace = require("@rollup/plugin-replace");
++const terser = require("@rollup/plugin-terser");
+ const cache_1 = require("../utils/cache");
+ const log = __importStar(require("../utils/log"));
+ const file_loader_plugin_1 = require("./file-loader-plugin");
++const fs = require('fs');
++const os = require('os');
+ let rollup;
+ /** Runs rollup over the given entry file, writes a bundle file. */
+ async function rollupBundleFile(opts) {
+@@ -59,12 +64,25 @@ async function rollupBundleFile(opts) {
+     }
+     else {
+         outExtension = '.mjs';
+-        plugins = [(0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache, ['.js', '/index.js']), (0, plugin_json_1.default)()];
++        plugins = [(0, plugin_json_1.default)(), replace({preventAssignment: true, 'process.env.NODE_ENV': '"production"'}), commonJs(), terser()];
+     }
+     // Create the bundle
++    const data = fs.readFileSync(path.join(__dirname, '../../../thingsboard/src/app/modules/common/modules-map.ts'), 'utf8');
++    const reg = /private modulesMap: {\[key: string\]: any} = {([^;]*)};/gsm;
++    const regMatch = reg.exec(data);
++    const modulesStr = regMatch[1];
++    const externalModuleIds = [];
++    modulesStr.split(',' + os.EOL).forEach(
++      (line) => {
++        const moduleId = line.trim().split(":")[0].replaceAll("'", "").trim();
++        if (moduleId.length) {
++          externalModuleIds.push(moduleId);
++        }
++      }
++    );
+     const bundle = await rollup.rollup({
+         context: 'this',
+-        external: moduleId => isExternalDependency(moduleId),
++        external: moduleId => isExternalDependency(moduleId, externalModuleIds),
+         cache: (_a = opts.cache) !== null && _a !== void 0 ? _a : (cacheDirectory ? await (0, cache_1.readCacheEntry)(cacheDirectory, opts.cacheKey) : undefined),
+         input: opts.entry,
+         plugins,
+@@ -88,12 +106,13 @@ async function rollupBundleFile(opts) {
+     // Output the bundle to disk
+     const output = await bundle.write({
+         name: opts.moduleName,
+-        format: 'es',
++        format: opts.format || 'es',
+         dir: opts.dir,
+         inlineDynamicImports: false,
+         hoistTransitiveImports: false,
+-        chunkFileNames: `${opts.entryName}-[name]-[hash]${outExtension}`,
+-        entryFileNames: opts.entryName + outExtension,
++        chunkFileNames: `${opts.entryName}-[name]-[hash]${opts.entryExt || outExtension}`,
++        entryFileNames: opts.entryName + (opts.entryExt || outExtension),
++        compact: true,
+         banner: '',
+         sourcemap: opts.sourcemap,
+     });
+@@ -126,13 +145,16 @@ async function ensureRollup() {
+         log.debug(`rollup using wasm version.`);
+     }
+ }
+-function isExternalDependency(moduleId) {
++function isExternalDependency(moduleId, externalModuleIds) {
+     // more information about why we don't check for 'node_modules' path
+     // https://github.com/rollup/rollup-plugin-node-resolve/issues/110#issuecomment-350353632
+     if (moduleId[0] === '.' || moduleId[0] === '/' || path.isAbsolute(moduleId)) {
+         // if it's either 'absolute', marked to embed, starts with a '.' or '/' or is the umd bundle and is tslib
+         return false;
+     }
++    if (externalModuleIds.indexOf(moduleId) === -1) {
++        return false;
++    }
+     return true;
+ }
+ //# sourceMappingURL=rollup.js.map
+diff --git a/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.d.ts b/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.d.ts
+index a62d84e..34b7fb9 100644
+--- a/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.d.ts
++++ b/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.d.ts
+@@ -13,10 +13,14 @@ export interface DestinationFiles {
+     fesm2022: string;
+     /** Absolute path of this entry point `ESM2022` module */
+     esm2022: string;
++    /** Absolute path of this entry point `SystemJS` module */
++    system: string;
+     /** Sub path of entrypoint distributable. */
+     directory: string;
+     /** Absolute path of this entry point `FESM2022` directory */
+     fesm2022Dir: string;
++    /** Absolute path of this entry point `SystemJS` directory */
++    systemDir: string;
+ }
+ /**
+  * An entry point - quoting Angular Package Format - is:
+diff --git a/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.js b/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.js
+index 56e22e6..78a1b24 100644
+--- a/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.js
++++ b/node_modules/ng-packagr/src/lib/ng-package/entry-point/entry-point.js
+@@ -109,6 +109,8 @@ class NgEntryPoint {
+             esm2022: pathJoinWithDest('tmp-esm2022', secondaryDir, `${flatModuleFile}.js`),
+             fesm2022: pathJoinWithDest('fesm2022', `${flatModuleFile}.mjs`),
+             fesm2022Dir: pathJoinWithDest('fesm2022'),
++            system: pathJoinWithDest('system', `${flatModuleFile}.js`),
++            systemDir: pathJoinWithDest('system'),
+         };
+     }
+     $get(key) {
+diff --git a/node_modules/ng-packagr/src/lib/ng-package/entry-point/write-bundles.transform.js b/node_modules/ng-packagr/src/lib/ng-package/entry-point/write-bundles.transform.js
+index f39e854..3136527 100644
+--- a/node_modules/ng-packagr/src/lib/ng-package/entry-point/write-bundles.transform.js
++++ b/node_modules/ng-packagr/src/lib/ng-package/entry-point/write-bundles.transform.js
+@@ -18,21 +18,21 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+     const entryPoint = graph.find((0, nodes_1.isEntryPointInProgress)());
+     const { destinationFiles, entryPoint: ngEntryPoint, tsConfig } = entryPoint.data;
+     const cache = entryPoint.cache;
+-    const { fesm2022Dir, esm2022, declarations, declarationsDir } = destinationFiles;
++    const { fesm2022Dir, esm2022, declarations, declarationsDir, systemDir, system } = destinationFiles;
+     const spinner = (0, ora_1.default)({
+         hideCursor: false,
+         discardStdin: false,
+     });
+-    const cacheKey = await (0, cache_1.generateKey)(ngEntryPoint.moduleId, fesm2022Dir, declarationsDir, tsConfig.options.compilationMode, ((_a = tsConfig.options.declarationMap) !== null && _a !== void 0 ? _a : false).toString());
++    const cacheKey = await (0, cache_1.generateKey)(ngEntryPoint.moduleId, systemDir, declarationsDir, tsConfig.options.compilationMode, ((_a = tsConfig.options.declarationMap) !== null && _a !== void 0 ? _a : false).toString());
+     const hash = await (0, cache_1.generateKey)([...cache.outputCache.values()].map(({ version }) => version).join(':'));
+     const cacheDirectory = options.cacheEnabled && options.cacheDirectory;
+     if (cacheDirectory) {
+         const cacheResult = await (0, cache_1.readCacheEntry)(options.cacheDirectory, cacheKey);
+         if ((cacheResult === null || cacheResult === void 0 ? void 0 : cacheResult.hash) === hash) {
+             const filesToCopy = [
+-                ...cacheResult.fesm2022.map(file => ({
++                ...cacheResult.systemDir.map(file => ({
+                     ...file,
+-                    filePath: (0, path_1.join)(fesm2022Dir, file.fileName),
++                    filePath: (0, path_1.join)(systemDir, file.fileName),
+                 })),
+                 ...cacheResult.types.map(file => ({
+                     ...file,
+@@ -46,18 +46,18 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+                         continue;
+                     }
+                     if (writeFilePromises.length === 0) {
+-                        spinner.start('Writing FESM and DTS bundles');
+-                        await Promise.all([(0, fs_1.mkdir)(fesm2022Dir, { recursive: true }), (0, fs_1.mkdir)(declarationsDir, { recursive: true })]);
++                        spinner.start('Writing system bundles');
++                        await Promise.all([(0, fs_1.mkdir)(systemDir, { recursive: true }), (0, fs_1.mkdir)(declarationsDir, { recursive: true })]);
+                     }
+                     writeFilePromises.push((0, fs_1.writeFile)(file.filePath, file.type === 'asset' ? file.source : file.code));
+                 }
+                 if (writeFilePromises.length) {
+                     await Promise.all(writeFilePromises);
+-                    spinner.succeed('Writing FESM and DTS bundles');
++                    spinner.succeed('Writing system bundles');
+                 }
+             }
+             catch (error) {
+-                spinner.fail('Writing FESM and DTS bundles');
++                spinner.fail('Writing system bundles');
+                 throw error;
+             }
+             return;
+@@ -69,7 +69,7 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+                 entry: esm2022,
+                 entryName: ngEntryPoint.flatModuleFile,
+                 moduleName: ngEntryPoint.moduleId,
+-                dir: fesm2022Dir,
++                dir: systemDir,
+                 cache: cache.rollupFESM2022Cache,
+                 cacheDirectory,
+                 fileCache: cache.outputCache,
+@@ -100,7 +100,7 @@ const writeBundlesTransform = (options) => (0, transform_1.transformFromPromise)
+     let cacheRollup;
+     try {
+         cacheRollup = await generateBundles();
+-        spinner.succeed(`Generating FESM and DTS bundles`);
++        spinner.succeed(`Generating SystemJS bundles`);
+         // Invalidate dependent entry-points
+         const changedDtsFiles = [];
+         for (const file of cacheRollup.types) {

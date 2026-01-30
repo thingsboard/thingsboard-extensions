@@ -1,0 +1,31 @@
+diff --git a/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js b/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js
+index 89e0caa..e6ef1ba 100755
+--- a/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js
++++ b/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js
+@@ -20879,7 +20879,7 @@ var ComponentDecoratorHandler = class {
+     const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+     const inputTransformFields = compileInputTransformFields(analysis.inputs);
+     const classMetadata = analysis.classMetadata !== null ? compileComponentClassMetadata(analysis.classMetadata, perComponentDeferredDeps).toStmt() : null;
+-    const debugInfo = analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
++    const debugInfo = null;//analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
+     const hmrMeta = this.enableHmr ? extractHmrMetatadata(node, this.reflector, this.evaluator, this.compilerHost, this.rootDirs, def, fac, defer, classMetadata, debugInfo) : null;
+     const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+     const deferrableImports = this.canDeferDeps ? this.deferredSymbolTracker.getDeferrableImportDecls() : null;
+@@ -20926,7 +20926,7 @@ var ComponentDecoratorHandler = class {
+     const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+     const inputTransformFields = compileInputTransformFields(analysis.inputs);
+     const classMetadata = analysis.classMetadata !== null ? compileComponentClassMetadata(analysis.classMetadata, deferrableTypes).toStmt() : null;
+-    const debugInfo = analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
++    const debugInfo = null;//analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
+     const hmrMeta = this.enableHmr ? extractHmrMetatadata(node, this.reflector, this.evaluator, this.compilerHost, this.rootDirs, def, fac, defer, classMetadata, debugInfo) : null;
+     const hmrInitializer = hmrMeta ? compileHmrInitializer(hmrMeta).toStmt() : null;
+     const deferrableImports = this.canDeferDeps ? this.deferredSymbolTracker.getDeferrableImportDecls() : null;
+@@ -20946,7 +20946,7 @@ var ComponentDecoratorHandler = class {
+     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget3.Component));
+     const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
+     const classMetadata = analysis.classMetadata !== null ? compileComponentClassMetadata(analysis.classMetadata, null).toStmt() : null;
+-    const debugInfo = analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
++    const debugInfo = null;//analysis.classDebugInfo !== null ? compileClassDebugInfo(analysis.classDebugInfo).toStmt() : null;
+     const hmrMeta = this.enableHmr ? extractHmrMetatadata(node, this.reflector, this.evaluator, this.compilerHost, this.rootDirs, def, fac, defer, classMetadata, debugInfo) : null;
+     const res = compileResults(fac, def, classMetadata, "\u0275cmp", null, null, debugInfo, null);
+     return hmrMeta === null || res.length === 0 ? null : getHmrUpdateDeclaration(res, pool.statements, hmrMeta, node);

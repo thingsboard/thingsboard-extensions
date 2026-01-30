@@ -5,7 +5,7 @@
 import { BuilderContext, BuilderOutput, createBuilder } from '@angular-devkit/architect';
 import express from 'express';
 import * as http from 'http';
-import { NgPackagrBuilderOptions } from '@angular/build';
+import { NgPackagrBuilderOptions } from '@angular-devkit/build-angular';
 import { resolve } from 'path';
 import { from, Observable } from 'rxjs';
 import { mapTo, switchMap, tap } from 'rxjs/operators';
