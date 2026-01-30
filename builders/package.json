@@ -4,7 +4,7 @@
   "description": "Builder for Architect",
   "builders": "builders.json",
   "scripts": {
-    "postinstall": "tsc -p tsconfig.builders.json --skipLibCheck"
+    "postinstall": "tsc -p tsconfig.builders.json --skipLibCheck --esModuleInterop"
   },
   "dependencies": {
     "@angular-devkit/architect": "0.2003.15",
@@ -27,5 +27,9 @@
     "express": "^5.2.1",
     "http": "^0.0.0",
     "typescript": "~5.9.3"
+  },
+  "resolutions": {
+    "express": "5.2.1",
+    "@types/express": "5.0.3"
   }
 }
