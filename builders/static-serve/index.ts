@@ -3,9 +3,9 @@
 ///
 
 import { BuilderContext, BuilderOutput, createBuilder } from '@angular-devkit/architect';
-import * as express from 'express';
+import express from 'express';
 import * as http from 'http';
-import { NgPackagrBuilderOptions } from '@angular-devkit/build-angular';
+import { NgPackagrBuilderOptions } from '@angular/build';
 import { resolve } from 'path';
 import { from, Observable } from 'rxjs';
 import { mapTo, switchMap, tap } from 'rxjs/operators';

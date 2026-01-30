@@ -8,7 +8,8 @@ import { DatasourceType } from '@shared/public-api';
 @Component({
     selector: 'tb-example-table-custom-subscription',
     templateUrl: './example-table-custom-subscription.component.html',
-    styleUrls: ['./example-table-custom-subscription.component.scss']
+    styleUrls: ['./example-table-custom-subscription.component.scss'],
+    standalone: false
 })
 
 export class ExampleTableCustomSubscriptionComponent implements OnInit {

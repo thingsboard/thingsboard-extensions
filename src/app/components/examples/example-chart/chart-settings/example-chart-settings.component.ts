@@ -5,9 +5,10 @@ import { Store } from '@ngrx/store';
 import { LegendPosition, WidgetSettings, WidgetSettingsComponent } from '@shared/public-api';
 
 @Component({
-  selector: 'tb-example-chart-settings',
-  templateUrl: './example-chart-settings.component.html',
-  styleUrls: []
+    selector: 'tb-example-chart-settings',
+    templateUrl: './example-chart-settings.component.html',
+    styleUrls: [],
+    standalone: false
 })
 
 export class ExampleChartSettingsComponent extends WidgetSettingsComponent {

@@ -33,9 +33,10 @@ import { calculateAxisSize, measureAxisNameSize } from '@home/components/public-
 import { ECharts } from '@home/components/widget/lib/chart/echarts-widget.models';
 
 @Component({
-  selector: 'tb-example-echart',
-  templateUrl: './example-chart.component.html',
-  styleUrls: ['./example-chart.component.scss']
+    selector: 'tb-example-echart',
+    templateUrl: './example-chart.component.html',
+    styleUrls: ['./example-chart.component.scss'],
+    standalone: false
 })
 export class ExampleChartComponent implements OnInit, AfterViewInit {
 

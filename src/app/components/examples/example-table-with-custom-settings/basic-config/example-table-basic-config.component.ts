@@ -10,7 +10,8 @@ import { DataKey, Datasource } from '@shared/public-api';
 @Component({
     selector: 'tb-example-table-basic-config',
     templateUrl: './example-table-basic-config.component.html',
-    styleUrls: []
+    styleUrls: [],
+    standalone: false
 })
 
 export class ExampleTableBasicConfigComponent extends BasicWidgetConfigComponent {

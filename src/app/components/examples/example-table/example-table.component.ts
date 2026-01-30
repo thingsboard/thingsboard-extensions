@@ -9,9 +9,10 @@ enum FormatKey {
 }
 
 @Component({
-   selector: 'tb-example-table',
-   templateUrl: 'example-table.component.html',
-   styleUrls: ['example-table.component.scss']
+    selector: 'tb-example-table',
+    templateUrl: 'example-table.component.html',
+    styleUrls: ['example-table.component.scss'],
+    standalone: false
 })
 
 export class ExampleTableComponent implements OnInit {

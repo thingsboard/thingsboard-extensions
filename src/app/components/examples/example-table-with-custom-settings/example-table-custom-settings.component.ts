@@ -39,9 +39,10 @@ enum FormatKey {
 }
 
 @Component({
-   selector: 'tb-example-table-custom-settings',
-   templateUrl: 'example-table-custom-settings.component.html',
-   styleUrls: ['example-table-custom-settings.component.scss']
+    selector: 'tb-example-table-custom-settings',
+    templateUrl: 'example-table-custom-settings.component.html',
+    styleUrls: ['example-table-custom-settings.component.scss'],
+    standalone: false
 })
 
 export class ExampleTableCustomSettingsComponent implements OnInit {

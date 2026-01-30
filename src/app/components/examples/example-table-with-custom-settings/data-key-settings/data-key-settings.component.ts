@@ -15,7 +15,8 @@ interface KeySettings {
 @Component({
     selector: 'tb-example-table-key-settings',
     templateUrl: './data-key-settings.component.html',
-    styleUrls: []
+    styleUrls: [],
+    standalone: false
 })
 
 export class DataKeySettingsComponent extends WidgetSettingsComponent {

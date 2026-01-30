@@ -21,7 +21,8 @@ import { EntityRelation } from '@shared/models/relation.models';
 @Component({
     selector: 'tb-add-entity-action',
     templateUrl: './add-entity.component.html',
-    styleUrls: ['./add-entity.component.scss']
+    styleUrls: ['./add-entity.component.scss'],
+    standalone: false
 })
 
 export class AddEntityComponent extends PageComponent implements OnInit, OnDestroy {
