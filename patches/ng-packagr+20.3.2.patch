@@ -1,3 +1,17 @@
+diff --git a/node_modules/ng-packagr/src/lib/flatten/file-loader-plugin.js b/node_modules/ng-packagr/src/lib/flatten/file-loader-plugin.js
+index 3126ecb..d604d29 100644
+--- a/node_modules/ng-packagr/src/lib/flatten/file-loader-plugin.js
++++ b/node_modules/ng-packagr/src/lib/flatten/file-loader-plugin.js
+@@ -67,7 +67,8 @@ function fileLoaderPlugin(fileCache, resolutionExtensions) {
+             const idPosix = (0, path_1.ensureUnixPath)(id);
+             const data = fileCache.get(idPosix);
+             if (!data) {
+-                throw new Error(`Could not load '${id}' from memory.`);
++                return null;
++                //throw new Error(`Could not load '${id}' from memory.`);
+             }
+             return {
+                 code: data.content,
 diff --git a/node_modules/ng-packagr/src/lib/flatten/rollup.d.ts b/node_modules/ng-packagr/src/lib/flatten/rollup.d.ts
 index 634d8c0..5c516a8 100644
 --- a/node_modules/ng-packagr/src/lib/flatten/rollup.d.ts
@@ -11,14 +25,14 @@ index 634d8c0..5c516a8 100644
      cacheDirectory?: string | false;
      fileCache: OutputFileCache;
 diff --git a/node_modules/ng-packagr/src/lib/flatten/rollup.js b/node_modules/ng-packagr/src/lib/flatten/rollup.js
-index 81d96de..7cdd704 100644
+index 81d96de..1f4fa79 100644
 --- a/node_modules/ng-packagr/src/lib/flatten/rollup.js
 +++ b/node_modules/ng-packagr/src/lib/flatten/rollup.js
 @@ -40,9 +40,15 @@ exports.rollupBundleFile = rollupBundleFile;
  const plugin_json_1 = __importDefault(require("@rollup/plugin-json"));
  const path = __importStar(require("path"));
  const rollup_plugin_dts_1 = require("rollup-plugin-dts");
-+const nodeResolve = require("@rollup/plugin-node-resolve");
++const plugin_node_resolve_1 = __importDefault(require("@rollup/plugin-node-resolve"));
 +const commonJs = require("@rollup/plugin-commonjs");
 +const replace = require("@rollup/plugin-replace");
 +const terser = require("@rollup/plugin-terser");
@@ -35,7 +49,7 @@ index 81d96de..7cdd704 100644
      else {
          outExtension = '.mjs';
 -        plugins = [(0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache, ['.js', '/index.js']), (0, plugin_json_1.default)()];
-+        plugins = [(0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache, ['.js', '/index.js']), (0, plugin_json_1.default)(), replace({preventAssignment: true, 'process.env.NODE_ENV': '"production"'}), nodeResolve({mainFields:['module', 'main', 'browser']}), commonJs(), terser()];
++        plugins = [(0, plugin_node_resolve_1.default)(), (0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache, ['.js', '/index.js']), (0, plugin_json_1.default)(), replace({preventAssignment: true, 'process.env.NODE_ENV': '"production"'}), commonJs(), terser()];
      }
      // Create the bundle
 +    const data = fs.readFileSync(path.join(__dirname, '../../../../thingsboard/src/app/modules/common/modules-map.ts'), 'utf8');
