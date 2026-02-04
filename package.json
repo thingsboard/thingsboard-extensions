@@ -1,7 +1,7 @@
 {
   "name": "thingsboard-extension-widgets",
   "private": true,
-  "version": "4.3.1",
+  "version": "4.3.0.2",
   "description": "ThingsBoard Extension Widgets",
   "scripts": {
     "ng": "ng",
@@ -31,7 +31,7 @@
     "@angular-devkit/core": "20.3.15",
     "@angular-devkit/schematics": "20.3.15",
     "@angular/animations": "20.3.16",
-    "@angular/build": "^20.3.15",
+    "@angular/build": "20.3.15",
     "@angular/cdk": "20.2.14",
     "@angular/cli": "20.3.15",
     "@angular/common": "20.3.16",
@@ -77,6 +77,7 @@
     "zone.js": "~0.15.1"
   },
   "resolutions": {
-    "tinymce": "6.8.6"
+    "tinymce": "6.8.6",
+    "rxjs": "7.8.2"
   }
 }
