@@ -1,12 +1,12 @@
 <div class="example-table flex flex-col gap-2">
   <div class="header">
-    {{entityName}}
+    {{ entityName }}
   </div>
   <div class="content">
     @for (key of tableValues | keyvalue; track key) {
       <div class="content-column flex flex-row items-center justify-between">
-        <div class="content-key">{{key.key}}</div>
-        <div class="content-value">{{key.value}}</div>
+        <div class="content-key">{{ key.key }}</div>
+        <div class="content-value">{{ key.value }}</div>
       </div>
     }
   </div>

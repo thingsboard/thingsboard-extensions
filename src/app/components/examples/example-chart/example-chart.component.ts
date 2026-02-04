@@ -33,10 +33,10 @@ import { calculateAxisSize, measureAxisNameSize } from '@home/components/public-
 import { ECharts } from '@home/components/widget/lib/chart/echarts-widget.models';
 
 @Component({
-    selector: 'tb-example-echart',
-    templateUrl: './example-chart.component.html',
-    styleUrls: ['./example-chart.component.scss'],
-    standalone: false
+  selector: 'tb-example-echart',
+  templateUrl: './example-chart.component.html',
+  styleUrls: ['./example-chart.component.scss'],
+  standalone: false
 })
 export class ExampleChartComponent implements OnInit, AfterViewInit {
 
@@ -75,7 +75,7 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.myChart = echarts.init(this.echartContainer.nativeElement,  null, {
+    this.myChart = echarts.init(this.echartContainer.nativeElement, null, {
       renderer: 'svg'
     });
     this.initResize();
@@ -118,7 +118,7 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
           type: 'inside',
           disabled: false,
           realtime: true,
-          filterMode:  'none'
+          filterMode: 'none'
         },
         {
           type: 'slider',
@@ -139,9 +139,9 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
     const newData = [];
     this.onResize();
     this.updateXAxisTimeWindow(this.xAxis, this.ctx.defaultSubscription.timeWindow);
-    for(const key in this.ctx.data) {
+    for (const key in this.ctx.data) {
       newData[key] = [];
-      for(const [ts, value] of this.ctx.data[key].data) {
+      for (const [ts, value] of this.ctx.data[key].data) {
         newData[key].push({
           name: ts,
           value: [
@@ -153,7 +153,7 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
     }
 
     const linesData = [];
-    for(const data of newData) {
+    for (const data of newData) {
       linesData.push({data});
     }
     this.option.series = linesData;
@@ -164,9 +164,9 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
 
   //Support logic
   private updateAxisOffset(lazy = true): void {
-    const leftOffset = calculateAxisSize(this.myChart, this.yAxis.mainType,  this.yAxis.id as string);
+    const leftOffset = calculateAxisSize(this.myChart, this.yAxis.mainType, this.yAxis.id as string);
     const leftNameSize = measureAxisNameSize(this.myChart, this.yAxis.mainType, this.yAxis.id as string, this.yAxis.name);
-    const bottomOffset = calculateAxisSize(this.myChart, this.xAxis.mainType,  this.xAxis.id as string);
+    const bottomOffset = calculateAxisSize(this.myChart, this.xAxis.mainType, this.xAxis.id as string);
     const bottomNameSize = measureAxisNameSize(this.myChart, this.yAxis.mainType, this.yAxis.id as string, this.yAxis.name);
     const newGridLeft = leftOffset + leftNameSize;
     const newGridBottom = bottomOffset + bottomNameSize + 35;
@@ -292,7 +292,7 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
     const units = isDefinedAndNotNull(this.ctx.data[index].dataKey.units) ?
       this.ctx.data[index].dataKey.units : this.ctx.units;
     const valueFormatter = ValueFormatProcessor.fromSettings(this.ctx.$injector, {units, decimals});
-    const value  = valueFormatter.format(param.value[1]);
+    const value = valueFormatter.format(param.value[1]);
     const valueElement: HTMLElement = this.renderer.createElement('div');
     this.renderer.setProperty(valueElement, 'innerHTML', this.sanitizer.sanitize(SecurityContext.HTML, value));
     this.renderer.setStyle(valueElement, 'flex', '1');
@@ -320,21 +320,21 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
   }
 
   private setupAnimationSettings(): object {
-      return  {
-        animation: true,
-        animationDelay: 0,
-        animationDelayUpdate: 0,
-        animationDuration: 500,
-        animationDurationUpdate: 300,
-        animationEasing: "cubicOut",
-        animationEasingUpdate: "cubicOut",
-        animationThreshold: 2000
-      }
+    return {
+      animation: true,
+      animationDelay: 0,
+      animationDelayUpdate: 0,
+      animationDuration: 500,
+      animationDurationUpdate: 300,
+      animationEasing: "cubicOut",
+      animationEasingUpdate: "cubicOut",
+      animationThreshold: 2000
+    }
   }
 
   private setupChartLines(): SeriesOption[] {
     const series: SeriesOption[] = [];
-    for(const [index, dataKey] of this.ctx.datasources[0].dataKeys.entries()) {
+    for (const [index, dataKey] of this.ctx.datasources[0].dataKeys.entries()) {
       series.push({
         id: index,
         name: dataKey.label,
@@ -414,8 +414,8 @@ export class ExampleChartComponent implements OnInit, AfterViewInit {
       name: 'XAxis',
       offset: 0,
       nameLocation: 'middle',
-      max:  this.ctx.defaultSubscription.timeWindow.maxTime,
-      min:  this.ctx.defaultSubscription.timeWindow.minTime,
+      max: this.ctx.defaultSubscription.timeWindow.maxTime,
+      min: this.ctx.defaultSubscription.timeWindow.minTime,
       nameTextStyle: {
         color: 'rgba(0, 0, 0, 0.54)',
         fontStyle: 'normal',

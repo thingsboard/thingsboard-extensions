@@ -15,7 +15,7 @@ class LibStylesEntryComponent {
 
 }
 
-const addStyleFromComponent = (type: Type<any>, target: string)=> {
+const addStyleFromComponent = (type: Type<any>, target: string) => {
   const def: ɵComponentDef<any> = type[ɵNG_COMP_DEF];
   if (def.styles?.length) {
     const style = def.styles[0];

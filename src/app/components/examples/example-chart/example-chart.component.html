@@ -12,19 +12,19 @@
             <tr>
               <th></th>
               @if (legendConfig.showMin === true) {
-                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color" >{{ 'legend.Min' | translate }}</th>
+                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color">{{ 'legend.Min' | translate }}</th>
               }
               @if (legendConfig.showMax === true) {
-                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color" >{{ 'legend.Max' | translate }}</th>
+                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color">{{ 'legend.Max' | translate }}</th>
               }
               @if (legendConfig.showAvg === true) {
-                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color" >{{ 'legend.Avg' | translate }}</th>
+                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color">{{ 'legend.Avg' | translate }}</th>
               }
               @if (legendConfig.showTotal === true) {
-                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color" >{{ 'legend.Total' | translate }}</th>
+                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color">{{ 'legend.Total' | translate }}</th>
               }
               @if (legendConfig.showLatest === true) {
-                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color" >{{ 'legend.Latest' | translate }}</th>
+                <th class="tb-time-series-chart-legend-type-label right legend legend-row-color">{{ 'legend.Latest' | translate }}</th>
               }
             </tr>
           </thead>
@@ -36,27 +36,27 @@
                 </th>
                 @if (legendConfig.showMin === true) {
                   <td class="tb-time-series-chart-legend-value legend"
-                    [innerHTML]="legendData.data[legendKey.dataIndex].min | safe: 'html'">
+                      [innerHTML]="legendData.data[legendKey.dataIndex].min | safe: 'html'">
                   </td>
                 }
                 @if (legendConfig.showMax === true) {
                   <td class="tb-time-series-chart-legend-value legend"
-                    [innerHTML]="legendData.data[legendKey.dataIndex].max | safe: 'html'">
+                      [innerHTML]="legendData.data[legendKey.dataIndex].max | safe: 'html'">
                   </td>
                 }
                 @if (legendConfig.showAvg === true) {
                   <td class="tb-time-series-chart-legend-value legend"
-                    [innerHTML]="legendData.data[legendKey.dataIndex].avg | safe: 'html'">
+                      [innerHTML]="legendData.data[legendKey.dataIndex].avg | safe: 'html'">
                   </td>
                 }
                 @if (legendConfig.showTotal === true) {
                   <td class="tb-time-series-chart-legend-value legend"
-                    [innerHTML]="legendData.data[legendKey.dataIndex].total | safe: 'html'">
+                      [innerHTML]="legendData.data[legendKey.dataIndex].total | safe: 'html'">
                   </td>
                 }
                 @if (legendConfig.showLatest === true) {
                   <td class="tb-time-series-chart-legend-value legend"
-                    [innerHTML]="legendData.data[legendKey.dataIndex].latest | safe: 'html'">
+                      [innerHTML]="legendData.data[legendKey.dataIndex].latest | safe: 'html'">
                   </td>
                 }
               </tr>
@@ -66,8 +66,7 @@
       </div>
     }
     <ng-template #legendItem let-legendKey="legendKey" let-left="left">
-      <div class="tb-time-series-chart-legend-item"
-        [class.left]="left">
+      <div class="tb-time-series-chart-legend-item" [class.left]="left">
         <div class="tb-time-series-chart-legend-item-label">
           <div class="tb-time-series-chart-legend-item-label-circle" [style]="{background: legendKey.dataKey.color}"></div>
           <div class="legend legend-label-color" [innerHTML]="legendKey.dataKey.label | safe: 'html'"></div>

@@ -5,10 +5,10 @@ import { Store } from '@ngrx/store';
 import { LegendPosition, WidgetSettings, WidgetSettingsComponent } from '@shared/public-api';
 
 @Component({
-    selector: 'tb-example-chart-settings',
-    templateUrl: './example-chart-settings.component.html',
-    styleUrls: [],
-    standalone: false
+  selector: 'tb-example-chart-settings',
+  templateUrl: './example-chart-settings.component.html',
+  styleUrls: [],
+  standalone: false
 })
 
 export class ExampleChartSettingsComponent extends WidgetSettingsComponent {
@@ -41,6 +41,7 @@ export class ExampleChartSettingsComponent extends WidgetSettingsComponent {
       legendConfig: [settings.legendConfig, []]
     });
   }
+
   protected settingsForm(): FormGroup {
     return this.exampleTableConfigForm;
   }

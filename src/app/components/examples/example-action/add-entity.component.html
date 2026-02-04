@@ -1,5 +1,5 @@
 <form #addEntityForm="ngForm" [formGroup]="addEntityFormGroup"
-  (ngSubmit)="save()" class="add-entity-form">
+      (ngSubmit)="save()" class="add-entity-form">
   <mat-toolbar color="primary">
     <h2>Add entity</h2>
     <span class="flex-1"></span>
@@ -27,7 +27,7 @@
       </mat-form-field>
       <mat-form-field class="mat-block flex-1">
         <mat-label>Entity Label</mat-label>
-        <input matInput formControlName="entityLabel" >
+        <input matInput formControlName="entityLabel">
       </mat-form-field>
     </div>
     <div class="xs:flex-col xs:gap-0 flex flex-row gap-2">
@@ -106,7 +106,7 @@
                     <mat-select formControlName="direction" name="direction">
                       @for (direction of entitySearchDirection | keyvalue; track direction) {
                         <mat-option [value]="direction.value">
-                          {{ ("relation.search-direction." + direction.value) | translate}}
+                          {{ ("relation.search-direction." + direction.value) | translate }}
                         </mat-option>
                       }
                     </mat-select>
@@ -132,11 +132,11 @@
               </div>
               <div class="flex flex-col">
                 <button mat-icon-button color="primary"
-                  aria-label="Remove"
-                  type="button"
-                  (click)="removeRelation(i)"
-                  matTooltip="Remove relation"
-                  matTooltipPosition="above">
+                        aria-label="Remove"
+                        type="button"
+                        (click)="removeRelation(i)"
+                        matTooltip="Remove relation"
+                        matTooltipPosition="above">
                   <mat-icon>close</mat-icon>
                 </button>
               </div>
@@ -146,25 +146,25 @@
       </div>
       <div>
         <button mat-raised-button color="primary"
-          type="button"
-          (click)="addRelation()"
-          matTooltip="Add Relation"
-          matTooltipPosition="above">
+                type="button"
+                (click)="addRelation()"
+                matTooltip="Add Relation"
+                matTooltipPosition="above">
           Add
         </button>
       </div>
     </div>
   </div>
-  <div mat-dialog-actions class="flex flex-row place-content-end" >
+  <div mat-dialog-actions class="flex flex-row place-content-end">
     <button mat-button color="primary"
-      type="button"
-      [disabled]="(isLoading$ | async)"
-      (click)="cancel()" cdkFocusInitial>
+            type="button"
+            [disabled]="(isLoading$ | async)"
+            (click)="cancel()" cdkFocusInitial>
       Cancel
     </button>
     <button mat-button mat-raised-button color="primary"
-      type="submit"
-      [disabled]="(isLoading$ | async) || addEntityForm.invalid || !addEntityForm.dirty">
+            type="submit"
+            [disabled]="(isLoading$ | async) || addEntityForm.invalid || !addEntityForm.dirty">
       Create
     </button>
   </div>

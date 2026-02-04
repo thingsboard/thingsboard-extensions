@@ -6,42 +6,43 @@ import { getSourceTbUnitSymbol, WidgetSettings, WidgetSettingsComponent } from '
 import { valueDefaultSettings } from '../example-table-custom-settings.component';
 
 @Component({
-    selector: 'tb-example-table-advanced-config',
-    templateUrl: './example-table-advanced-config.component.html',
-    styleUrls: [],
-    standalone: false
+  selector: 'tb-example-table-advanced-config',
+  templateUrl: './example-table-advanced-config.component.html',
+  styleUrls: [],
+  standalone: false
 })
 
 export class ExampleTableAdvancedConfigComponent extends WidgetSettingsComponent {
 
-    public exampleTableConfigForm: FormGroup;
-    public valuePreviewFn = this._valuePreviewFn.bind(this);
-    constructor(protected store: Store<AppState>,
-                private fb: FormBuilder) {
-        super(store);
-    }
+  public exampleTableConfigForm: FormGroup;
+  public valuePreviewFn = this._valuePreviewFn.bind(this);
 
-    protected defaultSettings(): WidgetSettings {
-        return valueDefaultSettings;
-    }
+  constructor(protected store: Store<AppState>,
+              private fb: FormBuilder) {
+    super(store);
+  }
 
-    protected onSettingsSet(settings: WidgetSettings): any {
-        this.exampleTableConfigForm = this.fb.group({
-            columnHeight: [settings.columnHeight, [Validators.required]],
-            valueColor: [settings.valueColor, []],
-            keyColor: [settings.keyColor, []],
-            keyFont: [settings.keyFont, []],
-            valueFont: [settings.valueFont, []]
-        });
-    }
+  protected defaultSettings(): WidgetSettings {
+    return valueDefaultSettings;
+  }
 
-    private _valuePreviewFn(): string {
-        const units = getSourceTbUnitSymbol(this.widgetConfig.config.units);
-        const decimals: number = this.widgetConfig.config.decimals;
-        return formatValue(22, decimals, units, true);
-    }
+  protected onSettingsSet(settings: WidgetSettings): any {
+    this.exampleTableConfigForm = this.fb.group({
+      columnHeight: [settings.columnHeight, [Validators.required]],
+      valueColor: [settings.valueColor, []],
+      keyColor: [settings.keyColor, []],
+      keyFont: [settings.keyFont, []],
+      valueFont: [settings.valueFont, []]
+    });
+  }
 
-    protected settingsForm(): FormGroup {
-        return this.exampleTableConfigForm;
-    }
+  private _valuePreviewFn(): string {
+    const units = getSourceTbUnitSymbol(this.widgetConfig.config.units);
+    const decimals: number = this.widgetConfig.config.decimals;
+    return formatValue(22, decimals, units, true);
+  }
+
+  protected settingsForm(): FormGroup {
+    return this.exampleTableConfigForm;
+  }
 }
