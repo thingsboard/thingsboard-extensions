@@ -1,31 +1,33 @@
 <div class="flex flex-col" [formGroup]="exampleTableConfigForm">
-    <div class="flex flex-row gap-2">
-        <mat-form-field class="flex-1">
-            <mat-label>Column height</mat-label>
-            <input matInput type="number" formControlName="columnHeight"/>
-            <mat-error *ngIf="exampleTableConfigForm.get('columnHeight').hasError('required')">
-                Column height is required
-            </mat-error>
-        </mat-form-field>
-        <div class="tb-form-row space-between flex-1">
-            <div>Key</div>
-            <div class="flex flex-row items-center gap-2">
-                <tb-font-settings formControlName="keyFont"
-                                  [previewText]="valuePreviewFn">
-                </tb-font-settings>
-                <tb-color-settings formControlName="keyColor" settingsKey="Key">
-                </tb-color-settings>
-            </div>
-        </div>
-        <div class="tb-form-row space-between flex-1">
-            <div>Value</div>
-            <div class="flex flex-row items-center gap-2">
-                <tb-font-settings formControlName="valueFont"
-                                  [previewText]="valuePreviewFn">
-                </tb-font-settings>
-                <tb-color-settings formControlName="valueColor" settingsKey="Value">
-                </tb-color-settings>
-            </div>
-        </div>
+  <div class="flex flex-row gap-2">
+    <mat-form-field class="flex-1">
+      <mat-label>Column height</mat-label>
+      <input matInput type="number" formControlName="columnHeight"/>
+      @if (exampleTableConfigForm.get('columnHeight').hasError('required')) {
+        <mat-error>
+          Column height is required
+        </mat-error>
+      }
+    </mat-form-field>
+    <div class="tb-form-row space-between flex-1">
+      <div>Key</div>
+      <div class="flex flex-row items-center gap-2">
+        <tb-font-settings formControlName="keyFont"
+          [previewText]="valuePreviewFn">
+        </tb-font-settings>
+        <tb-color-settings formControlName="keyColor" settingsKey="Key">
+        </tb-color-settings>
+      </div>
     </div>
+    <div class="tb-form-row space-between flex-1">
+      <div>Value</div>
+      <div class="flex flex-row items-center gap-2">
+        <tb-font-settings formControlName="valueFont"
+          [previewText]="valuePreviewFn">
+        </tb-font-settings>
+        <tb-color-settings formControlName="valueColor" settingsKey="Value">
+        </tb-color-settings>
+      </div>
+    </div>
+  </div>
 </div>
