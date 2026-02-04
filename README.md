@@ -1,69 +1,86 @@
-Extension ThingsBoard Platform
-=====================
-## ThingsBoard Dependencies
-To add some of ThingsBoard dependencies imports to your "extension" Angular component,
-please use this import structure:
+# ThingsBoard Platform Extension
 
-```
+This repository contains the **ThingsBoard Extension** codebase. Follow the instructions below to integrate, develop, and deploy your custom widgets and components.
+
+## Migration & Updates
+
+To ensure your extension remains compatible with the latest platform features and security standards, periodic updates are required.
+
+Please refer to the **[Updating Guide](UPDATING.md)** for detailed migration scripts, framework updates, and version-specific instructions.
+
+---
+
+## ThingsBoard Dependencies
+To import ThingsBoard core dependencies into your extension components, use the following import structure:
+
+```typescript
 import { <dependency> } from '<TB-module>/public-api';
 ```
-"TB-module" - any of the following modules:
-```
-@app/*
-@core/*
-@shared/*
-@modules/*
-@home/*
-```
-"dependency" - name of dependency/type located in "TB-module".
-Refer to [modules-map](https://github.com/thingsboard/thingsboard-pe-ui-types/blob/master/src/app/modules/common/modules-map.ts)
-to see what you can use.
 
-Example:
+### Supported TB Modules
+You can import from any of the following modules:
 
-```
+- `@app/*`
+- `@core/*`
+- `@shared/*`
+- `@modules/*`
+- `@home/*`
+
+**Note:** Refer to the [modules-map](https://github.com/thingsboard/thingsboard-pe-ui-types/blob/master/src/app/modules/common/modules-map.ts)
+to see available types and dependencies.
+
+**Example:**
+
+```typescript
 import { WidgetConfig } from '@shared/public-api';
 ```
+
+---
+
 ## External Dependencies
-In case you want to use your own dependencies package from the npm registry (unless you have specified another one in your package.json), you can easily add them to yarn packet manager running the next command:
-```
+To use third-party packages from the npm registry, add them using the Yarn package manager:
+
+```bash
 yarn add <package-name>
 ```
 
-Example:
-
-```
+**Example:**
+```bash
 yarn add lodash
 ```
-If it's not the npm/yarn registry, and you want to add it in another way, please refer to [yarn docs](https://classic.yarnpkg.com/en/docs/cli/add).
+For non-standard registries or alternative installation methods, please refer to the [Yarn Documentation](https://classic.yarnpkg.com/en/docs/cli/add).
 
-## Run project in development mode
-```
-cd ${TB_EXTENSION_WORK_DIR}
+---
+
+## Development Mode
+
+1. **Install dependencies and start the server:**
+```bash
 yarn install
 yarn start
 ```
-In widgets library create a new widget and in the resources tab of the widget editor add this file path:
 
-```
-http://localhost:5000/static/widgets/thingsboard-extension-widgets.js
-```
-You must also check "Is module"
+2. **Configure the Widget:**
+    - Create a new widget in the ThingsBoard **Widgets Library**.
+    - In the **Resources** tab of the widget editor, add the following file path: `http://localhost:5000/static/widgets/thingsboard-extension-widgets.js`
+    - Ensure the **"Is module"** checkbox is checked.
 
-## Build project
+---
 
-```
-cd ${TB_EXTENSION_WORK_DIR}
+## Build Instructions
+
+To install dependencies and compile the project for production, run:
+```bash
+yarn install
 yarn build
 ```
 
-You can find the compiled file at the following path:
-```
-${TB_EXTENSION_WORK_DIR}/target/generated-resources/thingsboard-extension-widgets.js
-```
+The compiled file will be generated at: `target/generated-resources/thingsboard-extension-widgets.js`
 
-## Deploy project to customer server
+---
 
-You have two options for deploying extensions:
-1) Deploying using our UI. You can find all information about it in our [documentation](https://thingsboard.io/docs/user-guide/contribution/widgets-development/#thingsboard-extensions)
-2) Manual deploying. In this case you should use this [branch](https://github.com/thingsboard/thingsboard-extensions/tree/release-3.6-server) of **Thingsboard extensions**
+## Deployment
+
+There are two options for deploying extensions to a customer server:
+1) **UI Deployment:** Use the built-in ThingsBoard interface. Detailed instructions can be found in the [Official Documentation](https://thingsboard.io/docs/user-guide/contribution/widgets-development/#thingsboard-extensions)
+2) **Manual Deployment:** Use the specific [server-release branch](https://github.com/thingsboard/thingsboard-extensions/tree/release-3.6-server) for manual implementation.
