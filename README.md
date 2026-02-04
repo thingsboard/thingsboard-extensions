@@ -8,8 +8,6 @@ To ensure your extension remains compatible with the latest platform features an
 
 Please refer to the **[Updating Guide](UPDATING.md)** for detailed migration scripts, framework updates, and version-specific instructions.
 
----
-
 ## ThingsBoard Dependencies
 To import ThingsBoard core dependencies into your extension components, use the following import structure:
 
@@ -35,8 +33,6 @@ to see available types and dependencies.
 import { WidgetConfig } from '@shared/public-api';
 ```
 
----
-
 ## External Dependencies
 To use third-party packages from the npm registry, add them using the Yarn package manager:
 
@@ -49,8 +45,6 @@ yarn add <package-name>
 yarn add lodash
 ```
 For non-standard registries or alternative installation methods, please refer to the [Yarn Documentation](https://classic.yarnpkg.com/en/docs/cli/add).
-
----
 
 ## Development Mode
 
@@ -65,8 +59,6 @@ yarn start
     - In the **Resources** tab of the widget editor, add the following file path: `http://localhost:5000/static/widgets/thingsboard-extension-widgets.js`
     - Ensure the **"Is module"** checkbox is checked.
 
----
-
 ## Build Instructions
 
 To install dependencies and compile the project for production, run:
@@ -76,8 +68,6 @@ yarn build
 ```
 
 The compiled file will be generated at: `target/generated-resources/thingsboard-extension-widgets.js`
-
----
 
 ## Deployment
 
