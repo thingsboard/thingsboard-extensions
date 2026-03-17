@@ -1,22 +1,79 @@
-# ThingsBoard Platform Extension
+# ThingsBoard Extension
 
 This repository contains the **ThingsBoard Extension** codebase. Follow the instructions below to integrate, develop, and deploy your custom widgets and components.
 
-## Migration & Updates
+## Prerequisites
 
-To ensure your extension remains compatible with the latest platform features and security standards, periodic updates are required.
+- [Node.js](https://nodejs.org/) >= 20.20.0
+- [Yarn](https://classic.yarnpkg.com/) >= 1.22.22 (Yarn Classic)
 
-Please refer to the **[Updating Guide](UPDATING.md)** for detailed migration scripts, framework updates, and version-specific instructions.
+## Getting Started
+
+Install dependencies and start the development server:
+
+```bash
+yarn install
+yarn start
+```
+
+### Configure the Widget
+
+1. Create a new widget in the ThingsBoard **Widgets Library**.
+2. In the **Resources** tab of the widget editor, add the following URL:
+   ```
+   http://localhost:5000/static/widgets/thingsboard-extension-widgets.js
+   ```
+3. Ensure the **"Is extension"** checkbox is checked.
+
+## Build
+
+To compile the project for production, run:
+
+```bash
+yarn build
+```
+
+The compiled file will be generated at: `target/generated-resources/thingsboard-extension-widgets.js`
+
+## Deployment
+
+After a successful build, deploy your extension to production in two steps:
+
+### Step 1 — Upload the Extension
+
+1. In the ThingsBoard UI, go to **Resources** > **JavaScript library**
+2. Click the **"+"** button in the upper-right corner
+3. Select **Extension** from the "JavaScript type" dropdown
+4. Enter a title for your extension
+5. Drag and drop the compiled file from the build output:
+   ```
+   target/generated-resources/thingsboard-extension-widgets.js
+   ```
+6. Click **Add**
+
+### Step 2 — Connect to a Widget
+
+1. Open or create a widget in the **Widgets Library**
+2. Go to the **Resources** tab
+3. Click **Add**, then check the **"Is extension"** checkbox
+4. Select your uploaded extension from the dropdown
+5. Use your custom component tag in the **HTML** tab
+
+Your widget is now production-ready.
+
+> For more details, see the [Advanced Development Guide](https://thingsboard.io/docs/user-guide/contribution/ui/advanced-development/).
 
 ## ThingsBoard Dependencies
+
 To import ThingsBoard core dependencies into your extension components, use the following import structure:
 
 ```typescript
 import { <dependency> } from '<TB-module>/public-api';
 ```
 
-### Supported TB Modules
-You can import from any of the following modules:
+### Supported Modules
+
+You can import from any of the following ThingsBoard modules:
 
 - `@app/*`
 - `@core/*`
@@ -34,6 +91,7 @@ import { WidgetConfig } from '@shared/public-api';
 ```
 
 ## External Dependencies
+
 To use third-party packages from the npm registry, add them using the Yarn package manager:
 
 ```bash
@@ -41,36 +99,26 @@ yarn add <package-name>
 ```
 
 **Example:**
+
 ```bash
 yarn add lodash
 ```
+
 For non-standard registries or alternative installation methods, please refer to the [Yarn Documentation](https://classic.yarnpkg.com/en/docs/cli/add).
 
-## Development Mode
+## Examples
 
-1. **Install dependencies and start the server:**
-```bash
-yarn install
-yarn start
-```
+The `examples/` directory contains ready-to-use widget examples configured for development mode. Each example includes a detailed README and a JSON config for import:
 
-2. **Configure the Widget:**
-    - Create a new widget in the ThingsBoard **Widgets Library**.
-    - In the **Resources** tab of the widget editor, add the following file path: `http://localhost:5000/static/widgets/thingsboard-extension-widgets.js`
-    - Ensure the **"Is module"** checkbox is checked.
+- **[example-table](examples/example-table)** — basic widget creation (table with key-value pairs)
+- **[example-chart](examples/example-chart)** — ECharts library integration
+- **[example-table-with-custom-settings](examples/example-table-with-custom-settings)** — custom settings (basic, advanced, and data key)
+- **[example-table-with-custom-subscription](examples/example-table-with-custom-subscription)** — custom data subscriptions
+- **[example-of-using-third-party-library](examples/example-of-using-third-party-library)** — third-party npm packages (PrimeNG)
+- **[example-action](examples/example-action)** — custom actions with HTML templates
 
-## Build Instructions
+## Migration & Updates
 
-To install dependencies and compile the project for production, run:
-```bash
-yarn install
-yarn build
-```
+To ensure your extension remains compatible with the latest platform features, periodic updates are required.
 
-The compiled file will be generated at: `target/generated-resources/thingsboard-extension-widgets.js`
-
-## Deployment
-
-There are two options for deploying extensions to a customer server:
-1) **UI Deployment:** Use the built-in ThingsBoard interface. Detailed instructions can be found in the [Official Documentation](https://thingsboard.io/docs/user-guide/contribution/widgets-development/#thingsboard-extensions)
-2) **Manual Deployment:** Use the specific [server-release branch](https://github.com/thingsboard/thingsboard-extensions/tree/release-3.6-server) for manual implementation.
+Please refer to the **[Updating Guide](UPDATING.md)** for detailed migration scripts, framework updates, and version-specific instructions.

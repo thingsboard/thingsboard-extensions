@@ -1,5 +1,5 @@
 diff --git a/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js b/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js
-index 89e0caa..e6ef1ba 100755
+index 89e0caa..25fbfe6 100755
 --- a/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js
 +++ b/node_modules/@angular/compiler-cli/bundles/chunk-YDQJH54W.js
 @@ -20879,7 +20879,7 @@ var ComponentDecoratorHandler = class {
