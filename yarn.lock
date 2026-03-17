@@ -9382,9 +9382,9 @@ thingies@^2.5.0:
   resolved "https://registry.yarnpkg.com/thingies/-/thingies-2.5.0.tgz#5f7b882c933b85989f8466b528a6247a6881e04f"
   integrity sha512-s+2Bwztg6PhWUD7XMfeYm5qliDdSiZm7M7n8KjTkIsm3l/2lgVRc2/Gx/v+ZX8lT4FMA+i8aQvhcWylldc+ZNw==
 
-"thingsboard@https://github.com/thingsboard/thingsboard-ui-types.git#release/4.3.1":
-  version "4.3.1"
-  resolved "https://github.com/thingsboard/thingsboard-ui-types.git#f1fd07fe6093e20a6b9ce9de7e6f5eeb04cc0555"
+"thingsboard@https://github.com/thingsboard/thingsboard-ui-types.git#release/4.2.2":
+  version "4.2.2"
+  resolved "https://github.com/thingsboard/thingsboard-ui-types.git#9a479b8604867221d3eaade2b7154455abef0bea"
   dependencies:
     "@angular/animations" "20.3.18"
     "@angular/cdk" "20.2.14"
