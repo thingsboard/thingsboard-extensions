@@ -1,0 +1,6 @@
+<div class="seg-group" role="group">
+  <button *ngFor="let opt of options" (click)="select(opt.id)" [class.active]="selected === opt.id"
+          [attr.aria-pressed]="selected === opt.id" class="seg-btn" type="button">
+    {{ opt.label }}
+  </button>
+</div>

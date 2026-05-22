@@ -1,0 +1,82 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+:host {
+  display: flex;
+  gap: 4px;
+}
+
+.tb-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  // Taller padding so the bar gives any sibling action buttons even breathing
+  // room top and bottom; tabs still span the full height so the active underline
+  // sits on the bottom border.
+  padding: 18px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--c-text-neutral-semilight);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px 8px 0 0;
+  transition: color 0.15s ease, background 0.15s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  // Animated highlight bar (TTS-style): grows from the centre on hover, stays
+  // solid (brand) for the active tab.
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px; // sits on the header row's bottom border
+    width: 100%;
+    height: 3px;
+    background: var(--c-border-neutral-light); // grey hover bar
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    color: var(--c-text-neutral-heavy);
+    background: var(--c-bg-neutral-light); // #f3f5f8 hover fill
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+
+  &.active {
+    color: var(--c-text-neutral-heavy); // dark navy / white
+
+    &:hover {
+      // Same navy as a non-active tab hover in dark; pale blue in light.
+      background: light-dark(var(--c-bg-brand-semilight), var(--c-bg-neutral-light));
+    }
+
+    &::after {
+      background: var(--c-text-brand-normal); // brand underline (#1e5dff / #568aff)
+      transform: scaleX(1);
+    }
+  }
+}

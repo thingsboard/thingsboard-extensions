@@ -1,0 +1,308 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+:host {
+  display: block;
+}
+
+.map-card {
+  display: block;
+  overflow: hidden; // clip the canvas + controls to the rounded corners
+  background-color: var(--c-bg-neutral-extralight);
+  border: 1px solid var(--c-border-neutral-light);
+  border-radius: 13px;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.map-body {
+  position: relative;
+}
+
+.map-canvas {
+  height: 320px;
+  width: 100%;
+  background: var(--c-bg-neutral-light);
+}
+
+// Dark-mode Positron: invert/desaturate the light tiles into a dark-blue map
+// (same approach as the ThingsBoard native dark map). Roadmap only — Satellite
+// and Hybrid imagery must not be inverted.
+:host ::ng-deep .map-canvas.dark-roadmap {
+  background-color: #0d2743;
+
+  .leaflet-tile-pane {
+    opacity: 0.4;
+  }
+
+  .leaflet-tile {
+    filter: invert(1) saturate(0) brightness(2);
+  }
+}
+
+.map-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--c-bg-neutral-light);
+  color: var(--c-text-neutral-light);
+  font-size: 13px;
+  pointer-events: none;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* ---- Map controls ------------------------------------------------------- */
+
+// Leaflet zoom control → rounded pill with shadow (themed).
+:host ::ng-deep .leaflet-control-zoom {
+  border: none !important;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-box-panel-normal);
+}
+
+:host ::ng-deep .leaflet-control-zoom a {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  background-color: var(--c-bg-neutral-min);
+  color: var(--c-icon-neutral-normal);
+  border: none;
+  user-select: none; // don't text-select the +/- on double click
+  -webkit-user-select: none;
+  transition: none; // avoid the divider flickering on theme switch
+
+  &:hover {
+    background-color: light-dark(var(--c-gradient-neutral-light-01), var(--c-bg-neutral-light));
+    color: var(--c-icon-neutral-normal);
+  }
+}
+
+// Single divider between + and - (only on the top button).
+:host ::ng-deep .leaflet-control-zoom a.leaflet-control-zoom-in {
+  border-bottom: 1px solid var(--c-border-neutral-light);
+}
+
+// Custom controls (sit below the zoom control), stacked vertically.
+.map-layers {
+  position: absolute;
+  top: 86px;
+  left: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// Wraps the layers button so its pop-out panel anchors to that button only.
+.map-layers-control {
+  position: relative;
+}
+
+.map-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: var(--c-bg-neutral-min);
+  box-shadow: var(--shadow-box-panel-normal);
+  cursor: pointer;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--c-icon-neutral-normal);
+  }
+
+  &:hover {
+    background: light-dark(var(--c-gradient-neutral-light-01), var(--c-bg-neutral-light));
+  }
+
+  // Active (panel open) — brand tint, like the icon badge / search button.
+  &.active {
+    background: light-dark(var(--c-bg-brand-semilight), var(--c-bg-neutral-light));
+
+    mat-icon {
+      color: light-dark(var(--c-bg-brand-normal), var(--c-icon-brand-light));
+    }
+  }
+}
+
+// Horizontal pop-out (navbar-style) so it isn't clipped by the short map.
+.map-layers-panel {
+  position: absolute;
+  top: 50%;
+  left: 44px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--c-bg-neutral-min);
+  border: 1px solid var(--c-border-neutral-light);
+  box-shadow: var(--shadow-box-modal-normal);
+}
+
+.map-layers-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--c-icon-neutral-light);
+  }
+
+  &:hover mat-icon {
+    color: var(--c-text-neutral-heavy);
+  }
+}
+
+.map-type {
+  position: relative;
+  flex: 0 0 auto;
+  width: 76px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--c-bg-neutral-light);
+
+  &.selected {
+    border-color: var(--c-border-brand-normal);
+  }
+}
+
+.map-type-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-type-label {
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---- Markers / clusters / tooltips -------------------------------------- */
+
+// Brand circle + white water-drop marker (28px), like the TTS icon marker.
+:host ::ng-deep .tbm-marker {
+  background: transparent !important;
+  border: none !important;
+
+  .tbm-marker-pin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--c-bg-brand-normal);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  // White matches the dashboard's text white (#fff light / #ebeef3 dark).
+  .tbm-marker-icon {
+    font-size: 16px;
+    line-height: 1;
+    color: light-dark(var(--c-text-neutral-min), var(--c-text-neutral-heavy));
+  }
+}
+
+// Cluster bubble — brand circle with a count and a soft translucent halo.
+:host ::ng-deep .tbm-cluster {
+  background: transparent !important;
+  border: none !important;
+
+  .tbm-cluster-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--c-bg-brand-normal);
+    color: light-dark(var(--c-text-neutral-min), var(--c-text-neutral-heavy));
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 0 0 5px rgba(30, 93, 255, 0.25); // halo ring
+  }
+}
+
+// Marker label tooltip — frosted-glass pill matching the chart tooltip:
+// semi-transparent themed fill + backdrop blur.
+:host ::ng-deep .leaflet-tooltip.tbm-tooltip {
+  padding: 4px 10px;
+  border: 1px solid light-dark(
+    color-mix(in srgb, var(--c-border-neutral-light) 60%, transparent),
+    color-mix(in srgb, var(--c-border-neutral-normal) 60%, transparent)
+  );
+  border-radius: 8px;
+  // Darker (near-black) fill in dark mode so the pill stands out from the
+  // dark-blue map instead of blending into it.
+  background: light-dark(
+    color-mix(in srgb, var(--c-bg-neutral-min) 72%, transparent),
+    color-mix(in srgb, var(--c-bg-neutral-extralight) 85%, transparent)
+  );
+  color: var(--c-text-neutral-heavy);
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  // Hide Leaflet's default tooltip arrow for a clean pill.
+  &::before {
+    display: none;
+  }
+}

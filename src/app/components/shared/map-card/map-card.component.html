@@ -1,0 +1,43 @@
+<section class="map-card">
+  <tb-widget-header [icon]="icon" [title]="title" [actions]="headerActions"
+                    (actionClick)="headerActionClick.emit($event)"></tb-widget-header>
+
+  <div class="map-body">
+    <div #mapContainer class="map-canvas" [style.height]="mapHeight"
+         [class.dark-roadmap]="dark && mapType === 'roadmap'"></div>
+
+    <!-- Map controls (layer switcher + recenter) -->
+    <div #mapLayers class="map-layers">
+      <div class="map-layers-control">
+        <button (click)="toggleMapPanel()" [class.active]="mapPanelOpen" class="map-ctrl-btn" type="button"
+                title="Map layers" aria-label="Map layers">
+          <mat-icon>layers</mat-icon>
+        </button>
+
+        <div *ngIf="mapPanelOpen" class="map-layers-panel">
+          <button *ngFor="let t of mapTypes" (click)="selectMapType(t.id)" [class.selected]="mapType === t.id"
+                  class="map-type" type="button">
+            <img class="map-type-thumb" [src]="t.thumb" alt="" />
+            <span class="map-type-label">{{ t.label }}</span>
+          </button>
+          <button (click)="mapPanelOpen = false" class="map-layers-close" type="button" aria-label="Close">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <button (click)="recenter()" class="map-ctrl-btn" type="button" title="Recenter map" aria-label="Recenter map">
+        <mat-icon>recenter</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="mapError" class="map-overlay">
+      <mat-icon>map</mat-icon>
+      <span>Map unavailable</span>
+    </div>
+    <div *ngIf="!mapError && mapEmpty" class="map-overlay">
+      <mat-icon>location_off</mat-icon>
+      <span>{{ emptyText }}</span>
+    </div>
+  </div>
+</section>
