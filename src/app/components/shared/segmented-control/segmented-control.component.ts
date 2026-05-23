@@ -21,7 +21,12 @@ import { SharedModule } from "@shared/public-api";
 /** An option in the {@link SegmentedControlComponent}. */
 export interface SegmentOption {
   id: string;
+  /** Text label (also used as the accessible label when an icon is shown). */
   label: string;
+  /** Optional Material icon name; when set, the icon is shown instead of the label. */
+  icon?: string;
+  /** Optional hover tooltip (themed pill that opens above the button). */
+  tooltip?: string;
 }
 
 /**

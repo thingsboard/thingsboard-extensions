@@ -679,10 +679,14 @@ $radius: 8px;
   }
 }
 
-// Active-alarm tally — in the critical-alarm red. (Devices inherit the muted
-// meta colour.)
+// Active-alarm tally — critical-alarm red when > 0, muted when zero. (Devices
+// inherit the muted meta colour.)
 .wm-site-alarms {
   color: var(--c-bg-error-normal);
+
+  &.zero {
+    color: var(--c-text-neutral-light);
+  }
 }
 
 .alarm-device {

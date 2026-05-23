@@ -37,7 +37,8 @@
  * itself is loaded at runtime by the dashboard component.
  ***************/
 
-.wm-dashboard {
+.wm-dashboard,
+.qc-dashboard {
   .mat-icon,
   .material-icons {
     font-family: "Material Symbols Rounded" !important;

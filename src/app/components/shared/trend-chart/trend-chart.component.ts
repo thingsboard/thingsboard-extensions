@@ -18,6 +18,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostBinding,
   Input,
   OnChanges,
   OnDestroy,
@@ -49,6 +50,10 @@ export interface TrendPoint {
   imports: [CommonModule, SharedModule, WidgetHeaderComponent],
 })
 export class TrendChartComponent implements AfterViewInit, OnChanges, OnDestroy {
+  /** Strip the native `title` attribute off the host (set via `title=`) so the
+   *  browser doesn't render its own tooltip over the widget. */
+  @HostBinding("attr.title") readonly hostTitle: string | null = null;
+
   @Input() icon = "show_chart";
   @Input() title = "";
   @Input() unit = "";

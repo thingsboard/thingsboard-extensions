@@ -31,8 +31,10 @@
 }
 
 .seg-btn {
+  position: relative; // anchor for the hover tooltip
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   height: 100%;
   padding: 0 14px;
   // Transparent border so hover/active can add one without shifting layout.
@@ -62,5 +64,55 @@
     color: var(--c-text-neutral-heavy);
     border-color: light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  // Icon variant: square-ish padding, icon inherits the button colour.
+  &.seg-icon-btn {
+    padding: 0 12px;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: inherit;
+  }
+
+  &:hover .seg-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// Hover tooltip — same look as the theme-toggle button's, opening above.
+.seg-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: light-dark(var(--c-bg-neutral-heavy), var(--c-bg-neutral-bold)); // navy / slate
+  color: light-dark(var(--c-text-neutral-min), var(--c-text-neutral-heavy)); // white-ish both
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--shadow-box-modal-normal);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 10;
+
+  // Downward caret centred under the tooltip, pointing at the button.
+  &::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: light-dark(var(--c-bg-neutral-heavy), var(--c-bg-neutral-bold));
   }
 }

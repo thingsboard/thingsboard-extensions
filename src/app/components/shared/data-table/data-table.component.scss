@@ -146,6 +146,17 @@
     &:hover {
       background-color: var(--c-bg-neutral-extralight-hover);
     }
+
+    // Clickable (selectable) rows show a pointer; the selected row keeps a
+    // distinct brand-tinted highlight even over hover.
+    &.dt-row-clickable {
+      cursor: pointer;
+    }
+
+    &.dt-row-selected,
+    &.dt-row-selected:hover {
+      background-color: light-dark(var(--c-bg-brand-light), var(--c-bg-neutral-light));
+    }
   }
 }
 
@@ -218,6 +229,19 @@
     width: 32px;
     height: 32px;
     padding: 4px;
+  }
+
+  // The MDC ripple/state layer is invisible against the themed card, so give the
+  // enabled nav buttons an explicit hover/active fill (matching the header icon
+  // buttons).
+  .mat-mdc-icon-button:not(:disabled):not([aria-disabled="true"]) {
+    &:hover {
+      background-color: light-dark(var(--c-gradient-neutral-light-01), var(--c-bg-neutral-light));
+    }
+
+    &:active {
+      background-color: light-dark(var(--c-border-neutral-normal), var(--c-bg-neutral-normal));
+    }
   }
 
   .mat-mdc-icon-button:not(:disabled):not([aria-disabled="true"]) .mat-mdc-paginator-icon {

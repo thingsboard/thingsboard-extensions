@@ -16,6 +16,7 @@
 
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   Directive,
@@ -134,16 +135,41 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   /** Extra header action buttons, rendered left of the search button. */
   @Input() actions: DataTableAction[] = [];
   @Input() pageSize = 10;
+  /**
+   * Size the scroll area to exactly {@link pageSize} rows (measured from a
+   * rendered row), so a full page never scrolls and the card height stays
+   * constant. Overrides the default fixed scroll height when set.
+   */
+  @Input() fitPageSize = false;
+  /**
+   * Row property used as a stable identity for the mat-table's `trackBy`. Set
+   * this for tables fed by a live subscription so rows are reused (not
+   * recreated) on each update — otherwise the hovered row's highlight blinks
+   * when the data refreshes. Defaults to object-reference identity.
+   */
+  @Input() trackByKey?: string;
+  /** Make rows clickable: shows a pointer, highlights the selected row, and emits {@link rowClick}. */
+  @Input() selectable = false;
 
   /** Emits the {@link DataTableAction.id} of a clicked header action. */
   @Output() actionClick = new EventEmitter<string>();
+  /** Emits the clicked row (only when {@link selectable}). */
+  @Output() rowClick = new EventEmitter<Record<string, any>>();
 
   @ViewChild("paginator") paginator!: MatPaginator;
   @ViewChild("searchInput") searchInput?: ElementRef<HTMLInputElement>;
+  @ViewChild("scroll") scrollEl?: ElementRef<HTMLElement>;
   @ContentChildren(DataTableCellDirective) cellDefs?: QueryList<DataTableCellDirective>;
 
   dataSource = new MatTableDataSource<Record<string, any>>([]);
   searchOpen = false;
+  /** Computed pixel height for the scroll area when {@link fitPageSize} is set. */
+  fitHeightPx: number | null = null;
+  /** Identity of the currently selected row (matched by {@link trackByKey}, so it
+   *  survives live data refreshes). */
+  selectedRowKey: unknown = null;
+
+  constructor(private cd: ChangeDetectorRef) {}
 
   get columnKeys(): string[] {
     return this.columns.map((c) => c.key);
@@ -151,6 +177,33 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
 
   trackByActionId(_: number, action: DataTableAction): string {
     return action.id;
+  }
+
+  /** mat-table trackBy: a stable row id when {@link trackByKey} is set, else the row itself. */
+  trackByRow = (_: number, row: Record<string, any>): unknown => (this.trackByKey ? row[this.trackByKey] : row);
+
+  /** Stable identity for a row (used for selection + trackBy). */
+  private rowKey(row: Record<string, any>): unknown {
+    return this.trackByKey ? row[this.trackByKey] : row;
+  }
+
+  /** Whether a row is the currently selected one. */
+  isRowSelected(row: Record<string, any>): boolean {
+    return this.selectable && this.selectedRowKey != null && this.rowKey(row) === this.selectedRowKey;
+  }
+
+  /** Select a clicked row and emit it (no-op when not {@link selectable}). */
+  onRowClick(row: Record<string, any>): void {
+    if (!this.selectable) {
+      return;
+    }
+    this.selectedRowKey = this.rowKey(row);
+    this.rowClick.emit(row);
+  }
+
+  /** Clear the row selection (e.g. when the consumer closes its detail panel). */
+  clearSelection(): void {
+    this.selectedRowKey = null;
   }
 
   /** Custom cell template for a column, if a consumer projected one. */
@@ -161,6 +214,12 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["rows"]) {
       this.dataSource.data = this.rows ?? [];
+      // Re-measure once the new rows have rendered (the first batch usually
+      // arrives asynchronously after init, and row height can change when the
+      // icon font finishes loading).
+      if (this.fitPageSize) {
+        this.scheduleFitMeasure();
+      }
     }
     if (changes["columns"] || changes["searchKeys"]) {
       const defaultKeys = this.columns.flatMap((c) => (c.subtitleKey ? [c.key, c.subtitleKey] : [c.key]));
@@ -176,6 +235,43 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
+    if (this.fitPageSize) {
+      this.scheduleFitMeasure();
+    }
+  }
+
+  /**
+   * Measure now, after the next frame, and again once the icon font has loaded —
+   * the rendered row height grows when Material Symbols replaces the fallback
+   * font, so an early single measurement would be too short.
+   */
+  private scheduleFitMeasure(): void {
+    setTimeout(() => this.measureFitHeight());
+    const fonts: any = (document as any).fonts;
+    if (fonts?.ready?.then) {
+      fonts.ready.then(() => this.measureFitHeight());
+    }
+  }
+
+  /**
+   * Set {@link fitHeightPx} to `pageSize × (rendered row height)` so a full page
+   * fits exactly with no inner scroll and the height stays constant across
+   * pages. No-op until at least one row is rendered.
+   */
+  private measureFitHeight(): void {
+    const rows = this.scrollEl?.nativeElement.querySelectorAll<HTMLElement>("tr.mat-mdc-row");
+    if (!rows?.length) {
+      return;
+    }
+    // Use the tallest row to guard against a row that hasn't fully laid out yet;
+    // rows are uniform in practice.
+    let rowHeight = 0;
+    rows.forEach((r) => (rowHeight = Math.max(rowHeight, r.offsetHeight)));
+    const next = rowHeight * this.pageSize;
+    if (next !== this.fitHeightPx) {
+      this.fitHeightPx = next;
+      this.cd.detectChanges();
+    }
   }
 
   toggleSearch(): void {

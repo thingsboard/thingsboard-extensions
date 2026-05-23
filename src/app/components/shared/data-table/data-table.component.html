@@ -25,8 +25,9 @@
   <!-- Optional consumer-projected filter bar (rendered below the header/search). -->
   <ng-content select="[dt-filter-bar]"></ng-content>
 
-  <div class="dt-scroll">
-    <table [dataSource]="dataSource" class="dt-table" mat-table>
+  <div #scroll class="dt-scroll" [style.minHeight.px]="fitPageSize ? fitHeightPx : null"
+       [style.maxHeight.px]="fitPageSize ? fitHeightPx : null">
+    <table [dataSource]="dataSource" [trackBy]="trackByRow" class="dt-table" mat-table>
       <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
         <th *matHeaderCellDef mat-header-cell [class.dt-align-right]="col.align === 'right'">{{ col.header }}</th>
         <td *matCellDef="let row" mat-cell [class.dt-align-right]="col.align === 'right'">
@@ -55,7 +56,10 @@
       </ng-container>
 
       <tr *matHeaderRowDef="columnKeys; sticky: true" mat-header-row [style.display]="showColumnHeaders ? '' : 'none'"></tr>
-      <tr *matRowDef="let row; columns: columnKeys" mat-row></tr>
+      <tr *matRowDef="let row; columns: columnKeys" mat-row
+          [class.dt-row-clickable]="selectable" [class.dt-row-selected]="isRowSelected(row)"
+          [attr.role]="selectable ? 'button' : null" [attr.tabindex]="selectable ? 0 : null"
+          (click)="onRowClick(row)" (keydown.enter)="onRowClick(row)"></tr>
       <tr *matNoDataRow class="dt-no-data">
         <td [attr.colspan]="columnKeys.length" class="dt-no-data-cell">
           {{ loading ? loadingText : emptyText }}
