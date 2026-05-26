@@ -30,8 +30,29 @@
        [style.minHeight.px]="fitPageSize ? fitHeightPx : null"
        [style.maxHeight.px]="fitPageSize ? fitHeightPx : null">
     <table [dataSource]="dataSource" [trackBy]="trackByRow" class="dt-table" mat-table>
+      <!-- Leading checkbox column for bulk selection (rendered only when multiSelect,
+           via displayedColumns). Header is select-all with an indeterminate dash. -->
+      <ng-container matColumnDef="__select">
+        <th *matHeaderCellDef mat-header-cell class="dt-select-cell">
+          <button type="button" role="checkbox" class="dt-checkbox" [class.checked]="allChecked"
+                  [class.indeterminate]="someChecked && !allChecked"
+                  [attr.aria-checked]="someChecked && !allChecked ? 'mixed' : allChecked"
+                  [attr.aria-label]="allChecked ? 'Deselect all' : 'Select all'" (click)="toggleAll(!allChecked)">
+            <mat-icon>{{ allChecked ? "check" : "remove" }}</mat-icon>
+          </button>
+        </th>
+        <td *matCellDef="let row" mat-cell class="dt-select-cell" (click)="$event.stopPropagation()">
+          <button type="button" role="checkbox" class="dt-checkbox" [class.checked]="isChecked(row)"
+                  [attr.aria-checked]="isChecked(row)" aria-label="Select row" (click)="toggleRow(row)">
+            <mat-icon>check</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
       <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
-        <th *matHeaderCellDef mat-header-cell [class.dt-align-right]="col.align === 'right'">{{ col.header }}</th>
+        <th *matHeaderCellDef mat-header-cell [class.dt-align-right]="col.align === 'right'">
+          {{ showColumnHeaders ? col.header : "" }}
+        </th>
         <td *matCellDef="let row" mat-cell [class.dt-align-right]="col.align === 'right'">
           <ng-container *ngIf="cellTemplate(col.key) as customCell; else builtinCell">
             <ng-container *ngTemplateOutlet="customCell; context: { $implicit: row, row: row }"></ng-container>
@@ -57,13 +78,14 @@
         </td>
       </ng-container>
 
-      <tr *matHeaderRowDef="columnKeys; sticky: true" mat-header-row [style.display]="showColumnHeaders ? '' : 'none'"></tr>
-      <tr *matRowDef="let row; columns: columnKeys" mat-row
+      <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row
+          [style.display]="showColumnHeaders || multiSelect ? '' : 'none'"></tr>
+      <tr *matRowDef="let row; columns: displayedColumns" mat-row
           [class.dt-row-clickable]="selectable" [class.dt-row-selected]="isRowSelected(row)"
           [attr.role]="selectable ? 'button' : null" [attr.tabindex]="selectable ? 0 : null"
           (click)="onRowClick(row)" (keydown.enter)="onRowClick(row)"></tr>
       <tr *matNoDataRow class="dt-no-data">
-        <td [attr.colspan]="columnKeys.length" class="dt-no-data-cell">
+        <td [attr.colspan]="displayedColumns.length" class="dt-no-data-cell">
           <div class="dt-empty">
             <mat-icon *ngIf="emptyIcon && !loading" class="dt-empty-icon">{{ emptyIcon }}</mat-icon>
             <span>{{ loading ? loadingText : emptyText }}</span>

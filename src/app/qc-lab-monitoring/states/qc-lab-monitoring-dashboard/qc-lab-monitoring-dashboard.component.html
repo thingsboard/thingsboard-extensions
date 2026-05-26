@@ -1,0 +1,240 @@
+<div [class.dark]="darkMode" class="qc-dashboard">
+
+  <!-- Header: tab bar + actions -->
+  <div class="qc-header">
+    <div class="qc-header-row">
+      <tb-tab-bar [tabs]="tabs" [active]="activeTab" (activeChange)="selectTab($event)"></tb-tab-bar>
+
+      <div class="qc-header-actions">
+        <!-- Alarms — opens the alarm popup; red badge shows the active count. -->
+        <button (click)="alarmDialogOpen = true" class="qc-alarm-btn" type="button" matTooltip="Alarms"
+                aria-label="Alarms">
+          <mat-icon>notifications</mat-icon>
+          <span *ngIf="activeAlarmCount > 0" class="qc-alarm-badge">{{ activeAlarmCount }}</span>
+        </button>
+
+        <tb-theme-toggle [dark]="darkMode" (toggled)="toggleTheme()"></tb-theme-toggle>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overview tab — single Devices table. -->
+  <div [style.display]="activeTab === 'overview' ? 'grid' : 'none'" class="qc-grid">
+    <div class="col">
+      <!-- All devices of type Milesight-TS302. -->
+      <tb-data-table #deviceTable title="Devices" icon="sensors"
+                     [columns]="devicesColumns" [rows]="devicesRows" [loading]="devicesLoading"
+                     [showColumnHeaders]="true" [fitPageSize]="true" trackByKey="deviceId"
+                     [selectable]="true" (rowClick)="onDeviceRowClick($event)"
+                     [multiSelect]="selectMode" (selectionChange)="onDeviceSelectionChange($event)"
+                     [actions]="devicesActions" (actionClick)="onDeviceAction($event)"
+                     [searchKeys]="['name', 'label']"
+                     emptyText="No devices found" loadingText="Loading devices…"
+                     searchPlaceholder="Search devices">
+        <ng-template tbDataTableCell="name" let-row>
+          <div class="qc-device-cell">
+            <div class="qc-device-title">{{ row.name }}</div>
+            <div class="cell-meta">
+              <span *ngIf="row.label && row.label !== row.name">{{ row.label }}</span>
+              <span *ngIf="row.label && row.label !== row.name" class="cell-meta-divider"></span>
+              <span class="qc-device-alarms" [class.zero]="row.alarmCount === 0"
+                    [matTooltip]="'Alarms (' + row.alarmCount + ')'">
+                <mat-icon>warning</mat-icon>{{ row.alarmCount }}
+              </span>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template tbDataTableCell="temperature" let-row>
+          <div class="qc-temp-cell">
+            <span>{{ row.tempChn1 }}</span>
+            <span class="cell-meta-divider"></span>
+            <span>{{ row.tempChn2 }}</span>
+          </div>
+        </ng-template>
+      </tb-data-table>
+    </div>
+  </div>
+
+  <!-- Bulk action bar — floats while devices are checked in the Overview table. -->
+  <div class="qc-bulk-bar" *ngIf="activeTab === 'overview' && selectedDeviceIds.length">
+    <span class="qc-bulk-count">{{ selectedDeviceIds.length }} selected</span>
+    <button class="qc-bulk-action" type="button" (click)="openBulkEdit()">
+      <mat-icon>edit</mat-icon>Edit settings
+    </button>
+    <button class="qc-bulk-action qc-bulk-action--ghost" type="button" (click)="clearDeviceSelection()">Clear</button>
+  </div>
+
+  <!-- Bulk settings editor — reuses the detail-panel sidebar with a single
+       Settings tab; applies the changed settings to every checked device. -->
+  <tb-entity-detail-panel [open]="bulkEditOpen" icon="tune"
+                          [name]="selectedDeviceIds.length + ' devices'" subtitle="Bulk settings" [tabs]="bulkTabs"
+                          (closed)="closeBulkEdit()">
+    <tb-device-settings-card settings *ngIf="bulkEditOpen" [ctx]="ctx" [bulkDeviceIds]="selectedDeviceIds"
+                             attributeCardTitle="Sensor channels" [attributeSelects]="sensorChannelSelects"
+                             deviceSettingsTitle="Device settings" [deviceSettings]="deviceSettingControls"
+                             [objectCards]="objectCards" syncStateKey="syncState"
+                             (saved)="onBulkSaved()"></tb-device-settings-card>
+  </tb-entity-detail-panel>
+
+  <!-- Alarms popup (opened from the header alarm button). -->
+  <div *ngIf="alarmDialogOpen" (click)="onAlarmBackdropClick($event)" (keydown.escape)="alarmDialogOpen = false"
+       tabindex="0" role="button" aria-label="Close alarms" class="qc-modal-backdrop">
+    <div class="qc-modal qc-modal--narrow">
+      <tb-data-table title="Alarms" icon="notifications" [columns]="alarmColumns" [rows]="displayedAlarms"
+                     [loading]="alarmsLoading" [showColumnHeaders]="false" [searchKeys]="['searchText']"
+                     [searchFirst]="true" [reserveSearchSpace]="true" [actions]="alarmDialogActions"
+                     (actionClick)="onAlarmAction($event)" emptyText="No alarms" loadingText="Loading alarms…"
+                     searchPlaceholder="Search alarms">
+        <!-- Severity filter bar (toggled by the header "filter" action). -->
+        <div dt-filter-bar *ngIf="alarmFilterOpen" class="qc-alarm-filter">
+          <button *ngFor="let s of alarmSeverities" (click)="toggleAlarmSeverity(s.value)"
+                  [class.active]="alarmSeverityFilter === s.value" class="qc-alarm-filter-box" type="button"
+                  [matTooltip]="s.label" [attr.aria-pressed]="alarmSeverityFilter === s.value">
+            <span class="severity-bar" [ngClass]="severityClass(s.value)">
+              <span class="seg" [class.on]="severityRank(s.value) >= 1"></span>
+              <span class="seg" [class.on]="severityRank(s.value) >= 2"></span>
+              <span class="seg" [class.on]="severityRank(s.value) >= 3"></span>
+              <span class="seg" [class.on]="severityRank(s.value) >= 4"></span>
+            </span>
+          </button>
+        </div>
+
+        <ng-template tbDataTableCell="alarm" let-row>
+          <div class="alarm-cell">
+            <div class="alarm-main">
+              <div class="alarm-title">{{ row.type }}</div>
+              <div class="cell-meta">
+                <span class="severity-bar" [ngClass]="severityClass(row.severity)"
+                      [matTooltip]="severityLabel(row.severity)">
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 1"></span>
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 2"></span>
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 3"></span>
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 4"></span>
+                </span>
+                <span class="alarm-date">{{ row.createdTime | date: "MMM d 'at' HH:mm" }}</span>
+                <span class="cell-meta-divider"></span>
+                <span class="alarm-device">{{ row.originatorName }}</span>
+              </div>
+            </div>
+
+            <div class="alarm-actions">
+              <button (click)="ackAlarm(row)" [class.active]="row.acknowledged" [disabled]="row.acknowledged"
+                      [matTooltip]="row.acknowledged ? 'Acknowledged' : 'Acknowledge'" class="alarm-action-btn"
+                      type="button" aria-label="Acknowledge alarm">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button (click)="clearAlarm(row)" [disabled]="row.cleared"
+                      [matTooltip]="row.cleared ? 'Cleared' : 'Clear'" class="alarm-action-btn" type="button"
+                      aria-label="Clear alarm">
+                <mat-icon>clear</mat-icon>
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </tb-data-table>
+    </div>
+  </div>
+
+  <!-- Device detail panel (opens from a Devices table row click). -->
+  <tb-entity-detail-panel [open]="detailOpen" icon="sensors" [name]="selectedDevice?.name || ''"
+                          [subtitle]="selectedDevice?.label || ''" (closed)="closeDetail()">
+    <!-- Settings sync pill (left of the close button): green Synced / grey Queued. -->
+    <span header-actions *ngIf="selectedDevice" class="qc-sync-pill"
+          [class.synced]="!settingsQueued" [class.queued]="settingsQueued">
+      <mat-icon>settings</mat-icon>
+      <span>{{ settingsQueued ? "Queued (" + selectedDevice.downlinkQueue + ")" : "Synced" }}</span>
+    </span>
+    <!-- Insights tab content (dashboard-specific). -->
+    <div insights *ngIf="selectedDevice" class="qc-insights">
+      <!-- Battery level (non-collapsible). -->
+      <section class="qc-battery-card">
+        <div class="qc-battery-head">
+          <span class="qc-battery-title">Battery</span>
+          <span class="qc-battery-value" [class.low]="selectedDevice.battery !== null && selectedDevice.battery < 20">
+            {{ selectedDevice.battery !== null ? selectedDevice.battery + "%" : "—" }}
+          </span>
+        </div>
+        <div class="qc-battery-track">
+          <div class="qc-battery-fill" [class.low]="selectedDevice.battery !== null && selectedDevice.battery < 20"
+               [style.width.%]="selectedDevice.battery ?? 0"></div>
+        </div>
+        <div class="qc-battery-foot">
+          <span>Updated {{ relativeTime(selectedDevice.batteryTs) }}</span>
+        </div>
+      </section>
+
+      <!-- Metrics: both channel temperatures over the rolling window. -->
+      <tb-metric-chart-card [ctx]="ctx" [deviceId]="selectedDevice.deviceId" title="Metrics" [dark]="darkMode"
+                            [charts]="metricsCharts"></tb-metric-chart-card>
+
+      <!-- Signal: standalone reusable LoRaWAN widget (RSSI + SNR). -->
+      <tb-lorawan-signal-card [ctx]="ctx" [deviceId]="selectedDevice.deviceId"
+                              [dark]="darkMode"></tb-lorawan-signal-card>
+    </div>
+
+    <!-- Alarms tab: severity filter + the alarm table (no header). -->
+    <div alarms class="qc-detail-alarms">
+      <div class="qc-detail-alarm-filter">
+        <button *ngFor="let s of alarmSeverities" (click)="toggleDetailAlarmSeverity(s.value)"
+                [class.active]="detailAlarmSeverity === s.value" class="qc-alarm-filter-box" type="button"
+                [attr.aria-label]="s.label" [attr.aria-pressed]="detailAlarmSeverity === s.value">
+          <span class="severity-bar" [ngClass]="severityClass(s.value)">
+            <span class="seg" [class.on]="severityRank(s.value) >= 1"></span>
+            <span class="seg" [class.on]="severityRank(s.value) >= 2"></span>
+            <span class="seg" [class.on]="severityRank(s.value) >= 3"></span>
+            <span class="seg" [class.on]="severityRank(s.value) >= 4"></span>
+          </span>
+          <span class="qc-filter-tip">{{ s.label }}</span>
+        </button>
+      </div>
+
+      <tb-data-table [showHeader]="false" [columns]="alarmColumns" [rows]="detailAlarms" [loading]="alarmsLoading"
+                     [showColumnHeaders]="false" [searchEnabled]="false" [paginated]="false" trackByKey="id"
+                     emptyText="No alarms" emptyIcon="notifications_off" loadingText="Loading alarms…">
+        <ng-template tbDataTableCell="alarm" let-row>
+          <div class="alarm-cell">
+            <div class="alarm-main">
+              <div class="alarm-title">{{ row.type }}</div>
+              <div class="cell-meta">
+                <span class="severity-bar" [ngClass]="severityClass(row.severity)"
+                      [matTooltip]="severityLabel(row.severity)">
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 1"></span>
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 2"></span>
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 3"></span>
+                  <span class="seg" [class.on]="severityRank(row.severity) >= 4"></span>
+                </span>
+                <span class="alarm-date">{{ row.createdTime | date: "MMM d 'at' HH:mm" }}</span>
+              </div>
+            </div>
+
+            <div class="alarm-actions">
+              <button (click)="ackAlarm(row)" [class.active]="row.acknowledged" [disabled]="row.acknowledged"
+                      [matTooltip]="row.acknowledged ? 'Acknowledged' : 'Acknowledge'" class="alarm-action-btn"
+                      type="button" aria-label="Acknowledge alarm">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button (click)="clearAlarm(row)" [disabled]="row.cleared"
+                      [matTooltip]="row.cleared ? 'Cleared' : 'Clear'" class="alarm-action-btn" type="button"
+                      aria-label="Clear alarm">
+                <mat-icon>clear</mat-icon>
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </tb-data-table>
+    </div>
+
+    <!-- Settings tab: device name/note (+ groups read-only) and sensor channels.
+         Values are pre-fetched in the devices query, so no per-click lookup. -->
+    <tb-device-settings-card settings *ngIf="selectedDevice" [ctx]="ctx" [deviceId]="selectedDevice.deviceId"
+                             [hostname]="selectedDevice.deviceName" [label]="selectedDevice.deviceLabel"
+                             [description]="selectedDevice.description" attributeCardTitle="Sensor channels"
+                             [attributeSelects]="sensorChannelSelects" [attributeValues]="sensorChannelValues"
+                             deviceSettingsTitle="Device settings" [deviceSettings]="deviceSettingControls"
+                             [deviceSettingsValues]="deviceSettingsValues" [objectCards]="objectCards"
+                             [objectValues]="objectValues" syncStateKey="syncState"
+                             downlinkQueueKey="downlinkQueue" [downlinkQueue]="selectedDevice.downlinkQueue"
+                             (saved)="loadDevices()"></tb-device-settings-card>
+  </tb-entity-detail-panel>
+</div>

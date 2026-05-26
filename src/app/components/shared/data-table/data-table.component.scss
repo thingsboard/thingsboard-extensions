@@ -28,8 +28,35 @@
   background-color: var(--c-bg-neutral-extralight);
   border: 1px solid var(--c-border-neutral-light);
   border-radius: 13px;
+  // Clip children to the rounded shape so a hover/focus background never bleeds
+  // into the corners and squares them off. (No cell here uses a pop-out menu, so
+  // clipping is safe.)
+  overflow: hidden;
   box-sizing: border-box;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// The card and its wrappers aren't interactive. Some hosts (ThingsBoard, the
+// browser default) draw a focus/hover outline on them when the table area is
+// interacted with; because :host and the <section>/<table> have no
+// border-radius, that box shows square just outside the rounded card. Suppress
+// it on these non-interactive containers (real controls keep their focus styles).
+// `!important` is needed to beat ThingsBoard's global focus styling.
+:host:hover,
+:host:focus,
+:host:focus-visible,
+:host:focus-within,
+.dt-card:hover,
+.dt-card:focus,
+.dt-card:focus-visible,
+.dt-card:focus-within,
+.dt-scroll:hover,
+.dt-scroll:focus,
+.dt-scroll:focus-visible,
+.dt-table:hover,
+.dt-table:focus,
+.dt-table:focus-visible {
+  outline: none !important;
 }
 
 .dt-actions {
@@ -130,11 +157,13 @@
   background: transparent;
 
   th.mat-mdc-header-cell {
-    color: var(--c-text-neutral-light);
-    font-size: 12px;
-    font-weight: 500;
+    // --c-text-neutral-heavy is the same dark-mode-safe token the row cells use;
+    // the 600 weight is what makes the header read as a prominent title.
+    color: var(--c-text-neutral-heavy);
+    font-size: 13px;
+    font-weight: 600;
     border-bottom: 1px solid var(--c-border-neutral-light);
-    padding: 8px 16px;
+    padding: 6px 16px;
     background-color: var(--c-bg-neutral-extralight);
   }
 
@@ -209,11 +238,65 @@
   }
 }
 
-.dt-no-data-cell {
+// Multi-select checkbox column.
+.dt-select-cell {
+  width: 1%; // shrink to content
+  white-space: nowrap;
+  padding-right: 0 !important;
+}
+
+.dt-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1.5px solid var(--c-border-neutral-normal);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    color: #fff;
+    opacity: 0; // only shown once checked/indeterminate
+  }
+
+  &:hover {
+    border-color: var(--c-icon-brand-light);
+  }
+
+  &.checked,
+  &.indeterminate {
+    background: var(--c-bg-brand-normal);
+    border-color: var(--c-bg-brand-normal);
+
+    mat-icon {
+      opacity: 1;
+    }
+  }
+}
+
+// `td.` prefix out-specifies the `td.mat-mdc-cell` border rule above, so the
+// empty-state cell doesn't draw a divider just inside the card's own bottom
+// border (which read as a stray line at the bottom of the widget).
+td.dt-no-data-cell {
   padding: 20px 16px;
   text-align: center;
   color: var(--c-text-neutral-light);
   font-size: 13px;
+  border-bottom: none;
+}
+
+// Belt-and-braces: kill any cell border Angular Material puts on the no-data row
+// regardless of which class it lands on.
+:host ::ng-deep tr.mat-mdc-no-data-row td {
+  border-bottom: none !important;
 }
 
 // Empty state: optional icon above the text.
@@ -226,11 +309,14 @@
   padding: 24px 0;
 }
 
-.dt-empty-icon {
+// Match the empty text colour so it adapts to light/dark (--c-icon-neutral-light
+// doesn't flip and renders near-black in dark mode). `!important` is required to
+// beat ThingsBoard's global mat-icon colour rule, which otherwise wins.
+mat-icon.dt-empty-icon {
   font-size: 40px;
   width: 40px;
   height: 40px;
-  color: var(--c-icon-neutral-light);
+  color: var(--c-text-neutral-light) !important;
 }
 
 :host ::ng-deep .mat-mdc-paginator {

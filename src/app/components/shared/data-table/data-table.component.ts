@@ -160,11 +160,23 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   @Input() trackByKey?: string;
   /** Make rows clickable: shows a pointer, highlights the selected row, and emits {@link rowClick}. */
   @Input() selectable = false;
+  /**
+   * Add a leading checkbox column for bulk selection: a select-all header
+   * checkbox (with an indeterminate state) and a per-row checkbox. Selection
+   * survives live refreshes when {@link trackByKey} is set, and is reported via
+   * {@link selectionChange}. Independent of {@link selectable}.
+   */
+  @Input() multiSelect = false;
 
   /** Emits the {@link DataTableAction.id} of a clicked header action. */
   @Output() actionClick = new EventEmitter<string>();
   /** Emits the clicked row (only when {@link selectable}). */
   @Output() rowClick = new EventEmitter<Record<string, any>>();
+  /** Emits the currently checked rows whenever the multi-select selection changes. */
+  @Output() selectionChange = new EventEmitter<Record<string, any>[]>();
+
+  /** Keys ({@link rowKey}) of the rows checked in multi-select mode. */
+  private checkedKeys = new Set<unknown>();
 
   @ViewChild("paginator") paginator!: MatPaginator;
   @ViewChild("searchInput") searchInput?: ElementRef<HTMLInputElement>;
@@ -183,6 +195,11 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
 
   get columnKeys(): string[] {
     return this.columns.map((c) => c.key);
+  }
+
+  /** Columns rendered by the table — the checkbox column is prepended in multi-select mode. */
+  get displayedColumns(): string[] {
+    return this.multiSelect ? ["__select", ...this.columnKeys] : this.columnKeys;
   }
 
   trackByActionId(_: number, action: DataTableAction): string {
@@ -214,6 +231,71 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   /** Clear the row selection (e.g. when the consumer closes its detail panel). */
   clearSelection(): void {
     this.selectedRowKey = null;
+  }
+
+  // --- Multi-select (checkbox column) ---
+
+  /** Rows currently passing the search filter (the scope of select-all). */
+  private get filteredRows(): Record<string, any>[] {
+    return this.dataSource.filteredData ?? [];
+  }
+
+  /** Whether a row's checkbox is ticked. */
+  isChecked(row: Record<string, any>): boolean {
+    return this.checkedKeys.has(this.rowKey(row));
+  }
+
+  /** All filtered rows are checked (drives the header checkbox's checked state). */
+  get allChecked(): boolean {
+    const rows = this.filteredRows;
+    return rows.length > 0 && rows.every((r) => this.checkedKeys.has(this.rowKey(r)));
+  }
+
+  /** At least one filtered row is checked (drives the header's indeterminate dash). */
+  get someChecked(): boolean {
+    return this.filteredRows.some((r) => this.checkedKeys.has(this.rowKey(r)));
+  }
+
+  /** Toggle a single row's checkbox. */
+  toggleRow(row: Record<string, any>): void {
+    const key = this.rowKey(row);
+    if (this.checkedKeys.has(key)) {
+      this.checkedKeys.delete(key);
+    } else {
+      this.checkedKeys.add(key);
+    }
+    this.emitSelection();
+  }
+
+  /** Check or uncheck every filtered row (the header select-all). */
+  toggleAll(checked: boolean): void {
+    for (const row of this.filteredRows) {
+      const key = this.rowKey(row);
+      if (checked) {
+        this.checkedKeys.add(key);
+      } else {
+        this.checkedKeys.delete(key);
+      }
+    }
+    this.emitSelection();
+  }
+
+  /** The checked rows (resolved against the current data, so stale keys drop out). */
+  get selectedRows(): Record<string, any>[] {
+    return (this.rows ?? []).filter((r) => this.checkedKeys.has(this.rowKey(r)));
+  }
+
+  /** Clear the multi-select checkbox selection. */
+  clearChecked(): void {
+    if (this.checkedKeys.size === 0) {
+      return;
+    }
+    this.checkedKeys.clear();
+    this.emitSelection();
+  }
+
+  private emitSelection(): void {
+    this.selectionChange.emit(this.selectedRows);
   }
 
   /** Custom cell template for a column, if a consumer projected one. */
