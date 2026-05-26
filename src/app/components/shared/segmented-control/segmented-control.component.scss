@@ -78,6 +78,35 @@
     color: inherit;
   }
 
+  // Icon + its count badge, so the badge anchors to the icon's corner (not the
+  // full-width button).
+  .seg-icon-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Notification-style count badge on the icon's top-right.
+  .seg-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--c-bg-error-normal);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
   &:hover .seg-tooltip {
     opacity: 1;
     visibility: visible;

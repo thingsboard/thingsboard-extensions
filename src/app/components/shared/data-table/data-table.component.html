@@ -1,5 +1,5 @@
 <section class="dt-card" [class.dt-reserve-search]="reserveSearchSpace" [class.dt-searching]="searchOpen"
-         [class.dt-no-header]="!showHeader">
+         [class.dt-no-header]="!showHeader" [class.dt-inset-divider]="insetRowDivider">
   <tb-widget-header *ngIf="showHeader" [icon]="icon" [title]="title">
     <span widget-header-actions class="dt-actions" *ngIf="searchEnabled || actions.length">
       <button *ngFor="let action of actions; trackBy: trackByActionId" (click)="actionClick.emit(action.id)"

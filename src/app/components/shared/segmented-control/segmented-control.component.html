@@ -1,8 +1,11 @@
 <div class="seg-group" role="group">
-  <button *ngFor="let opt of options" (click)="select(opt.id)" [class.active]="selected === opt.id"
+  <button *ngFor="let opt of options; trackBy: trackById" (click)="select(opt.id)" [class.active]="selected === opt.id"
           [class.seg-icon-btn]="opt.icon" [attr.aria-pressed]="selected === opt.id" [attr.aria-label]="opt.label"
           class="seg-btn" type="button">
-    <mat-icon *ngIf="opt.icon; else segLabel">{{ opt.icon }}</mat-icon>
+    <span *ngIf="opt.icon; else segLabel" class="seg-icon-wrap">
+      <mat-icon>{{ opt.icon }}</mat-icon>
+      <span *ngIf="opt.badge" class="seg-badge">{{ opt.badge }}</span>
+    </span>
     <ng-template #segLabel>{{ opt.label }}</ng-template>
     <span *ngIf="opt.tooltip" class="seg-tooltip">{{ opt.tooltip }}</span>
   </button>

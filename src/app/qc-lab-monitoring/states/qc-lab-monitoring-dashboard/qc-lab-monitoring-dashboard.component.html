@@ -1,5 +1,9 @@
 <div [class.dark]="darkMode" class="qc-dashboard">
 
+  <!-- Scrollable content. The dashboard root itself doesn't scroll, so overlays
+       anchored to it (the bulk bar, detail panels) stay pinned while this scrolls. -->
+  <div class="qc-scroll">
+
   <!-- Header: tab bar + actions -->
   <div class="qc-header">
     <div class="qc-header-row">
@@ -9,8 +13,10 @@
         <!-- Alarms — opens the alarm popup; red badge shows the active count. -->
         <button (click)="alarmDialogOpen = true" class="qc-alarm-btn" type="button" matTooltip="Alarms"
                 aria-label="Alarms">
-          <mat-icon>notifications</mat-icon>
-          <span *ngIf="activeAlarmCount > 0" class="qc-alarm-badge">{{ activeAlarmCount }}</span>
+          <span class="qc-alarm-icon-wrap">
+            <mat-icon>notifications</mat-icon>
+            <span *ngIf="activeAlarmCount > 0" class="qc-alarm-badge">{{ activeAlarmCount }}</span>
+          </span>
         </button>
 
         <tb-theme-toggle [dark]="darkMode" (toggled)="toggleTheme()"></tb-theme-toggle>
@@ -47,33 +53,41 @@
 
         <ng-template tbDataTableCell="temperature" let-row>
           <div class="qc-temp-cell">
-            <span>{{ row.tempChn1 }}</span>
+            <span [class.qc-temp-alarm]="row.chn1Alarm">{{ row.tempChn1 }}</span>
             <span class="cell-meta-divider"></span>
-            <span>{{ row.tempChn2 }}</span>
+            <span [class.qc-temp-alarm]="row.chn2Alarm">{{ row.tempChn2 }}</span>
           </div>
         </ng-template>
       </tb-data-table>
     </div>
   </div>
 
+  </div>
+  <!-- /.qc-scroll -->
+
   <!-- Bulk action bar — floats while devices are checked in the Overview table. -->
-  <div class="qc-bulk-bar" *ngIf="activeTab === 'overview' && selectedDeviceIds.length">
+  <div class="qc-bulk-bar" *ngIf="activeTab === 'overview' && selectMode">
     <span class="qc-bulk-count">{{ selectedDeviceIds.length }} selected</span>
-    <button class="qc-bulk-action" type="button" (click)="openBulkEdit()">
-      <mat-icon>edit</mat-icon>Edit settings
+    <button class="qc-bulk-selectall" type="button" [class.checked]="allDevicesSelected"
+            [attr.aria-pressed]="allDevicesSelected" (click)="toggleSelectAll()">
+      <span class="qc-bulk-check"><mat-icon>check</mat-icon></span>
+      <span>Select all</span>
     </button>
-    <button class="qc-bulk-action qc-bulk-action--ghost" type="button" (click)="clearDeviceSelection()">Clear</button>
+    <button class="qc-bulk-action" type="button" [disabled]="!selectedDeviceIds.length" (click)="openBulkEdit()">
+      <mat-icon>edit</mat-icon>Edit
+    </button>
   </div>
 
   <!-- Bulk settings editor — reuses the detail-panel sidebar with a single
        Settings tab; applies the changed settings to every checked device. -->
-  <tb-entity-detail-panel [open]="bulkEditOpen" icon="tune"
+  <tb-entity-detail-panel [open]="bulkEditOpen" icon="tune" [dismissible]="true"
                           [name]="selectedDeviceIds.length + ' devices'" subtitle="Bulk settings" [tabs]="bulkTabs"
                           (closed)="closeBulkEdit()">
     <tb-device-settings-card settings *ngIf="bulkEditOpen" [ctx]="ctx" [bulkDeviceIds]="selectedDeviceIds"
-                             attributeCardTitle="Sensor channels" [attributeSelects]="sensorChannelSelects"
-                             deviceSettingsTitle="Device settings" [deviceSettings]="deviceSettingControls"
-                             [objectCards]="objectCards" syncStateKey="syncState"
+                             [bulkDownlinkQueues]="deviceQueues" attributeCardTitle="Sensor channels"
+                             [attributeSelects]="sensorChannelSelects" deviceSettingsTitle="Device settings"
+                             [deviceSettings]="deviceSettingControls" [objectCards]="objectCards"
+                             syncStateKey="syncState" downlinkQueueKey="downlinkQueue"
                              (saved)="onBulkSaved()"></tb-device-settings-card>
   </tb-entity-detail-panel>
 
@@ -84,6 +98,7 @@
       <tb-data-table title="Alarms" icon="notifications" [columns]="alarmColumns" [rows]="displayedAlarms"
                      [loading]="alarmsLoading" [showColumnHeaders]="false" [searchKeys]="['searchText']"
                      [searchFirst]="true" [reserveSearchSpace]="true" [actions]="alarmDialogActions"
+                     [insetRowDivider]="true"
                      (actionClick)="onAlarmAction($event)" emptyText="No alarms" loadingText="Loading alarms…"
                      searchPlaceholder="Search alarms">
         <!-- Severity filter bar (toggled by the header "filter" action). -->
@@ -138,7 +153,7 @@
 
   <!-- Device detail panel (opens from a Devices table row click). -->
   <tb-entity-detail-panel [open]="detailOpen" icon="sensors" [name]="selectedDevice?.name || ''"
-                          [subtitle]="selectedDevice?.label || ''" (closed)="closeDetail()">
+                          [subtitle]="selectedDevice?.label || ''" [tabs]="detailTabs" (closed)="closeDetail()">
     <!-- Settings sync pill (left of the close button): green Synced / grey Queued. -->
     <span header-actions *ngIf="selectedDevice" class="qc-sync-pill"
           [class.synced]="!settingsQueued" [class.queued]="settingsQueued">
@@ -191,7 +206,8 @@
 
       <tb-data-table [showHeader]="false" [columns]="alarmColumns" [rows]="detailAlarms" [loading]="alarmsLoading"
                      [showColumnHeaders]="false" [searchEnabled]="false" [paginated]="false" trackByKey="id"
-                     emptyText="No alarms" emptyIcon="notifications_off" loadingText="Loading alarms…">
+                     [insetRowDivider]="true" emptyText="No alarms" emptyIcon="notifications_off"
+                     loadingText="Loading alarms…">
         <ng-template tbDataTableCell="alarm" let-row>
           <div class="alarm-cell">
             <div class="alarm-main">
@@ -205,6 +221,10 @@
                   <span class="seg" [class.on]="severityRank(row.severity) >= 4"></span>
                 </span>
                 <span class="alarm-date">{{ row.createdTime | date: "MMM d 'at' HH:mm" }}</span>
+                <ng-container *ngIf="row.detailsData">
+                  <span class="cell-meta-divider"></span>
+                  <span class="alarm-data">{{ row.detailsData }}</span>
+                </ng-container>
               </div>
             </div>
 

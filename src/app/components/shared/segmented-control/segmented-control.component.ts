@@ -27,6 +27,8 @@ export interface SegmentOption {
   icon?: string;
   /** Optional hover tooltip (themed pill that opens above the button). */
   tooltip?: string;
+  /** Optional count badge shown on the option (e.g. active alarms on a bell icon). */
+  badge?: number;
 }
 
 /**
@@ -49,5 +51,11 @@ export class SegmentedControlComponent {
     if (id !== this.selected) {
       this.selectedChange.emit(id);
     }
+  }
+
+  /** Reuse option buttons across renders (the tabs array may be rebuilt each CD,
+   *  e.g. for a live badge count) so hover state isn't dropped. */
+  trackById(_: number, opt: SegmentOption): string {
+    return opt.id;
   }
 }

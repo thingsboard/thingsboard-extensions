@@ -160,18 +160,26 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   --shadow-box-modal-normal: 0 4px 35px 0 rgba(0, 0, 0, 0.25);
 }
 
+// The scrolling content area inside the (non-scrolling) dashboard root.
+.qc-scroll {
+  height: 100%;
+  overflow: auto;
+  // Firefox — thin scrollbars (inherited by descendants).
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-border-neutral-normal) transparent;
+}
+
 .qc-dashboard {
-  position: relative; // anchor for the absolutely-positioned detail panel
+  position: relative; // anchor for the absolutely-positioned detail panel + bulk bar
   height: 100%;
   width: 100%;
   box-sizing: border-box;
   padding: 16px;
   background: $bg;
   color: var(--c-text-neutral-heavy);
-  overflow: auto;
-  // Firefox — thin rounded-ish scrollbars (inherited by descendants).
-  scrollbar-width: thin;
-  scrollbar-color: var(--c-border-neutral-normal) transparent;
+  // The root doesn't scroll — an inner .qc-scroll does — so overlays anchored to
+  // the root (bulk bar, detail panels) stay pinned while content scrolls.
+  overflow: hidden;
 
   // ---- The Things Stack — dark theme token overrides --------------------
   &.dark {
@@ -356,23 +364,30 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   }
 }
 
-.qc-alarm-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
+// Icon + badge wrapper so the count overlays the bell icon's corner (matching
+// the detail-panel tab badge), rather than the button box corner.
+.qc-alarm-icon-wrap {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
+}
+
+.qc-alarm-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
   box-sizing: border-box;
-  border-radius: 9px;
-  // Ring in the page background so the badge reads as separate from the button.
-  border: 2px solid light-dark(var(--c-bg-neutral-min), var(--c-bg-neutral-extralight));
+  border-radius: 999px;
   background: var(--c-bg-error-normal);
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   line-height: 1;
 }
@@ -448,6 +463,12 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   font-size: 14px;
   color: var(--c-text-neutral-heavy);
   white-space: nowrap;
+
+  // A channel value whose "Channel N Threshold" alarm is active — same red as
+  // the active-alarm count in the device name sub-label.
+  .qc-temp-alarm {
+    color: var(--c-bg-error-normal);
+  }
 }
 
 /* ---- Device detail panel — Insights tab content ------------------------- */
@@ -552,6 +573,7 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   color: var(--c-text-neutral-heavy);
 }
 
+
 // Shared cell title + meta line so the "text | text" separator spacing is
 // identical across tables.
 .cell-meta {
@@ -636,9 +658,12 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   }
 }
 
-// Floating bulk-action bar shown while devices are checked.
+// Floating bulk-action bar shown while devices are checked. Anchored to the
+// dashboard root (.qc-dashboard, position: relative) rather than the viewport,
+// so it centres on the widget's content area — the widget is embedded inside the
+// ThingsBoard app, whose left nav makes viewport-centre (position: fixed) wrong.
 .qc-bulk-bar {
-  position: fixed;
+  position: absolute;
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
@@ -647,9 +672,11 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   align-items: center;
   gap: 12px;
   padding: 8px 10px 8px 16px;
-  border-radius: 999px;
-  background: var(--c-bg-neutral-normal);
-  border: 1px solid var(--c-border-neutral-light);
+  // Squared like the cards, but using the settings nav (segmented-control)
+  // background so it reads as the same control family.
+  border-radius: 13px;
+  background: var(--c-bg-neutral-light);
+  border: 1px solid var(--c-border-neutral-normal);
   box-shadow: var(--shadow-box-modal-normal);
 }
 
@@ -666,7 +693,7 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   height: 32px;
   padding: 0 14px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -679,16 +706,63 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
     height: 16px;
   }
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: var(--c-bg-brand-normal-hover);
   }
 
-  &--ghost {
-    background: transparent;
-    color: var(--c-text-neutral-light);
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
 
-    &:hover {
-      background: var(--c-bg-neutral-light);
+// "Select all" toggle (checkbox + label) in the bulk bar — selects every device.
+.qc-bulk-selectall {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  color: var(--c-text-neutral-heavy);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  // Matches tb-ext-checkbox (.cb-box) used in the settings nav.
+  .qc-bulk-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    border: 1px solid var(--c-border-neutral-normal);
+    border-radius: 4px;
+    background: var(--c-bg-neutral-min);
+    transition: background 0.1s ease, border-color 0.1s ease;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+  }
+
+  &:hover:not(.checked) .qc-bulk-check {
+    border-color: var(--c-icon-brand-light);
+  }
+
+  &.checked .qc-bulk-check {
+    background: var(--c-bg-brand-normal);
+    border-color: var(--c-bg-brand-normal);
+
+    mat-icon {
+      opacity: 1;
     }
   }
 }

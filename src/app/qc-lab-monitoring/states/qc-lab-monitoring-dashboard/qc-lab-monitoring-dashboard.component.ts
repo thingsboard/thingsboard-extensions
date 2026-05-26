@@ -39,7 +39,8 @@ import {
   EntityDataQuery,
   EntityFilter,
   EntityKeyType,
-  historyInterval,
+  RealtimeWindowType,
+  TimewindowType,
   widgetType,
 } from "@shared/public-api";
 import type { AlarmService } from "@core/http/alarm.service";
@@ -85,6 +86,8 @@ interface AlarmRow {
   severity: string;
   acknowledged: boolean;
   cleared: boolean;
+  /** Alarm `details.data` (shown after the date in the detail panel's Alarms tab). */
+  detailsData: string;
   /** Precomputed visible text, used by the base table's search filter. */
   searchText: string;
 }
@@ -95,6 +98,9 @@ interface DeviceRow {
   name: string;
   label: string;
   alarmCount: number;
+  /** Whether a "Channel N Threshold" alarm is active — colours that channel's value. */
+  chn1Alarm: boolean;
+  chn2Alarm: boolean;
   /** Latest channel temperatures, preformatted with the °C unit (or "—"). */
   tempChn1: string;
   tempChn2: string;
@@ -165,6 +171,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   devicesLoading = false;
   /** Active-alarm tally per device (resolved from the alarm subscription). */
   private deviceAlarmCount = new Map<string, number>();
+  /** Per-device active "Channel N Threshold" alarm flags (colours the temp value). */
+  private deviceChannelAlarms = new Map<string, { chn1: boolean; chn2: boolean }>();
 
   /** The device table, so its selection can be cleared when the panel closes. */
   @ViewChild("deviceTable") private deviceTable?: DataTableComponent;
@@ -415,6 +423,16 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   /** The bulk panel reuses the entity detail panel with a single Settings tab. */
   readonly bulkTabs: SegmentOption[] = [{ id: "settings", label: "Settings", icon: "settings", tooltip: "Settings" }];
 
+  /** Tabs for the single-device detail panel — the Alarms (bell) tab carries a
+   *  live count badge of the selected device's active alarms. */
+  get detailTabs(): SegmentOption[] {
+    return [
+      { id: "insights", label: "Insights", icon: "bar_chart", tooltip: "Insights" },
+      { id: "alarms", label: "Alarms", icon: "notifications", tooltip: "Alarms", badge: this.selectedDevice?.alarmCount ?? 0 },
+      { id: "settings", label: "Settings", icon: "settings", tooltip: "Settings" },
+    ];
+  }
+
   /** Header action(s) on the Devices table — a toggle for the select checkboxes. */
   get devicesActions(): DataTableAction[] {
     return [
@@ -427,7 +445,9 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     if (id === "select") {
       this.selectMode = !this.selectMode;
       if (!this.selectMode) {
+        // Leaving select mode: drop the selection and close the bulk panel.
         this.clearDeviceSelection();
+        this.bulkEditOpen = false;
       }
     }
   }
@@ -435,6 +455,25 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   /** Track the checked device rows for bulk editing. */
   onDeviceSelectionChange(rows: Record<string, any>[]): void {
     this.selectedDeviceIds = rows.map((r) => r["deviceId"] as string);
+  }
+
+  /** Whether every device is selected (drives the bulk bar's "Select all" box). */
+  get allDevicesSelected(): boolean {
+    return this.devicesRows.length > 0 && this.selectedDeviceIds.length === this.devicesRows.length;
+  }
+
+  /** Current downlinkQueue per device id (from the live table subscription), so the
+   *  bulk form can increment each device's queue accurately. */
+  get deviceQueues(): Record<string, number> {
+    return this.devicesRows.reduce((acc, r) => {
+      acc[r.deviceId] = r.downlinkQueue;
+      return acc;
+    }, {} as Record<string, number>);
+  }
+
+  /** Bulk bar "Select all": check all devices, or clear when already all checked. */
+  toggleSelectAll(): void {
+    this.deviceTable?.checkAll(!this.allDevicesSelected);
   }
 
   /** Open the bulk-settings panel for the checked devices. */
@@ -571,9 +610,10 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   private alarmService: AlarmService;
   private alarmsSubscription: any;
   private devicesSubscription: any;
-  // Throttle the table refresh so frequent telemetry doesn't re-query on every
-  // message (the chart cards update themselves via their own subscriptions).
-  private lastDevicesRefresh = 0;
+  // Debounce the table refresh: coalesce a burst of telemetry into a single
+  // re-query shortly after the last change, so values update near-instantly
+  // without re-querying on every individual message.
+  private devicesRefreshTimer?: any;
   /** 1s ticker (runs only while the panel is open) so "Updated Xs ago" counts up. */
   private clockTimer?: any;
 
@@ -602,6 +642,7 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     if (this.devicesSubscription) {
       this.ctx.subscriptionApi.removeSubscription(this.devicesSubscription.id);
     }
+    clearTimeout(this.devicesRefreshTimer);
     this.stopClock();
   }
 
@@ -757,11 +798,10 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
             firstEmission = false;
             return;
           }
-          // Refresh the table at most every 5s. (The chart updates itself via
-          // its own live timeseries subscription.)
-          if (Date.now() - this.lastDevicesRefresh > 5000) {
-            this.loadDevices();
-          }
+          // Debounce: reload shortly after the last change so a burst of telemetry
+          // coalesces into one re-query, but values still update near-instantly.
+          clearTimeout(this.devicesRefreshTimer);
+          this.devicesRefreshTimer = setTimeout(() => this.loadDevices(), 300);
         },
       },
     };
@@ -778,7 +818,6 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   /** Reload the Devices table (also called after a device's settings are saved). */
   loadDevices(): void {
     this.devicesLoading = true;
-    this.lastDevicesRefresh = Date.now();
     const deviceQuery: EntityDataQuery = {
       entityFilter: this.deviceFilter,
       pageLink: {
@@ -835,6 +874,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
                 name: label || name || "Unknown device",
                 label: name,
                 alarmCount: this.deviceAlarmCount.get(deviceId) ?? 0,
+                chn1Alarm: this.deviceChannelAlarms.get(deviceId)?.chn1 ?? false,
+                chn2Alarm: this.deviceChannelAlarms.get(deviceId)?.chn2 ?? false,
                 tempChn1: this.formatTemp(ts["temperatureChn1"]?.value),
                 tempChn2: this.formatTemp(ts["temperatureChn2"]?.value),
                 battery: this.parseBattery(batt?.value),
@@ -887,14 +928,18 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       ],
     };
 
-    // Alarm subscriptions require a timewindow — a wide history window surfaces
-    // alarms of any age for these devices.
+    // A REALTIME timewindow (not history) so the alarm subscription streams live
+    // updates — new alarms appear and cleared/acked ones drop out without a manual
+    // refresh. The wide window still surfaces alarms of any age for these devices.
     const tenYearsMs = 10 * 365 * 24 * 60 * 60 * 1000;
     const options: WidgetSubscriptionOptions = {
       type: widgetType.alarm,
       alarmSource,
       useDashboardTimewindow: false,
-      timeWindowConfig: historyInterval(tenYearsMs),
+      timeWindowConfig: {
+        selectedTab: TimewindowType.REALTIME,
+        realtime: { realtimeType: RealtimeWindowType.LAST_INTERVAL, timewindowMs: tenYearsMs },
+      },
       callbacks: {
         onDataUpdated: (subscription) => this.onAlarmsSubscriptionUpdated(subscription),
       },
@@ -924,6 +969,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     const alarms = subscription?.alarms?.data ?? [];
     this.alarmsRows = alarms.map((a: any) => {
       const originatorName = a.originatorDisplayName || a.originatorLabel || a.originatorName || "";
+      const rawData = a.details?.data;
+      const detailsData = rawData == null ? "" : typeof rawData === "object" ? JSON.stringify(rawData) : String(rawData);
       return {
         id: a.id?.id ?? a.id,
         createdTime: a.createdTime,
@@ -933,6 +980,7 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
         severity: a.severity,
         acknowledged: !!(a.acknowledged ?? a.ackTs > 0),
         cleared: !!(a.cleared ?? a.clearTs > 0),
+        detailsData,
         searchText: `${originatorName} ${a.type} ${this.severityLabel(a.severity)} ${new Date(a.createdTime).toLocaleString()}`,
       };
     });
@@ -946,13 +994,32 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   /** Recompute the active-alarm count per device and inject it into the device rows. */
   private applyAlarmCounts(): void {
     const counts = new Map<string, number>();
+    const chan = new Map<string, { chn1: boolean; chn2: boolean }>();
     for (const a of this.alarmsRows) {
-      if (a.originatorId) {
-        counts.set(a.originatorId, (counts.get(a.originatorId) ?? 0) + 1);
+      if (!a.originatorId) {
+        continue;
+      }
+      counts.set(a.originatorId, (counts.get(a.originatorId) ?? 0) + 1);
+      // "Channel 1/2 Threshold[ Alarm]" → flag that channel for this device.
+      if (a.type.includes("Threshold")) {
+        const flags = chan.get(a.originatorId) ?? { chn1: false, chn2: false };
+        if (a.type.includes("Channel 1")) {
+          flags.chn1 = true;
+        }
+        if (a.type.includes("Channel 2")) {
+          flags.chn2 = true;
+        }
+        chan.set(a.originatorId, flags);
       }
     }
     this.deviceAlarmCount = counts;
-    this.devicesRows = this.devicesRows.map((r) => ({ ...r, alarmCount: counts.get(r.deviceId) ?? 0 }));
+    this.deviceChannelAlarms = chan;
+    this.devicesRows = this.devicesRows.map((r) => ({
+      ...r,
+      alarmCount: counts.get(r.deviceId) ?? 0,
+      chn1Alarm: chan.get(r.deviceId)?.chn1 ?? false,
+      chn2Alarm: chan.get(r.deviceId)?.chn2 ?? false,
+    }));
     this.refreshSelectedDevice();
   }
 

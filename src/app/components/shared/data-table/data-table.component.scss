@@ -157,11 +157,13 @@
   background: transparent;
 
   th.mat-mdc-header-cell {
-    // --c-text-neutral-heavy is the same dark-mode-safe token the row cells use;
-    // the 600 weight is what makes the header read as a prominent title.
-    color: var(--c-text-neutral-heavy);
-    font-size: 13px;
-    font-weight: 600;
+    // Muted, uppercase, letter-spaced "label" style. --c-text-neutral-light is the
+    // dark-mode-safe muted tone (same as the device-id subtext).
+    color: var(--c-text-neutral-light);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     border-bottom: 1px solid var(--c-border-neutral-light);
     padding: 6px 16px;
     background-color: var(--c-bg-neutral-extralight);
@@ -193,6 +195,23 @@
     &.dt-row-selected:hover {
       background-color: light-dark(var(--c-bg-brand-light), var(--c-bg-neutral-light));
     }
+  }
+}
+
+// Inset row divider (single-column tables): the line matches the cell's 16px
+// horizontal padding instead of spanning the full card width.
+.dt-inset-divider .dt-table td.mat-mdc-cell {
+  position: relative;
+  border-bottom: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 0;
+    height: 1px;
+    background: var(--c-border-neutral-light);
   }
 }
 
@@ -249,6 +268,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  // Centre on the line rather than the baseline, so it lines up with the header
+  // title text (and the row content) instead of sitting low.
+  vertical-align: middle;
   width: 20px;
   height: 20px;
   padding: 0;

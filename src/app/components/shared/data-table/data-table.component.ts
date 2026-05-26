@@ -136,6 +136,12 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   @Input() searchKeys: string[] = [];
   /** Hide the column header row (useful for single rich-cell tables). */
   @Input() showColumnHeaders = true;
+  /**
+   * Inset the row divider to match the cell padding (instead of spanning the full
+   * width). Intended for single-column tables — on multi-column tables the inset
+   * would leave gaps between columns.
+   */
+  @Input() insetRowDivider = false;
   /** Extra header action buttons, rendered left of the search button. */
   @Input() actions: DataTableAction[] = [];
   @Input() pageSize = 10;
@@ -235,9 +241,18 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
 
   // --- Multi-select (checkbox column) ---
 
-  /** Rows currently passing the search filter (the scope of select-all). */
-  private get filteredRows(): Record<string, any>[] {
-    return this.dataSource.filteredData ?? [];
+  /**
+   * Rows on the current page — the scope of the select-all checkbox. Falls back
+   * to all filtered rows when there's no paginator (unpaginated tables).
+   */
+  private get pageRows(): Record<string, any>[] {
+    const data = this.dataSource.filteredData ?? [];
+    const paginator = this.dataSource.paginator;
+    if (!paginator) {
+      return data;
+    }
+    const start = paginator.pageIndex * paginator.pageSize;
+    return data.slice(start, start + paginator.pageSize);
   }
 
   /** Whether a row's checkbox is ticked. */
@@ -245,15 +260,15 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
     return this.checkedKeys.has(this.rowKey(row));
   }
 
-  /** All filtered rows are checked (drives the header checkbox's checked state). */
+  /** All rows on the current page are checked (drives the header checkbox). */
   get allChecked(): boolean {
-    const rows = this.filteredRows;
+    const rows = this.pageRows;
     return rows.length > 0 && rows.every((r) => this.checkedKeys.has(this.rowKey(r)));
   }
 
-  /** At least one filtered row is checked (drives the header's indeterminate dash). */
+  /** At least one row on the current page is checked (drives the indeterminate dash). */
   get someChecked(): boolean {
-    return this.filteredRows.some((r) => this.checkedKeys.has(this.rowKey(r)));
+    return this.pageRows.some((r) => this.checkedKeys.has(this.rowKey(r)));
   }
 
   /** Toggle a single row's checkbox. */
@@ -267,9 +282,9 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
     this.emitSelection();
   }
 
-  /** Check or uncheck every filtered row (the header select-all). */
+  /** Check or uncheck every row on the current page (the header select-all). */
   toggleAll(checked: boolean): void {
-    for (const row of this.filteredRows) {
+    for (const row of this.pageRows) {
       const key = this.rowKey(row);
       if (checked) {
         this.checkedKeys.add(key);
@@ -291,6 +306,22 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
       return;
     }
     this.checkedKeys.clear();
+    this.emitSelection();
+  }
+
+  /**
+   * Check or uncheck every (filtered) row — a global "select all" across pages,
+   * distinct from the page-scoped header checkbox ({@link toggleAll}).
+   */
+  checkAll(checked: boolean): void {
+    for (const row of this.dataSource.filteredData ?? []) {
+      const key = this.rowKey(row);
+      if (checked) {
+        this.checkedKeys.add(key);
+      } else {
+        this.checkedKeys.delete(key);
+      }
+    }
     this.emitSelection();
   }
 
@@ -361,7 +392,12 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
     // rows are uniform in practice.
     let rowHeight = 0;
     rows.forEach((r) => (rowHeight = Math.max(rowHeight, r.offsetHeight)));
-    const next = rowHeight * this.pageSize;
+    // The (sticky) column-header row lives inside the scroll area, so the fit
+    // height must include it or the last row gets clipped and scrolls. It's
+    // offsetHeight 0 when hidden (display:none), so this is a no-op then.
+    const headerRow = this.scrollEl?.nativeElement.querySelector<HTMLElement>("tr.mat-mdc-header-row");
+    const headerHeight = headerRow?.offsetHeight ?? 0;
+    const next = rowHeight * this.pageSize + headerHeight;
     if (next !== this.fitHeightPx) {
       this.fitHeightPx = next;
       this.cd.detectChanges();
