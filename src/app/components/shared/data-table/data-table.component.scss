@@ -110,6 +110,13 @@
   overflow-y: auto;
 }
 
+// Unpaginated: grow with the content and let the surrounding container scroll.
+.dt-scroll.dt-fluid {
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
 // reserveSearchSpace: when the search bar is closed, grow the scroll area by the
 // search bar's footprint (~46px) so the card height matches the open state and
 // doesn't jump when search is toggled.
@@ -207,6 +214,23 @@
   text-align: center;
   color: var(--c-text-neutral-light);
   font-size: 13px;
+}
+
+// Empty state: optional icon above the text.
+.dt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 0;
+}
+
+.dt-empty-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--c-icon-neutral-light);
 }
 
 :host ::ng-deep .mat-mdc-paginator {

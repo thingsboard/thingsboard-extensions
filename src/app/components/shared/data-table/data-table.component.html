@@ -1,5 +1,6 @@
-<section class="dt-card" [class.dt-reserve-search]="reserveSearchSpace" [class.dt-searching]="searchOpen">
-  <tb-widget-header [icon]="icon" [title]="title">
+<section class="dt-card" [class.dt-reserve-search]="reserveSearchSpace" [class.dt-searching]="searchOpen"
+         [class.dt-no-header]="!showHeader">
+  <tb-widget-header *ngIf="showHeader" [icon]="icon" [title]="title">
     <span widget-header-actions class="dt-actions" *ngIf="searchEnabled || actions.length">
       <button *ngFor="let action of actions; trackBy: trackByActionId" (click)="actionClick.emit(action.id)"
               [class.active]="action.active" [attr.aria-label]="action.tooltip" [matTooltip]="action.tooltip || ''"
@@ -25,7 +26,8 @@
   <!-- Optional consumer-projected filter bar (rendered below the header/search). -->
   <ng-content select="[dt-filter-bar]"></ng-content>
 
-  <div #scroll class="dt-scroll" [style.minHeight.px]="fitPageSize ? fitHeightPx : null"
+  <div #scroll class="dt-scroll" [class.dt-fluid]="!paginated"
+       [style.minHeight.px]="fitPageSize ? fitHeightPx : null"
        [style.maxHeight.px]="fitPageSize ? fitHeightPx : null">
     <table [dataSource]="dataSource" [trackBy]="trackByRow" class="dt-table" mat-table>
       <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
@@ -62,11 +64,15 @@
           (click)="onRowClick(row)" (keydown.enter)="onRowClick(row)"></tr>
       <tr *matNoDataRow class="dt-no-data">
         <td [attr.colspan]="columnKeys.length" class="dt-no-data-cell">
-          {{ loading ? loadingText : emptyText }}
+          <div class="dt-empty">
+            <mat-icon *ngIf="emptyIcon && !loading" class="dt-empty-icon">{{ emptyIcon }}</mat-icon>
+            <span>{{ loading ? loadingText : emptyText }}</span>
+          </div>
         </td>
       </tr>
     </table>
   </div>
 
-  <mat-paginator #paginator [hidePageSize]="true" [pageSize]="pageSize" showFirstLastButtons></mat-paginator>
+  <mat-paginator *ngIf="paginated" #paginator [hidePageSize]="true" [pageSize]="pageSize"
+                 showFirstLastButtons></mat-paginator>
 </section>

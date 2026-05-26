@@ -39,6 +39,10 @@ export class CopyBoxComponent {
   @Input() copyValue?: string;
   /** Stretch the box to fill its container instead of hugging its content. */
   @Input() fullWidth = false;
+  /** Grey the value text (e.g. to indicate a read-only field). */
+  @Input() muted = false;
+  /** Match the height/padding of the form text inputs (taller than the chip default). */
+  @Input() inputSized = false;
   /**
    * Fixed box width (any CSS length, e.g. "140px"). Keeps the box a stable size
    * regardless of the value's length — useful when the value changes (e.g. unit

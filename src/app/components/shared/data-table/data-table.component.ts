@@ -121,6 +121,8 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   @Input() rows: Record<string, any>[] = [];
   @Input() loading = false;
   @Input() emptyText = "No data";
+  /** Optional Material icon shown above {@link emptyText} in the empty state. */
+  @Input() emptyIcon = "";
   @Input() loadingText = "Loading…";
   @Input() searchEnabled = true;
   /** Render the search button before the action buttons (default: after). */
@@ -128,6 +130,8 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   /** Keep the card the same height whether the search bar is open or closed. */
   @Input() reserveSearchSpace = false;
   @Input() searchPlaceholder = "Search";
+  /** Hide the whole card header (title + search + actions row). */
+  @Input() showHeader = true;
   /** Row properties included in the search filter (defaults to all column keys). */
   @Input() searchKeys: string[] = [];
   /** Hide the column header row (useful for single rich-cell tables). */
@@ -135,6 +139,12 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   /** Extra header action buttons, rendered left of the search button. */
   @Input() actions: DataTableAction[] = [];
   @Input() pageSize = 10;
+  /**
+   * Whether to paginate. When false, no paginator is shown and all rows render;
+   * the scroll area grows with the content and the surrounding container scrolls
+   * once it runs out of room.
+   */
+  @Input() paginated = true;
   /**
    * Size the scroll area to exactly {@link pageSize} rows (measured from a
    * rendered row), so a full page never scrolls and the card height stays
@@ -234,7 +244,9 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+    if (this.paginated) {
+      this.dataSource.paginator = this.paginator;
+    }
     if (this.fitPageSize) {
       this.scheduleFitMeasure();
     }

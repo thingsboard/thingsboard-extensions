@@ -43,6 +43,16 @@
     width: 100%;
   }
 
+  // Greyed value (e.g. read-only field).
+  &.tb-copy-box--muted .tb-copy-text {
+    color: var(--c-text-neutral-light);
+  }
+
+  // Match the form text inputs' height/padding (taller than the chip default).
+  &.tb-copy-box--input .tb-copy-text {
+    padding: 10px 12px;
+  }
+
   .tb-copy-text {
     flex: 0 1 auto;
     min-width: 0; // allow shrink so long values ellipsize
