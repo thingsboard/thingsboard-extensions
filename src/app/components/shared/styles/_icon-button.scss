@@ -38,8 +38,13 @@
     color: var(--c-icon-neutral-light);
   }
 
-  &:hover:not(:disabled) {
-    background: light-dark(var(--c-gradient-neutral-light-01), var(--c-bg-neutral-light));
+  // Skip hover when already .active so the brand tint isn't swapped for the
+  // neutral hover fill. The hover fill uses --c-bg-neutral-light in both modes
+  // (theme-adapted via the token) so light mode reads the same subtle way as
+  // dark mode — the previous light-mode value (--c-gradient-neutral-light-01)
+  // looked too saturated next to the dark-mode counterpart.
+  &:hover:not(:disabled):not(.active) {
+    background: var(--c-bg-neutral-light);
   }
 
   &.active {
