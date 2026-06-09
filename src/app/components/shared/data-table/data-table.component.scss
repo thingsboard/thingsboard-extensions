@@ -199,20 +199,21 @@
 }
 
 // Inset row divider (single-column tables): the line matches the cell's 16px
-// horizontal padding instead of spanning the full card width.
+// horizontal padding instead of spanning the full card width. The last row
+// doesn't get a trailing divider.
 .dt-inset-divider .dt-table td.mat-mdc-cell {
   position: relative;
   border-bottom: none;
+}
 
-  &::after {
-    content: "";
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 0;
-    height: 1px;
-    background: var(--c-border-neutral-light);
-  }
+.dt-inset-divider .dt-table tr.mat-mdc-row:not(:last-of-type) td.mat-mdc-cell::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 1px;
+  background: var(--c-border-neutral-light);
 }
 
 .dt-chip {
