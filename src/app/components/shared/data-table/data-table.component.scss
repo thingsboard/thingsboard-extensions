@@ -343,7 +343,8 @@ mat-icon.dt-empty-icon {
 }
 
 :host ::ng-deep .mat-mdc-paginator {
-  --mat-paginator-enabled-icon-color: var(--c-icon-neutral-normal);
+  // Match the widget-header icon-button mixin: same icon colour, same hover fill.
+  --mat-paginator-enabled-icon-color: var(--c-icon-neutral-light);
   --mat-paginator-disabled-icon-color: var(--c-icon-neutral-extralight);
   background: transparent;
   border-top: 1px solid var(--c-border-neutral-light);
@@ -364,21 +365,14 @@ mat-icon.dt-empty-icon {
     padding: 4px;
   }
 
-  // The MDC ripple/state layer is invisible against the themed card, so give the
-  // enabled nav buttons an explicit hover/active fill (matching the header icon
-  // buttons).
-  .mat-mdc-icon-button:not(:disabled):not([aria-disabled="true"]) {
-    &:hover {
-      background-color: light-dark(var(--c-gradient-neutral-light-01), var(--c-bg-neutral-light));
-    }
-
-    &:active {
-      background-color: light-dark(var(--c-border-neutral-normal), var(--c-bg-neutral-normal));
-    }
+  // Enabled nav buttons: hover matches the header icon-button mixin
+  // (`var(--c-bg-neutral-light)` in both modes, theme-adapted).
+  .mat-mdc-icon-button:not(:disabled):not([aria-disabled="true"]):hover {
+    background-color: var(--c-bg-neutral-light);
   }
 
   .mat-mdc-icon-button:not(:disabled):not([aria-disabled="true"]) .mat-mdc-paginator-icon {
-    fill: var(--c-icon-neutral-normal) !important;
+    fill: var(--c-icon-neutral-light) !important;
   }
 
   .mat-mdc-icon-button[aria-disabled="true"] .mat-mdc-paginator-icon,

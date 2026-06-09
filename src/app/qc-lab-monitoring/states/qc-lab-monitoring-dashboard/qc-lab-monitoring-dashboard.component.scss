@@ -514,7 +514,8 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
 .qc-battery-track {
   height: 8px;
   border-radius: 6px;
-  background: var(--c-bg-neutral-light);
+  // Unfilled portion matches the card border in light mode; navy in dark.
+  background: light-dark(var(--c-border-neutral-light), var(--c-bg-neutral-light));
   overflow: hidden;
 }
 
