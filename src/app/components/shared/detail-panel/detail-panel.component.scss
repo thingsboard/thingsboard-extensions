@@ -1,0 +1,110 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+@use "../styles/icon-button";
+
+:host {
+  display: block;
+}
+
+// Drawer pinned to the right edge of the nearest positioned ancestor (the
+// dashboard root), so it fits the dashboard's height instead of the viewport.
+// Shares the dashboard background colour, separated only by a left drop shadow.
+// Click-to-dismiss scrim behind the panel (dismissible mode). Covers the
+// dashboard area (the panel's positioning context) and sits just under the panel.
+.dp-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1999;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.dp-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  width: 386px;
+  max-width: 90vw;
+  background: var(--c-bg-neutral-min);
+  // Border matches the header divider line; the shadow reads in light mode, the
+  // border keeps the edge visible in dark mode (where the shadow disappears).
+  border-left: 1px solid light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+  // Soft elevation shadow in light mode; original heavier shadow in dark mode.
+  box-shadow: light-dark(-8px 0 24px 0 rgba(0, 0, 0, 0.08), -8px 0 28px 0 rgba(0, 0, 0, 0.22));
+  animation: dp-slide-in 0.2s ease;
+}
+
+@keyframes dp-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.dp-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px;
+}
+
+.dp-title-area {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dp-title {
+  display: block;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--c-text-neutral-heavy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dp-close {
+  flex: 0 0 auto;
+  @include icon-button.tb-icon-button();
+}
+
+// Tabs region between header and scrolling body. Collapses to nothing when no
+// content is projected (only adds spacing when it actually has children).
+.dp-tabs {
+  flex: 0 0 auto;
+  overflow: visible; // let the pill group's hover tooltip open above
+
+  &:not(:empty) {
+    padding: 0 16px;
+  }
+}
+
+.dp-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden; // never scroll sideways — clip any slight overflow
+  padding: 16px;
+}

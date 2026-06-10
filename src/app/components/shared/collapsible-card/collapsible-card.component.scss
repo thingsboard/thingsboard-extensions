@@ -1,0 +1,115 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+:host {
+  display: block;
+}
+
+.cc-card {
+  display: block;
+  background-color: var(--c-bg-neutral-extralight);
+  border: 1px solid var(--c-border-neutral-light);
+  border-radius: 13px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  // Once fully expanded, let overflowing children (e.g. a select dropdown
+  // panel) escape the card instead of being clipped.
+  &.cc-overflow-visible,
+  &.cc-overflow-visible .cc-body {
+    overflow: visible;
+  }
+}
+
+.cc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: var(--c-text-neutral-heavy);
+  user-select: none; // don't text-select the title on click / double-click
+  -webkit-user-select: none;
+}
+
+.cc-icon {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--c-icon-neutral-normal);
+}
+
+.cc-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Info icon beside the title.
+.cc-info {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+}
+
+// Pushes the chevron to the far right.
+.cc-spacer {
+  flex: 1 1 auto;
+}
+
+.cc-chevron {
+  flex: 0 0 auto;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--c-icon-neutral-light);
+  transition: transform 0.35s ease;
+
+  &.collapsed {
+    transform: rotate(180deg);
+  }
+}
+
+// Smoothly animate the body height by transitioning the grid track 0fr → 1fr.
+.cc-body-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+
+  &.expanded {
+    grid-template-rows: 1fr;
+  }
+}
+
+.cc-body {
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 14px;
+  transition: padding 0.35s ease;
+}
+
+.cc-body-wrap.expanded .cc-body {
+  padding: 4px 14px 14px;
+}

@@ -1,0 +1,12 @@
+<div class="lc-wrap">
+  <div *ngIf="title" class="lc-title">
+    <span class="lc-title-text">{{ title }}</span>
+    <span *ngIf="titleInfo" class="lc-info" tabindex="0" role="img" aria-label="Info">
+      <mat-icon>info</mat-icon>
+      <span class="lc-info-tip">{{ titleInfo }}</span>
+    </span>
+  </div>
+  <div class="lc-plot">
+    <div #chart class="lc-chart" [style.height]="height"></div>
+  </div>
+</div>
