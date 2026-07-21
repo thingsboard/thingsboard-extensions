@@ -52,7 +52,7 @@ index 81d96de..1f4fa79 100644
 +        plugins = [(0, plugin_node_resolve_1.default)(), (0, file_loader_plugin_1.fileLoaderPlugin)(opts.fileCache, ['.js', '/index.js']), (0, plugin_json_1.default)(), replace({preventAssignment: true, 'process.env.NODE_ENV': '"production"'}), commonJs(), terser()];
      }
      // Create the bundle
-+    const data = fs.readFileSync(path.join(__dirname, '../../../../thingsboard/src/app/modules/common/modules-map.ts'), 'utf8');
++    const data = fs.readFileSync(path.resolve(process.cwd(), 'node_modules/thingsboard/src/app/modules/common/modules-map.ts'), 'utf8');
 +    const reg = /private modulesMap: {\[key: string\]: any} = {([^;]*)};/gsm;
 +    const regMatch = reg.exec(data);
 +    const modulesStr = regMatch[1];

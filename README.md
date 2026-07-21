@@ -5,15 +5,15 @@ This repository contains the **ThingsBoard Extension** codebase. Follow the inst
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 20.20.0
-- [Yarn](https://classic.yarnpkg.com/) >= 1.22.22 (Yarn Classic)
+- [pnpm](https://pnpm.io/) >= 9
 
 ## Getting Started
 
 Install dependencies and start the development server:
 
 ```bash
-yarn install
-yarn start
+pnpm install
+pnpm start
 ```
 
 ### Configure the Widget
@@ -30,7 +30,7 @@ yarn start
 To compile the project for production, run:
 
 ```bash
-yarn build
+pnpm build
 ```
 
 The compiled file will be generated at: `target/generated-resources/thingsboard-extension-widgets.js`
@@ -92,19 +92,19 @@ import { WidgetConfig } from '@shared/public-api';
 
 ## External Dependencies
 
-To use third-party packages from the npm registry, add them using the Yarn package manager:
+To use third-party packages from the npm registry, add them using the pnpm package manager:
 
 ```bash
-yarn add <package-name>
+pnpm add <package-name>
 ```
 
 **Example:**
 
 ```bash
-yarn add lodash
+pnpm add lodash
 ```
 
-For non-standard registries or alternative installation methods, please refer to the [Yarn Documentation](https://classic.yarnpkg.com/en/docs/cli/add).
+For non-standard registries or alternative installation methods, please refer to the [pnpm Documentation](https://pnpm.io/cli/add).
 
 ## Examples
 
