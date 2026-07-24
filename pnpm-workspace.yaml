@@ -1,0 +1,36 @@
+packages:
+  - 'builders'
+
+# thingsboard-ui-types and the echarts fork pull git/url-based
+# sub-dependencies (ngx-flowchart, zrender). pnpm blocks exotic subdeps by
+# default; allow them to match Yarn Classic behaviour.
+blockExoticSubdeps: false
+
+# The patched ng-packagr SystemJS step bundles the whole app and resolves
+# transitive deps (e.g. @primeuix/styled) from the public node_modules via
+# @rollup/plugin-node-resolve. Hoist everything to the top level so resolution
+# behaves like Yarn Classic's flat node_modules.
+shamefullyHoist: true
+
+overrides:
+  tinymce: 6.8.6
+  rxjs: 7.8.2
+  express: 5.2.1
+  '@types/express': 5.0.3
+  # echarts fork depends on zrender via a GitHub archive tarball, which pnpm
+  # cannot verify (no integrity). Redirect to the equivalent git ref.
+  zrender: github:thingsboard/zrender#5.5.0-TB
+
+# pnpm blocks dependency build scripts by default; list the ones we trust.
+#   @tb/custom-builder  - local builder, compiles TS in its postinstall
+#   esbuild / @parcel/watcher / lmdb / msgpackr-extract - native Angular toolchain deps
+#   zrender             - built from source (git ref) via its prepare script
+#   postinstall-prepare - build helper
+allowBuilds:
+  '@tb/custom-builder': true
+  esbuild: true
+  '@parcel/watcher': true
+  lmdb: true
+  msgpackr-extract: true
+  postinstall-prepare: true
+  zrender: true
