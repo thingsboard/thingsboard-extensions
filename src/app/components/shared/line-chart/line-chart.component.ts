@@ -308,18 +308,12 @@ export class LineChartComponent implements AfterViewInit, OnChanges, OnDestroy {
           return {
             yAxis: Number(t.value),
             lineStyle: { color, width: 1.5, type: "dashed" },
-            // Caption sits at the line's right end as a filled, rounded badge.
             label: {
               show: !!t.label,
               formatter: t.label ?? "",
               position: "insideEndTop",
-              distance: 4,
-              color: "#fff",
+              color,
               fontSize: 10,
-              fontWeight: 500,
-              backgroundColor: color,
-              borderRadius: 4,
-              padding: [3, 6, 3, 6],
             },
           };
         }),
