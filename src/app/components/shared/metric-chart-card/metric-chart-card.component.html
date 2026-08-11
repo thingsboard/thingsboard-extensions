@@ -7,7 +7,8 @@
     <tb-line-chart [title]="section.chartTitle || ''" [titleInfo]="section.info || ''"
                    [series]="sectionSeries[i] || []" [loading]="loading" [dark]="dark" [unit]="section.unit || ''"
                    height="200px" [smooth]="true" [animated]="true" [showLegend]="section.showLegend !== false"
-                   [area]="!!section.fill" [syncGroup]="syncGroup" [xMin]="windowStart"
-                   [xMax]="windowEnd"></tb-line-chart>
+                   [area]="!!section.fill" [syncGroup]="syncGroup" [yDecimals]="1" [xMin]="windowStart"
+                   [xMax]="windowEnd" [yMin]="section.yMin" [yMax]="section.yMax"
+                   [thresholds]="section.thresholds || []"></tb-line-chart>
   </ng-container>
 </tb-collapsible-card>

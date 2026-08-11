@@ -35,6 +35,7 @@ import {
   DatasourceType,
   EntityFilter,
   EntityType,
+  RealtimeWindow,
   RealtimeWindowType,
   SharedModule,
   Timewindow,
@@ -44,7 +45,7 @@ import {
 import { WidgetContext } from "@home/models/widget-component.models";
 import { CollapsibleCardComponent } from "../collapsible-card/collapsible-card.component";
 import { SegmentOption, SegmentedControlComponent } from "../segmented-control/segmented-control.component";
-import { LineChartComponent, LineChartSeries } from "../line-chart/line-chart.component";
+import { LineChartComponent, LineChartSeries, LineChartThreshold } from "../line-chart/line-chart.component";
 
 /** Per-instance counter so each card's stacked charts get a unique sync group. */
 let cardSeq = 0;
@@ -73,6 +74,11 @@ export interface MetricChartSection {
   showLegend?: boolean;
   /** Fill the area under the line(s) with a gradient. */
   fill?: boolean;
+  /** Baseline y-axis range; the axis expands past it when data falls outside. */
+  yMin?: number;
+  yMax?: number;
+  /** Horizontal reference lines (e.g. alarm thresholds). */
+  thresholds?: LineChartThreshold[];
 }
 
 /**
@@ -128,11 +134,10 @@ export class MetricChartCardComponent implements OnChanges, OnDestroy {
     "1W": 7 * 24 * 60 * 60 * 1000,
     "1M": 30 * 24 * 60 * 60 * 1000,
   };
-  // AVG grouping interval per window — keeps the point count (and render cost) low.
-  private readonly intervalByTf: Record<string, number> = {
-    "1D": 15 * 60 * 1000, // 15 minutes → ~96 points
-    "1W": 60 * 60 * 1000, // 1 hour → ~168 points
-    "1M": 4 * 60 * 60 * 1000, // 4 hours → ~180 points
+  // AVG bin size per window. Windows without an entry fetch raw (unaggregated)
+  // data; 1M is aggregated to 1-day bins (30 days of raw points is too dense).
+  private readonly binByTf: Record<string, number> = {
+    "1M": 24 * 60 * 60 * 1000, // 1 day
   };
 
   private subscription?: any;
@@ -187,8 +192,8 @@ export class MetricChartCardComponent implements OnChanges, OnDestroy {
   }
 
   private open(deviceId: string): void {
-    // Reset to the default window every time a new device is selected.
-    this.timeframe = "1D";
+    // Keep the currently-selected timeframe across device switches (don't reset
+    // to the default), so the chosen window persists when browsing devices.
     this.setComputedWindow();
     // Show cached data instantly (one-time wait); only spin while uncached.
     const cached = this.cache.get(`${deviceId}:${this.timeframe}`);
@@ -299,19 +304,25 @@ export class MetricChartCardComponent implements OnChanges, OnDestroy {
     this.windowStart = this.windowEnd - windowMs;
   }
 
-  /** REALTIME "last N" window with AVG aggregation at the per-window interval. */
+  /**
+   * REALTIME "last N" window. Windows with a {@link binByTf} entry are AVG-binned
+   * at that interval (e.g. 1M → 1-day bins); the rest fetch raw data.
+   */
   private buildTimewindow(): Timewindow {
     const windowMs = this.windowByTf[this.timeframe] ?? this.windowByTf["1W"];
-    const interval = this.intervalByTf[this.timeframe] ?? this.intervalByTf["1W"];
+    const interval = this.binByTf[this.timeframe];
+    const realtime: RealtimeWindow = {
+      realtimeType: RealtimeWindowType.LAST_INTERVAL,
+      timewindowMs: windowMs,
+    };
+    if (interval) {
+      realtime.interval = interval;
+    }
     return {
       selectedTab: TimewindowType.REALTIME,
-      realtime: {
-        realtimeType: RealtimeWindowType.LAST_INTERVAL,
-        timewindowMs: windowMs,
-        interval,
-      },
+      realtime,
       aggregation: {
-        type: AggregationType.AVG,
+        type: interval ? AggregationType.AVG : AggregationType.NONE,
         limit: 50000,
       },
     };

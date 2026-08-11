@@ -29,13 +29,25 @@ import { CommonModule } from "@angular/common";
 import { SharedModule } from "@shared/public-api";
 import * as echarts from "echarts/core";
 import { LineChart } from "echarts/charts";
-import { GridComponent, LegendComponent, TooltipComponent } from "echarts/components";
+import { GridComponent, LegendComponent, MarkLineComponent, TooltipComponent } from "echarts/components";
 import { SVGRenderer } from "echarts/renderers";
 import { TrendPoint } from "../trend-chart/trend-chart.component";
 
 // Register the ECharts pieces this chart uses, once. Uses the bundled ECharts
 // (same dependency ThingsBoard's own charts use) — no CDN load, instant init.
-echarts.use([LineChart, GridComponent, LegendComponent, TooltipComponent, SVGRenderer]);
+// MarkLineComponent is required for the threshold lines: without it ECharts
+// silently ignores a series' markLine option.
+echarts.use([LineChart, GridComponent, LegendComponent, MarkLineComponent, TooltipComponent, SVGRenderer]);
+
+/** A horizontal reference line drawn across {@link LineChartComponent}. */
+export interface LineChartThreshold {
+  /** Y value the line sits at. */
+  value: number;
+  /** Line colour — any CSS colour, or a `var(--token)` resolved against the chart. */
+  color?: string;
+  /** Optional short caption drawn at the line's right end. */
+  label?: string;
+}
 
 /** A named, coloured series for {@link LineChartComponent}. */
 export interface LineChartSeries {
@@ -88,6 +100,8 @@ export class LineChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() showLegend = true;
   /** Fill the area under each line with a vertical colour gradient. */
   @Input() area = false;
+  /** Decimal places for the y-axis labels (default 1). */
+  @Input() yDecimals = 1;
   /** Charts sharing the same group sync their hover tooltip + axis pointer
    *  (like Grafana). Give every chart that should sync the same id. */
   @Input() syncGroup?: string;
@@ -95,6 +109,12 @@ export class LineChartComponent implements AfterViewInit, OnChanges, OnDestroy {
    *  extent — so e.g. a 1D chart shows the full 24h even when data is sparse. */
   @Input() xMin?: number;
   @Input() xMax?: number;
+  /** Baseline y-axis range. The axis always spans at least [yMin, yMax], and
+   *  expands beyond it when data or thresholds fall outside. */
+  @Input() yMin?: number;
+  @Input() yMax?: number;
+  /** Horizontal reference lines (e.g. alarm thresholds). */
+  @Input() thresholds: LineChartThreshold[] = [];
 
   @ViewChild("chart") chartEl?: ElementRef<HTMLElement>;
 
@@ -150,8 +170,12 @@ export class LineChartComponent implements AfterViewInit, OnChanges, OnDestroy {
         changes["animated"] ||
         changes["showLegend"] ||
         changes["area"] ||
+        changes["yDecimals"] ||
         changes["xMin"] ||
-        changes["xMax"])
+        changes["xMax"] ||
+        changes["yMin"] ||
+        changes["yMax"] ||
+        changes["thresholds"])
     ) {
       this.render();
     }
@@ -267,6 +291,41 @@ export class LineChartComponent implements AfterViewInit, OnChanges, OnDestroy {
       return opt;
     });
 
+    // Threshold lines ride on the first series' markLine. Always set it (even
+    // empty) so removing a threshold clears the line on a merged update.
+    const thresholds = (this.thresholds ?? []).filter((t) => isFinite(Number(t.value)));
+    if (series.length) {
+      series[0].markLine = {
+        silent: true,
+        symbol: "none",
+        animation: false,
+        data: thresholds.map((t) => {
+          // Resolve "var(--x)" against the chart element so a themed token
+          // follows light/dark (re-resolved on every render).
+          const raw = t.color || "#f59e0b";
+          const varName = raw.match(/^var\(\s*(--[^),\s]+)/)?.[1];
+          const color = (varName ? cssVar(varName) : raw) || "#f59e0b";
+          return {
+            yAxis: Number(t.value),
+            lineStyle: { color, width: 1.5, type: "dashed" },
+            // Caption sits at the line's right end as a filled, rounded badge.
+            label: {
+              show: !!t.label,
+              formatter: t.label ?? "",
+              position: "insideEndTop",
+              distance: 4,
+              color: "#fff",
+              fontSize: 10,
+              fontWeight: 500,
+              backgroundColor: color,
+              borderRadius: 4,
+              padding: [3, 6, 3, 6],
+            },
+          };
+        }),
+      };
+    }
+
     this.chart.setOption(
       {
         // Animation settings copied from ThingsBoard's time-series chart
@@ -333,8 +392,26 @@ export class LineChartComponent implements AfterViewInit, OnChanges, OnDestroy {
         yAxis: {
           type: "value",
           scale: true,
-          // Round labels to avoid floating-point artefacts (e.g. 21.900000000002).
-          axisLabel: { color: axisText, fontSize: 11, formatter: (v: number) => `${Math.round(v * 10) / 10}` },
+          // Baseline range (when given): the axis always shows [yMin, yMax], and
+          // grows past it when data or a threshold line sits outside.
+          min:
+            this.yMin == null
+              ? undefined
+              : (v: { min: number }) => Math.min(this.yMin as number, Math.floor(v.min), ...thresholds.map((t) => Number(t.value))),
+          max:
+            this.yMax == null
+              ? undefined
+              : (v: { max: number }) => Math.max(this.yMax as number, Math.ceil(v.max), ...thresholds.map((t) => Number(t.value))),
+          // Round labels to {@link yDecimals} places, dropping trailing zeros
+          // (avoids artefacts like 21.900000000002; yDecimals=0 → whole degrees).
+          axisLabel: {
+            color: axisText,
+            fontSize: 11,
+            formatter: (v: number) => {
+              const f = 10 ** this.yDecimals;
+              return `${Math.round(v * f) / f}`;
+            },
+          },
           axisLine: { show: false },
           splitLine: { lineStyle: { color: splitLine, type: "dashed" } },
         },
