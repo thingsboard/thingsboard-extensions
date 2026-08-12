@@ -311,11 +311,14 @@ export class DeviceSettingsCardComponent implements OnChanges {
         this.objectMeta.set(obj, { gate, fields: obj.fields.filter((f) => f !== gate) });
       }
     }
-    // Repopulate from the pre-fetched inputs — but never clobber unsaved edits
-    // (a live table refresh re-pushes these inputs while the user may be typing).
+    // Repopulate from the pre-fetched inputs. A deviceId change means a
+    // different device is being shown, so any unsaved edits are discarded;
+    // otherwise never clobber a dirty form (a live table refresh re-pushes
+    // these inputs while the user may be typing).
     if (
-      !this.form.dirty &&
-      (changes["label"] ||
+      (changes["deviceId"] || !this.form.dirty) &&
+      (changes["deviceId"] ||
+        changes["label"] ||
         changes["description"] ||
         changes["attributeValues"] ||
         changes["attributeSelects"] ||

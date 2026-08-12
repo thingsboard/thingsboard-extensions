@@ -1,7 +1,8 @@
 <!-- Click-to-dismiss backdrop (only when dismissible) — closes the panel on click-off. -->
 <div *ngIf="open && dismissible" class="dp-backdrop" (click)="closed.emit()"></div>
 
-<div *ngIf="open" class="dp-panel" (keydown.escape)="closed.emit()" tabindex="-1">
+<!-- Escape is handled document-wide in the component (the panel rarely holds focus). -->
+<div *ngIf="open" class="dp-panel" tabindex="-1">
   <div class="dp-header">
     <div class="dp-title-area">
       <!-- Custom header content (e.g. an entity summary); falls back to the title text. -->

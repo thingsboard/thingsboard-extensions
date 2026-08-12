@@ -14,7 +14,7 @@
 /// limitations under the License.
 ///
 
-import { Component, EventEmitter, HostBinding, Input, Output } from "@angular/core";
+import { Component, EventEmitter, HostBinding, HostListener, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { SharedModule } from "@shared/public-api";
 
@@ -52,4 +52,19 @@ export class DetailPanelComponent {
 
   /** Emitted when the user closes the panel (close button, Escape, or backdrop). */
   @Output() closed = new EventEmitter<void>();
+
+  /**
+   * Close on Escape from anywhere in the document — the panel is usually opened
+   * by a click elsewhere (e.g. a table row), so it never holds focus and a
+   * panel-local keydown handler wouldn't fire. `preventDefault` marks the event
+   * handled so a single press doesn't close several stacked panels at once.
+   */
+  @HostListener("document:keydown.escape", ["$event"])
+  onDocumentEscape(event: KeyboardEvent): void {
+    if (!this.open || event.defaultPrevented) {
+      return;
+    }
+    event.preventDefault();
+    this.closed.emit();
+  }
 }

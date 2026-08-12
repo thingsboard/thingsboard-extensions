@@ -82,8 +82,9 @@
       <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row
           [style.display]="showColumnHeaders || multiSelect ? '' : 'none'"></tr>
       <tr *matRowDef="let row; columns: displayedColumns" mat-row
-          [class.dt-row-clickable]="selectable" [class.dt-row-selected]="isRowSelected(row)"
-          [attr.role]="selectable ? 'button' : null" [attr.tabindex]="selectable ? 0 : null"
+          [class.dt-row-clickable]="selectable || multiSelect" [class.dt-row-selected]="isRowSelected(row)"
+          [attr.role]="selectable || multiSelect ? 'button' : null"
+          [attr.tabindex]="selectable || multiSelect ? 0 : null"
           (click)="onRowClick(row)" (keydown.enter)="onRowClick(row)"></tr>
       <tr *matNoDataRow class="dt-no-data">
         <td [attr.colspan]="displayedColumns.length" class="dt-no-data-cell">

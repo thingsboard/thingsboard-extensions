@@ -228,8 +228,13 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
     return this.selectable && this.selectedRowKey != null && this.rowKey(row) === this.selectedRowKey;
   }
 
-  /** Select a clicked row and emit it (no-op when not {@link selectable}). */
+  /** Select a clicked row and emit it (no-op when not {@link selectable}).
+   *  In multi-select mode the click toggles the row's checkbox instead. */
   onRowClick(row: Record<string, any>): void {
+    if (this.multiSelect) {
+      this.toggleRow(row);
+      return;
+    }
     if (!this.selectable) {
       return;
     }
