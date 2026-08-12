@@ -41,6 +41,12 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   --c-bg-neutral-bold: #354661;
   --c-bg-neutral-heavy: #1c293f;
   --c-bg-neutral-heavy-hover: #080d15;
+  // ---- Interaction states (ours, not TTS) -------------------------------
+  // Hover fills, derived from the neutral ramp so they stay themed. The row
+  // wash is deliberately lighter than the control fill, so a hovered icon
+  // button still reads as a distinct circle on a hovered row.
+  --c-bg-hover-row: color-mix(in srgb, var(--c-bg-neutral-light) 50%, var(--c-bg-neutral-extralight));
+  --c-bg-hover-control: color-mix(in srgb, var(--c-bg-neutral-normal) 10%, var(--c-bg-neutral-light));
   --c-bg-brand-extralight: #f7fbff;
   --c-bg-brand-light: #eff5ff;
   --c-bg-brand-semilight: #e7f0ff;
@@ -194,6 +200,9 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
     --c-bg-neutral-bold: #536482;
     --c-bg-neutral-heavy: #f3f5f8;
     --c-bg-neutral-heavy-hover: #d2d7e0;
+    // Interaction states — dark mode reads well with the plain ramp steps.
+    --c-bg-hover-row: var(--c-bg-neutral-extralight-hover);
+    --c-bg-hover-control: var(--c-bg-neutral-light);
     --c-bg-brand-extralight: #0c1525;
     --c-bg-brand-light: #354661;
     --c-bg-brand-semilight: #e7f0ff;
@@ -336,6 +345,52 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+// Wrapper anchoring the alarm button's hover tooltip (same pattern as
+// .theme-toggle in the theme-toggle component).
+.qc-alarm-btn-wrap {
+  position: relative;
+  display: inline-flex;
+
+  &:hover .qc-alarm-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// Same navy-pill tooltip as the theme toggle, opening below the button and
+// centred on it so the caret sits in the middle of the pill.
+.qc-alarm-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: light-dark(var(--c-bg-neutral-heavy), var(--c-bg-neutral-bold)); // navy / slate
+  color: light-dark(var(--c-text-neutral-min), var(--c-text-neutral-heavy)); // white-ish both
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--shadow-box-modal-normal);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 10;
+
+  // Upward caret centred on the pill (and so on the button).
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: light-dark(var(--c-bg-neutral-heavy), var(--c-bg-neutral-bold));
+  }
 }
 
 // Alarms button — matches the theme-toggle button, with a red count badge.
@@ -633,32 +688,6 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   }
 }
 
-/* ---- Alarms popup ------------------------------------------------------- */
-
-.qc-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-.qc-modal {
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-
-  // Narrower variant (the alarms popup, a single-column list).
-  &.qc-modal--narrow {
-    max-width: 520px;
-  }
-}
-
 // Floating bulk-action bar shown while devices are checked. Anchored to the
 // dashboard root (.qc-dashboard, position: relative) rather than the viewport,
 // so it centres on the widget's content area — the widget is embedded inside the
@@ -768,14 +797,6 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
   }
 }
 
-
-// Alarm severity filter bar — boxes styled like the search box, left-aligned.
-.qc-alarm-filter {
-  display: flex;
-  justify-content: flex-start;
-  gap: 8px;
-  margin: 0 16px 12px;
-}
 
 // Settings sync pill in the detail-panel header (gear + Synced/Queued).
 .qc-sync-pill {

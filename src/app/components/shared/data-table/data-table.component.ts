@@ -142,6 +142,9 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
    * would leave gaps between columns.
    */
   @Input() insetRowDivider = false;
+  /** Highlight rows on hover (turn off for tables whose rows aren't clickable,
+   *  e.g. alarm lists where only the row's action buttons are interactive). */
+  @Input() rowHover = true;
   /** Extra header action buttons, rendered left of the search button. */
   @Input() actions: DataTableAction[] = [];
   @Input() pageSize = 10;

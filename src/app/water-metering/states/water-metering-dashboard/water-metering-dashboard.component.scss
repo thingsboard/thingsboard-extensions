@@ -60,6 +60,12 @@ $radius: 8px;
   --c-bg-neutral-bold: #354661;
   --c-bg-neutral-heavy: #1c293f;
   --c-bg-neutral-heavy-hover: #080d15;
+  // ---- Interaction states (ours, not TTS) -------------------------------
+  // Hover fills, derived from the neutral ramp so they stay themed. The row
+  // wash is deliberately lighter than the control fill, so a hovered icon
+  // button still reads as a distinct circle on a hovered row.
+  --c-bg-hover-row: color-mix(in srgb, var(--c-bg-neutral-light) 50%, var(--c-bg-neutral-extralight));
+  --c-bg-hover-control: color-mix(in srgb, var(--c-bg-neutral-normal) 10%, var(--c-bg-neutral-light));
   --c-bg-brand-extralight: #f7fbff;
   --c-bg-brand-light: #eff5ff;
   --c-bg-brand-semilight: #e7f0ff;
@@ -204,6 +210,9 @@ $radius: 8px;
     --c-bg-neutral-bold: #536482;
     --c-bg-neutral-heavy: #f3f5f8;
     --c-bg-neutral-heavy-hover: #d2d7e0;
+    // Interaction states — dark mode reads well with the plain ramp steps.
+    --c-bg-hover-row: var(--c-bg-neutral-extralight-hover);
+    --c-bg-hover-control: var(--c-bg-neutral-light);
     --c-bg-brand-extralight: #0c1525;
     --c-bg-brand-light: #354661;
     --c-bg-brand-semilight: #e7f0ff;

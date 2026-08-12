@@ -112,33 +112,39 @@
                 </button>
               </div>
             </ng-container>
-            <ng-template #plainLabel><span class="ds-object-label">{{ obj.label }}</span></ng-template>
+            <ng-template #plainLabel>
+              <span *ngIf="obj.label" class="ds-object-label">{{ obj.label }}</span>
+            </ng-template>
 
-            <!-- Remaining fields — shown only while the gate is on, grouped in an
-                 indented block so each object reads as a distinct unit. -->
-            <div class="ds-object-body" *ngIf="isObjGateOn(obj)">
+            <!-- Remaining fields — revealed while the gate is on, with the same
+                 grid-track animation as the collapsible cards. Content stays
+                 mounted; `inert` blocks focus/interaction while collapsed. -->
+            <div class="ds-object-body-wrap" [class.expanded]="isObjGateOn(obj)" [class.settled]="isObjSettled(obj)"
+                 [attr.inert]="isObjGateOn(obj) ? null : ''"
+                 (transitionend)="onObjBodyTransitionEnd(obj, $event)">
+              <div class="ds-object-body">
               <ng-container *ngFor="let f of fieldsOf(obj)">
                 <!-- Boolean toggle. -->
                 <tb-ext-checkbox *ngIf="f.kind === 'toggle'" [label]="f.label" [info]="f.info || ''"
-                                 [formControlName]="objCtrl(obj.key, f.key)"></tb-ext-checkbox>
+                                 [formControlName]="ctrlName(obj, f)"></tb-ext-checkbox>
 
                 <!-- Single-select button group. -->
                 <div class="ds-field" *ngIf="f.kind === 'buttons' || f.kind === 'segmented'">
                   <span class="ds-label">{{ f.label }}</span>
                   <tb-button-group [options]="f.options || []"
-                                   [formControlName]="objCtrl(obj.key, f.key)"></tb-button-group>
+                                   [formControlName]="ctrlName(obj, f)"></tb-button-group>
                 </div>
 
                 <!-- Themed dropdown. -->
                 <div class="ds-field" *ngIf="f.kind === 'select'">
                   <span class="ds-label">{{ f.label }}</span>
-                  <tb-select [options]="f.options || []" [formControlName]="objCtrl(obj.key, f.key)"></tb-select>
+                  <tb-select [options]="f.options || []" [formControlName]="ctrlName(obj, f)"></tb-select>
                 </div>
 
                 <!-- Numeric input. -->
                 <div class="ds-field" *ngIf="f.kind === 'number'">
                   <span class="ds-label">{{ f.label }}</span>
-                  <input class="ds-input" type="number" [formControlName]="objCtrl(obj.key, f.key)"
+                  <input class="ds-input" type="number" [formControlName]="ctrlName(obj, f)"
                          [attr.aria-label]="f.label" />
                 </div>
 
@@ -149,9 +155,10 @@
                     <tb-info-icon *ngIf="f.info" [text]="f.info"></tb-info-icon>
                   </span>
                   <tb-slider-stepper [min]="f.min ?? 0" [max]="f.max ?? 100" [step]="f.step ?? 1" [unit]="unitFor(f)"
-                                     [formControlName]="objCtrl(obj.key, f.key)"></tb-slider-stepper>
+                                     [formControlName]="ctrlName(obj, f)"></tb-slider-stepper>
                 </div>
               </ng-container>
+              </div>
             </div>
           </div>
         </div>

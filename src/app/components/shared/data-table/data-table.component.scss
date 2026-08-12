@@ -179,10 +179,11 @@
   tr.mat-mdc-row {
     height: 48px;
 
-    // Subtle row hover so it doesn't overpower an action button's hover/active
-    // highlight (which uses --c-bg-neutral-light).
+    // Row hover uses the shared row-hover token (a lighter wash than the
+    // control-hover fill, so a hovered action button still reads over it).
+    // Suppressed by [rowHover]="false" (.dt-no-row-hover) on the card.
     &:hover {
-      background-color: var(--c-bg-neutral-extralight-hover);
+      background-color: var(--c-bg-hover-row, var(--c-bg-neutral-extralight-hover));
     }
 
     // Clickable (selectable) rows show a pointer; the selected row keeps a
@@ -196,6 +197,11 @@
       background-color: light-dark(var(--c-bg-brand-light), var(--c-bg-neutral-light));
     }
   }
+}
+
+// rowHover=false: no row highlight (only the row's action buttons react).
+.dt-card.dt-no-row-hover .dt-table tr.mat-mdc-row:hover {
+  background-color: transparent;
 }
 
 // Inset row divider (single-column tables): the line matches the cell's 16px

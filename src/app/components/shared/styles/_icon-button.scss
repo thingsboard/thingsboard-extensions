@@ -39,12 +39,11 @@
   }
 
   // Skip hover when already .active so the brand tint isn't swapped for the
-  // neutral hover fill. The hover fill uses --c-bg-neutral-light in both modes
-  // (theme-adapted via the token) so light mode reads the same subtle way as
-  // dark mode — the previous light-mode value (--c-gradient-neutral-light-01)
-  // looked too saturated next to the dark-mode counterpart.
+  // neutral hover fill. --c-bg-hover-control is the shared control-hover token
+  // (defined per theme on the dashboard host); the fallback keeps the button
+  // usable when the mixin is used outside a themed dashboard.
   &:hover:not(:disabled):not(.active) {
-    background: var(--c-bg-neutral-light);
+    background: var(--c-bg-hover-control, var(--c-bg-neutral-light));
   }
 
   &.active {

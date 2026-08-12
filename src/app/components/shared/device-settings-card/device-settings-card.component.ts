@@ -63,6 +63,13 @@ export interface DeviceSettingControl {
   kind: "toggle" | "segmented" | "buttons" | "select" | "number" | "slider";
   key: string;
   label: string;
+  /**
+   * Object-card fields only: bind this field to its own top-level SHARED_SCOPE
+   * attribute of this name instead of a property inside the object (read from
+   * `objectValues[flatKey]`, saved as its own attribute). Lets a card mix a
+   * flat attribute in with an object's fields (e.g. V2 alarm reporting).
+   */
+  flatKey?: string;
   options?: AttributeSelectOption[];
   /** Numeric bounds / unit for the `slider` (and `number`) kinds. */
   min?: number;
@@ -73,6 +80,23 @@ export interface DeviceSettingControl {
   unitFrom?: { key: string; map: Record<string, string> };
   /** Optional info-icon tooltip shown next to the label. */
   info?: string;
+}
+
+/**
+ * One persistence target of a {@link DeviceSettingObject} — where (and for
+ * which device hardware) the object's field values are written on save.
+ */
+export interface DeviceSettingObjectTarget {
+  /** Attribute key written: a JSON object, or a flat value with {@link flatField}. */
+  key: string;
+  /** Only write this target to devices of these types (default: every device). */
+  deviceTypes?: string[];
+  /** Rename fields for this target: form field key → attribute property name. */
+  fieldMap?: Record<string, string>;
+  /** Field keys to leave out of this target's JSON object. */
+  omitFields?: string[];
+  /** Write this single field's value as a flat attribute instead of a JSON object. */
+  flatField?: string;
 }
 
 /**
@@ -93,6 +117,22 @@ export interface DeviceSettingObject {
    * while it is on.
    */
   gateKey?: string;
+  /**
+   * Additional SHARED_SCOPE attribute keys that receive this object's field
+   * values on save (e.g. one "Alarm reporting" card writing both channels'
+   * alarm configs). Displayed values are read from {@link key} only. The same
+   * attribute key may appear in several cards — its fields are merged into a
+   * single object on save.
+   */
+  mirrorKeys?: string[];
+  /**
+   * Full control over where the fields are saved (overrides the default
+   * "{@link key} plus {@link mirrorKeys}" targets) — supports per-device-type
+   * routing, field renames, and flat-attribute targets. Displayed values still
+   * come from {@link key}. Fields with `flatKey` always get an implicit flat
+   * target of their own in addition to these.
+   */
+  targets?: DeviceSettingObjectTarget[];
 }
 
 /** A group of objects under an optional static heading (e.g. "Channel 1"). */
@@ -198,6 +238,10 @@ export class DeviceSettingsCardComponent implements OnChanges {
   @Input() objectCards: DeviceSettingObjectCard[] = [];
   /** Pre-fetched object-attribute values (raw JSON string or object), by attribute key. */
   @Input() objectValues: Record<string, unknown> = {};
+  /** The single device's type — matched against object targets' `deviceTypes`. */
+  @Input() deviceType = "";
+  /** Bulk mode: device type per id, for per-device target routing on save. */
+  @Input() bulkDeviceTypes: Record<string, string> = {};
 
   /** Emitted after a successful save (e.g. so the parent can refresh its table). */
   @Output() saved = new EventEmitter<void>();
@@ -215,8 +259,9 @@ export class DeviceSettingsCardComponent implements OnChanges {
   otherSettings: DeviceSettingControl[] = [];
   /** Snapshot of the form values at populate time, used to save only what changed. */
   private baseline: Record<string, unknown> = {};
-  /** Per-object (keyed by attribute key) split into its gate field + remaining fields. */
-  private objectMeta = new Map<string, { gate: DeviceSettingControl | null; fields: DeviceSettingControl[] }>();
+  /** Per-object split into its gate field + remaining fields. Keyed by the
+   *  object reference (not `key`) — one attribute key may span several cards. */
+  private objectMeta = new Map<DeviceSettingObject, { gate: DeviceSettingControl | null; fields: DeviceSettingControl[] }>();
 
   readonly form: FormGroup;
 
@@ -256,14 +301,14 @@ export class DeviceSettingsCardComponent implements OnChanges {
     if (changes["objectCards"]) {
       for (const obj of this.allObjects()) {
         for (const f of obj.fields) {
-          const name = this.objCtrl(obj.key, f.key);
+          const name = this.ctrlName(obj, f);
           if (!this.form.contains(name)) {
             const initial = f.kind === "toggle" ? false : f.kind === "slider" ? this.defaultNumeric(f) : "";
             this.form.addControl(name, this.fb.control(initial));
           }
         }
         const gate = obj.gateKey ? obj.fields.find((f) => f.key === obj.gateKey) ?? null : null;
-        this.objectMeta.set(obj.key, { gate, fields: obj.fields.filter((f) => f !== gate) });
+        this.objectMeta.set(obj, { gate, fields: obj.fields.filter((f) => f !== gate) });
       }
     }
     // Repopulate from the pre-fetched inputs — but never clobber unsaved edits
@@ -303,7 +348,9 @@ export class DeviceSettingsCardComponent implements OnChanges {
     for (const obj of this.allObjects()) {
       const parsed = this.parseObject(this.objectValues?.[obj.key]);
       for (const f of obj.fields) {
-        values[this.objCtrl(obj.key, f.key)] = this.coerceSettingValue(f, parsed[f.key]);
+        // Flat fields read their own top-level attribute, not the object.
+        const raw = f.flatKey ? this.objectValues?.[f.flatKey] : parsed[f.key];
+        values[this.ctrlName(obj, f)] = this.coerceSettingValue(f, raw);
       }
     }
     this.baseline = { ...values };
@@ -316,11 +363,30 @@ export class DeviceSettingsCardComponent implements OnChanges {
       }
     }
     this.form.reset(values);
+    // Bodies that render already-open never fire a transition, so seed their
+    // settled state here (otherwise their tooltips would stay clipped).
+    this.settledObjects = new Set(this.allObjects().filter((o) => this.isObjGateOn(o)));
   }
 
   /** Composite form-control name for an object attribute's sub-field. */
   objCtrl(objKey: string, fieldKey: string): string {
     return `${objKey}::${fieldKey}`;
+  }
+
+  /** Form-control name for an object field — flat fields use their own key. */
+  ctrlName(obj: DeviceSettingObject, f: DeviceSettingControl): string {
+    return f.flatKey ?? this.objCtrl(obj.key, f.key);
+  }
+
+  /** An object's save targets: explicit `targets`, else key + mirrorKeys —
+   *  plus an implicit flat target for every `flatKey` field. */
+  private targetsOf(obj: DeviceSettingObject): DeviceSettingObjectTarget[] {
+    const base: DeviceSettingObjectTarget[] =
+      obj.targets ?? [{ key: obj.key }, ...(obj.mirrorKeys ?? []).map((key) => ({ key }))];
+    const flats: DeviceSettingObjectTarget[] = obj.fields
+      .filter((f) => f.flatKey)
+      .map((f) => ({ key: f.flatKey!, flatField: f.key }));
+    return [...base, ...flats];
   }
 
   /** All objects across all cards/groups (flattened). */
@@ -330,18 +396,40 @@ export class DeviceSettingsCardComponent implements OnChanges {
 
   /** The gate field of an object (or null when it has none). */
   gateOf(obj: DeviceSettingObject): DeviceSettingControl | null {
-    return this.objectMeta.get(obj.key)?.gate ?? null;
+    return this.objectMeta.get(obj)?.gate ?? null;
   }
 
   /** The non-gate fields of an object. */
   fieldsOf(obj: DeviceSettingObject): DeviceSettingControl[] {
-    return this.objectMeta.get(obj.key)?.fields ?? [];
+    return this.objectMeta.get(obj)?.fields ?? [];
   }
 
   /** Whether an object's gate is on (always true when it has no gate). */
   isObjGateOn(obj: DeviceSettingObject): boolean {
     const gate = this.gateOf(obj);
     return !gate || !!this.form.value[this.objCtrl(obj.key, gate.key)];
+  }
+
+  /** Objects whose reveal animation has finished (overflow released so field
+   *  tooltips can escape the animated body — same idea as the collapsible
+   *  card's `overflowVisible`). */
+  private settledObjects = new Set<DeviceSettingObject>();
+
+  /** Fully open: gate on AND the expand transition has finished. Collapsing
+   *  drops this immediately (gate off), restoring the clip for the animation. */
+  isObjSettled(obj: DeviceSettingObject): boolean {
+    return this.isObjGateOn(obj) && this.settledObjects.has(obj);
+  }
+
+  onObjBodyTransitionEnd(obj: DeviceSettingObject, ev: TransitionEvent): void {
+    if (ev.propertyName !== "grid-template-rows") {
+      return;
+    }
+    if (this.isObjGateOn(obj)) {
+      this.settledObjects.add(obj);
+    } else {
+      this.settledObjects.delete(obj);
+    }
   }
 
   /** Object keys flagged "Set Null" (force the gate off across devices in bulk). */
@@ -488,39 +576,75 @@ export class DeviceSettingsCardComponent implements OnChanges {
       // `!= null` skips tri-state toggles left "unchanged" in bulk mode.
       .filter((s) => changed(s.key) && this.form.value[s.key] != null)
       .map((s) => ({ key: s.key, value: this.settingSaveValue(s) }));
-    for (const obj of this.allObjects()) {
-      const nullify = this.setNullKeys.has(obj.key);
-      if (nullify || obj.fields.some((f) => changed(this.objCtrl(obj.key, f.key)))) {
-        const value: Record<string, unknown> = {};
-        for (const f of obj.fields) {
-          value[f.key] = this.settingSaveValue(f, this.objCtrl(obj.key, f.key));
-        }
-        // "Set Null" forces the gate off regardless of the form state.
+    // Merge object fields by target attribute key, per device type: a key may
+    // be split across several cards (each contributing some fields), an object
+    // may mirror into extra keys, and a target may apply only to some hardware
+    // versions (target.deviceTypes) with renamed properties (target.fieldMap)
+    // or as a flat attribute (target.flatField). A JSON target is written whole
+    // when any object contributing to it changed; flat targets are written when
+    // their own field changed.
+    const typeOfDevice = (id: string): string =>
+      this.isBulk ? this.bulkDeviceTypes[id] ?? "" : this.deviceType || "";
+    const objectAttrsByType = new Map<string, { key: string; value: unknown }[]>();
+    for (const type of new Set(targetIds.map(typeOfDevice))) {
+      const merged = new Map<string, Record<string, unknown>>();
+      const changedKeys = new Set<string>();
+      const flatAttrs: { key: string; value: unknown }[] = [];
+      for (const obj of this.allObjects()) {
         const gate = this.gateOf(obj);
-        if (nullify && gate) {
-          value[gate.key] = false;
+        const nullify = !!gate && this.setNullKeys.has(obj.key);
+        const anyChanged = nullify || obj.fields.some((f) => changed(this.ctrlName(obj, f)));
+        for (const target of this.targetsOf(obj)) {
+          if (target.deviceTypes && !target.deviceTypes.includes(type)) {
+            continue;
+          }
+          if (target.flatField) {
+            const f = obj.fields.find((x) => x.key === target.flatField);
+            if (f && changed(this.ctrlName(obj, f))) {
+              flatAttrs.push({ key: target.key, value: this.settingSaveValue(f, this.ctrlName(obj, f)) });
+            }
+            continue;
+          }
+          const value = merged.get(target.key) ?? {};
+          for (const f of obj.fields) {
+            if (f.flatKey || target.omitFields?.includes(f.key)) {
+              continue;
+            }
+            value[target.fieldMap?.[f.key] ?? f.key] = this.settingSaveValue(f, this.ctrlName(obj, f));
+          }
+          // "Set Null" forces the gate off regardless of the form state.
+          if (nullify && gate) {
+            value[target.fieldMap?.[gate.key] ?? gate.key] = false;
+          }
+          merged.set(target.key, value);
+          if (anyChanged) {
+            changedKeys.add(target.key);
+          }
         }
-        sharedAttrs.push({ key: obj.key, value });
       }
+      objectAttrsByType.set(type, [
+        ...[...changedKeys].map((key) => ({ key, value: merged.get(key)! })),
+        ...flatAttrs,
+      ]);
     }
 
     const labelChanged = !this.isBulk && (this.form.value.label ?? "") !== (this.baseline["label"] ?? "");
     const descChanged = !this.isBulk && (this.form.value.description ?? "") !== (this.baseline["description"] ?? "");
 
-    // A SHARED_SCOPE change triggers a config downlink, so mark each device queued:
-    // bump its downlinkQueue by 1 and set syncState = false. A rule chain decrements
-    // the queue on each ChirpStack txack and sets syncState = true at 0. The current
+    // Save the changed attributes to every target device (one in single mode,
+    // all checked devices in bulk). Each device gets the flat settings plus the
+    // object attributes routed for its hardware version. A SHARED_SCOPE change
+    // triggers a config downlink, so mark that device queued: bump its
+    // downlinkQueue by 1 and set syncState = false. A rule chain decrements the
+    // queue on each ChirpStack txack and sets syncState = true at 0. The current
     // per-device count comes from the table subscription — single: `downlinkQueue`;
     // bulk: `bulkDownlinkQueues[id]` — so the increment is correct for every device.
-    const queueDownlink = !!this.syncStateKey && sharedAttrs.length > 0;
-
-    // Save the changed attributes to every target device (one in single mode,
-    // all checked devices in bulk).
     const attrCalls: Observable<any>[] = [];
     for (const id of targetIds) {
       const entityId = { entityType: EntityType.DEVICE, id };
+      const deviceSharedAttrs = [...sharedAttrs, ...(objectAttrsByType.get(typeOfDevice(id)) ?? [])];
       const deviceServerAttrs = [...serverAttrs];
-      if (queueDownlink) {
+      if (this.syncStateKey && deviceSharedAttrs.length) {
         if (this.downlinkQueueKey) {
           const current = this.isBulk ? this.bulkDownlinkQueues[id] ?? 0 : this.downlinkQueue || 0;
           deviceServerAttrs.push({ key: this.downlinkQueueKey, value: current + 1 });
@@ -537,12 +661,12 @@ export class DeviceSettingsCardComponent implements OnChanges {
           ) as Observable<any>,
         );
       }
-      if (sharedAttrs.length) {
+      if (deviceSharedAttrs.length) {
         attrCalls.push(
           this.ctx.attributeService.saveEntityAttributes(
             entityId,
             AttributeScope.SHARED_SCOPE,
-            sharedAttrs,
+            deviceSharedAttrs,
             cfg,
           ) as Observable<any>,
         );

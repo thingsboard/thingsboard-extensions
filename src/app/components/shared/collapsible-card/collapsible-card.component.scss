@@ -24,11 +24,12 @@
   border: 1px solid var(--c-border-neutral-light);
   border-radius: 13px;
   box-sizing: border-box;
-  overflow: hidden;
+  // No overflow clipping on the card itself — the header's info tooltip must
+  // escape it even while collapsed. The animating body clips via .cc-body-wrap.
 
   // Once fully expanded, let overflowing children (e.g. a select dropdown
-  // panel) escape the card instead of being clipped.
-  &.cc-overflow-visible,
+  // panel) escape the body instead of being clipped.
+  &.cc-overflow-visible .cc-body-wrap,
   &.cc-overflow-visible .cc-body {
     overflow: visible;
   }
@@ -93,10 +94,14 @@
 }
 
 // Smoothly animate the body height by transitioning the grid track 0fr → 1fr.
+// Clipping lives here (not on the card) so the header tooltip is never cut
+// off; the radius matches the card's rounded bottom corners.
 .cc-body-wrap {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.35s ease;
+  overflow: hidden;
+  border-radius: 0 0 12px 12px;
 
   &.expanded {
     grid-template-rows: 1fr;

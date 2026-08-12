@@ -79,7 +79,8 @@
 .ds-object {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  // No flex gap: the body's spacing rides on .ds-object-body-wrap's animated
+  // margin, so a collapsed (zero-height) body leaves no stray gap.
 }
 
 .ds-object-label {
@@ -155,13 +156,45 @@
 
 // Indented block of a gated object's fields, with a left accent line so each
 // object (e.g. Mutation alarm vs Threshold alarm) reads as a distinct unit.
+// Animated reveal of an object's fields when its gate switch turns on — the
+// same grid-track 0fr → 1fr transition the collapsible cards use. The 12px
+// gap to the gate row is a transitioned margin so it collapses away too.
+.ds-object-body-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  transition: grid-template-rows 0.35s ease, margin-top 0.35s ease;
+
+  &.expanded {
+    grid-template-rows: 1fr;
+    margin-top: 12px;
+  }
+}
+
 .ds-object-body {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-height: 0;
+  overflow: hidden;
   margin-left: 7px; // centre the rule under the switch
   padding: 4px 0 4px 16px;
   border-left: 1px solid light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+  transition: padding 0.35s ease;
+}
+
+// While collapsed, drop the body's vertical padding so the grid track really
+// reaches zero height (mirrors the collapsible card's padding transition).
+.ds-object-body-wrap:not(.expanded) .ds-object-body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+// Once the expand transition settles, release the clip so field tooltips can
+// escape the body (same idea as the collapsible card's cc-overflow-visible).
+// Collapsing re-clips immediately — .settled drops as soon as the gate is off.
+.ds-object-body-wrap.settled .ds-object-body {
+  overflow: visible;
 }
 
 // Flat variant: no grouping accent line / indent.
