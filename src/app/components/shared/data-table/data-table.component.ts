@@ -132,6 +132,9 @@ export class DataTableComponent implements OnChanges, AfterViewInit {
   @Input() searchPlaceholder = "Search";
   /** Hide the whole card header (title + search + actions row). */
   @Input() showHeader = true;
+  /** Render the title as a plain compact row (collapsible-card style: 14px
+   *  bold, no icon badge, no actions/search) instead of the widget header. */
+  @Input() compactHeader = false;
   /** Row properties included in the search filter (defaults to all column keys). */
   @Input() searchKeys: string[] = [];
   /** Hide the column header row (useful for single rich-cell tables). */

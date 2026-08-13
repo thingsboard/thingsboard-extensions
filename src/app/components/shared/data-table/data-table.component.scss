@@ -17,6 +17,7 @@
 // Self-contained, themed data table. Colours come from the dashboard's `--c-*`
 // tokens (inherited from an ancestor), so it adapts to light/dark.
 
+@use "../styles/card";
 @use "../styles/icon-button";
 
 :host {
@@ -24,15 +25,12 @@
 }
 
 .dt-card {
-  display: block;
-  background-color: var(--c-bg-neutral-extralight);
-  border: 1px solid var(--c-border-neutral-light);
-  border-radius: 13px;
+  // Shared card shell; padding 0 — the header/cells sit on the 16px grid.
+  @include card.tb-card-shell(0);
   // Clip children to the rounded shape so a hover/focus background never bleeds
   // into the corners and squares them off. (No cell here uses a pop-out menu, so
   // clipping is safe.)
   overflow: hidden;
-  box-sizing: border-box;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
@@ -63,6 +61,27 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+// Compact header: same text treatment as the collapsible-card title
+// (.cc-title — 14px bold), no icon or actions. Sides align to the 16px grid
+// shared by the cells and the inset row divider, so title, rows, and divider
+// all start on the same left edge.
+.dt-compact-title {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-neutral-heavy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Compact-header cards: the title row gives the top breathing room but the
+// last row only has its own cell padding, so pad the (fluid) scroll area to
+// even out the outside spacing.
+.dt-compact-header .dt-scroll.dt-fluid {
+  padding-bottom: 6px;
 }
 
 .dt-icon-btn {
@@ -174,6 +193,19 @@
     color: var(--c-text-neutral-heavy);
     border-bottom: 1px solid var(--c-border-neutral-light);
     padding: 10px 16px;
+  }
+
+  // The host ThingsBoard app's Material styles pad the first/last cell of a
+  // row to 24px at high specificity, shifting the text off the 16px grid the
+  // inset row divider sits on. Re-pin them so text and divider share one edge.
+  td.mat-mdc-cell:first-of-type,
+  th.mat-mdc-header-cell:first-of-type {
+    padding-left: 16px;
+  }
+
+  td.mat-mdc-cell:last-of-type,
+  th.mat-mdc-header-cell:last-of-type {
+    padding-right: 16px;
   }
 
   tr.mat-mdc-row {

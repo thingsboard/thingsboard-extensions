@@ -14,6 +14,7 @@
 /// limitations under the License.
 ///
 
+@use "../../../components/shared/styles/card";
 @use "../../../components/shared/styles/icon-button";
 
 // SCSS aliases mapped to The Things Stack light-theme CSS custom properties
@@ -536,11 +537,7 @@ $text: var(--c-text-neutral-heavy); // #1c293f — headings / strong
 
 // Battery level card (non-collapsible).
 .qc-battery-card {
-  background-color: var(--c-bg-neutral-extralight);
-  border: 1px solid var(--c-border-neutral-light);
-  border-radius: 13px;
-  padding: 12px 14px;
-  box-sizing: border-box;
+  @include card.tb-card-shell;
 }
 
 .qc-battery-head {

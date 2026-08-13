@@ -1,4 +1,4 @@
-<tb-detail-panel [open]="open" [dismissible]="dismissible" (closed)="closed.emit()">
+<tb-detail-panel [open]="open" [dismissible]="dismissible" [flushBody]="flushBody" (closed)="closed.emit()">
   <!-- Header summary: icon badge + name/subtitle (replaces the plain title). -->
   <div dp-title class="edp-summary">
     <div class="edp-badge"><mat-icon>{{ icon }}</mat-icon></div>

@@ -62,6 +62,8 @@ export class EntityDetailPanelComponent implements OnChanges {
   @Input() tabs: SegmentOption[] = DEFAULT_TABS;
   /** Show a click-to-dismiss backdrop (closes the panel on click-off). */
   @Input() dismissible = false;
+  /** Drop the body's top padding so content starts flush under the header. */
+  @Input() flushBody = false;
 
   /** Emitted when the panel is closed. */
   @Output() closed = new EventEmitter<void>();

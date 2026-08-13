@@ -22,6 +22,7 @@ import { Observable, forkJoin } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { AttributeScope, EntityType, SharedModule } from "@shared/public-api";
 import { WidgetContext } from "@home/models/widget-component.models";
+import { CardComponent } from "../card/card.component";
 import { SelectComponent } from "../select/select.component";
 import { CopyBoxComponent } from "../copy-box/copy-box.component";
 import { CollapsibleCardComponent } from "../collapsible-card/collapsible-card.component";
@@ -170,6 +171,7 @@ export interface DeviceSettingObjectCard {
   imports: [
     CommonModule,
     SharedModule,
+    CardComponent,
     SelectComponent,
     CopyBoxComponent,
     CollapsibleCardComponent,

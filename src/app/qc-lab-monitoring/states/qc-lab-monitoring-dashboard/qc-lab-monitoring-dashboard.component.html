@@ -83,7 +83,7 @@
 
   <!-- Bulk settings editor — reuses the detail-panel sidebar with a single
        Settings tab; applies the changed settings to every checked device. -->
-  <tb-entity-detail-panel [open]="bulkEditOpen" icon="tune" [dismissible]="true"
+  <tb-entity-detail-panel [open]="bulkEditOpen" icon="tune" [dismissible]="true" [flushBody]="true"
                           [name]="selectedDeviceIds.length + ' devices'" subtitle="Bulk settings" [tabs]="bulkTabs"
                           (closed)="closeBulkEdit()">
     <tb-device-settings-card settings *ngIf="bulkEditOpen" [ctx]="ctx" [bulkDeviceIds]="selectedDeviceIds"
@@ -98,7 +98,8 @@
   <!-- Alarms panel (opened from the header alarm button) — same side panel as
        the bulk editor, styled like the device detail panel's Alarms tab. -->
   <tb-entity-detail-panel [open]="alarmDialogOpen" icon="notifications" name="Alarms" subtitle="All devices"
-                          [tabs]="alarmPanelTabs" [dismissible]="true" (closed)="alarmDialogOpen = false">
+                          [tabs]="alarmPanelTabs" [dismissible]="true" [flushBody]="true"
+                          (closed)="alarmDialogOpen = false">
     <div alarms class="qc-detail-alarms">
       <!-- Severity filter (always visible, matching the Alarms tab). -->
       <div class="qc-detail-alarm-filter">
@@ -115,10 +116,12 @@
         </button>
       </div>
 
-      <tb-data-table [showHeader]="false" [columns]="alarmColumns" [rows]="displayedAlarms" [loading]="alarmsLoading"
-                     [showColumnHeaders]="false" [searchEnabled]="false" [paginated]="false" trackByKey="id"
-                     [insetRowDivider]="true" [rowHover]="false" emptyText="No alarms" emptyIcon="notifications_off"
-                     loadingText="Loading alarms…">
+      <!-- One card per device, titled with its display name (label || name);
+           rows match the single-device Alarms tab (date + reading). -->
+      <tb-data-table *ngFor="let g of alarmGroups; trackBy: trackByGroupId" [title]="g.name" [compactHeader]="true"
+                     [columns]="alarmColumns" [rows]="g.rows" [showColumnHeaders]="false" [searchEnabled]="false"
+                     [paginated]="false" trackByKey="id" [insetRowDivider]="true" [rowHover]="false"
+                     emptyText="No alarms">
         <ng-template tbDataTableCell="alarm" let-row>
           <div class="alarm-cell">
             <div class="alarm-main">
@@ -132,8 +135,10 @@
                   <span class="seg" [class.on]="severityRank(row.severity) >= 4"></span>
                 </span>
                 <span class="alarm-date">{{ row.createdTime | date: "MMM d 'at' HH:mm" }}</span>
-                <span class="cell-meta-divider"></span>
-                <span class="alarm-device">{{ row.originatorName }}</span>
+                <ng-container *ngIf="row.detailsData">
+                  <span class="cell-meta-divider"></span>
+                  <span class="alarm-data">{{ row.detailsData }}</span>
+                </ng-container>
               </div>
             </div>
 
@@ -152,6 +157,12 @@
           </div>
         </ng-template>
       </tb-data-table>
+
+      <!-- Empty / loading state — a single headerless card, as before. -->
+      <tb-data-table *ngIf="!alarmGroups.length" [showHeader]="false" [columns]="alarmColumns" [rows]="[]"
+                     [loading]="alarmsLoading" [showColumnHeaders]="false" [searchEnabled]="false" [paginated]="false"
+                     [insetRowDivider]="true" [rowHover]="false" emptyText="No alarms" emptyIcon="notifications_off"
+                     loadingText="Loading alarms…"></tb-data-table>
     </div>
   </tb-entity-detail-panel>
 

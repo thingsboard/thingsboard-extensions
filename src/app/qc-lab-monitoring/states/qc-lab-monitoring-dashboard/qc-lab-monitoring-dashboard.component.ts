@@ -258,12 +258,16 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   ];
   /** Alarm rows shown in the popup (after the severity filter). */
   displayedAlarms: AlarmRow[] = [];
+  /** {@link displayedAlarms} grouped per originator device (one card each). */
+  alarmGroups: { id: string; name: string; rows: AlarmRow[] }[] = [];
   /** Severity filter for the detail panel's Alarms tab (independent of the popup). */
   detailAlarmSeverity: string | null = null;
   /** The selected device's alarms (after the Alarms-tab severity filter). */
   detailAlarms: AlarmRow[] = [];
-  /** Cards for the single-device panel — reporting variant per selected device. */
-  detailObjectCards: DeviceSettingObjectCard[] = this.cardsWithReporting(this.reportingCard("v1"));
+  /** Cards for the single-device panel — reporting variant per selected device.
+   *  Assigned in the constructor: the card-definition fields live further down
+   *  the class, so a field initializer here would read them as undefined. */
+  detailObjectCards: DeviceSettingObjectCard[] = [];
   private readonly themeSettingKey = "darkMode";
   /** Colour of the temperature chart's alarm-threshold lines — the Major alarm
    *  severity orange (#f66716 light / #ff8a45 dark), resolved by the chart. */
@@ -389,8 +393,9 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       },
     ],
   };
-  /** Cards for the bulk editor — reporting routed per device on save. */
-  readonly bulkObjectCards: DeviceSettingObjectCard[] = this.cardsWithReporting(this.bulkReportingCard);
+  /** Cards for the bulk editor — reporting routed per device on save.
+   *  Assigned in the constructor (see detailObjectCards). */
+  bulkObjectCards: DeviceSettingObjectCard[] = [];
   private readonly calibrationCard: DeviceSettingObjectCard = {
     title: "Calibration",
     info: "Adds a fixed offset to each channel's temperature reading.",
@@ -438,7 +443,13 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   /** 1s ticker (runs only while the panel is open) so "Updated Xs ago" counts up. */
   private clockTimer?: any;
 
-  constructor(private cd: ChangeDetectorRef, private destroyRef: DestroyRef) {}
+  constructor(private cd: ChangeDetectorRef, private destroyRef: DestroyRef) {
+    // Built here (not as field initializers) so they're independent of the
+    // card-definition fields' declaration order — the constructor always runs
+    // after every field initializer.
+    this.detailObjectCards = this.cardsWithReporting(this.reportingCard("v1"));
+    this.bulkObjectCards = this.cardsWithReporting(this.bulkReportingCard);
+  }
 
   /** Whether the selected device has a pending (queued) settings downlink. */
   get settingsQueued(): boolean {
@@ -656,6 +667,11 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       .subscribe();
   }
 
+  /** Track alarm-panel group cards by their device id. */
+  trackByGroupId(index: number, group: { id: string }): string {
+    return group.id;
+  }
+
   /** Toggle the severity filter (clicking the active one clears it). */
   toggleAlarmSeverity(value: string): void {
     this.alarmSeverityFilter = this.alarmSeverityFilter === value ? null : value;
@@ -775,6 +791,9 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
             .sort((a, b) => a.name.localeCompare(b.name));
           this.devicesLoading = false;
           this.refreshSelectedDevice();
+          // Devices may arrive after the alarms — refresh the alarm-panel group
+          // titles now that display names (label || name) are known.
+          this.alarmGroups = this.groupAlarms(this.displayedAlarms);
           this.cd.detectChanges();
         },
         error: () => {
@@ -982,6 +1001,27 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   private applyAlarmFilter(): void {
     const f = this.alarmSeverityFilter;
     this.displayedAlarms = f ? this.alarmsRows.filter((r) => (r.severity || "").toUpperCase() === f) : this.alarmsRows;
+    this.alarmGroups = this.groupAlarms(this.displayedAlarms);
+  }
+
+  /**
+   * Group the panel's alarms per originator device, preserving the list order
+   * (groups appear in order of their most recent alarm). The card title is the
+   * device's display name — label when set, else name — resolved against the
+   * devices table, falling back to the alarm's own originator name.
+   */
+  private groupAlarms(rows: AlarmRow[]): { id: string; name: string; rows: AlarmRow[] }[] {
+    const byId = new Map<string, { id: string; name: string; rows: AlarmRow[] }>();
+    for (const r of rows) {
+      let group = byId.get(r.originatorId);
+      if (!group) {
+        const device = this.devicesRows.find((d) => d.deviceId === r.originatorId);
+        group = { id: r.originatorId, name: device?.name || r.originatorName || "Unknown device", rows: [] };
+        byId.set(r.originatorId, group);
+      }
+      group.rows.push(r);
+    }
+    return [...byId.values()];
   }
 
   /**

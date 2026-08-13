@@ -20,7 +20,7 @@
   <div class="dp-tabs">
     <ng-content select="[dp-tabs]"></ng-content>
   </div>
-  <div class="dp-body">
+  <div class="dp-body" [class.dp-body--flush]="flushBody">
     <ng-content></ng-content>
   </div>
 </div>

@@ -1,6 +1,6 @@
 <div class="ds-cards">
   <!-- Per-device identity fields — hidden when editing several devices at once. -->
-  <div class="ds-card" *ngIf="!isBulk">
+  <tb-card *ngIf="!isBulk">
     <div class="ds-form" [formGroup]="form">
       <div class="ds-field">
         <span class="ds-label">Name</span>
@@ -25,7 +25,7 @@
                   aria-label="Note"></textarea>
       </div>
     </div>
-  </div>
+  </tb-card>
 
   <!-- Attribute-backed selects (e.g. Sensor channels). -->
   <tb-collapsible-card *ngIf="attributeSelects.length" [title]="attributeCardTitle">

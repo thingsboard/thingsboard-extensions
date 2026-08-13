@@ -14,16 +14,16 @@
 /// limitations under the License.
 ///
 
+@use "../styles/card";
+
 :host {
   display: block;
 }
 
 .cc-card {
-  display: block;
-  background-color: var(--c-bg-neutral-extralight);
-  border: 1px solid var(--c-border-neutral-light);
-  border-radius: 13px;
-  box-sizing: border-box;
+  // Shared card shell; padding 0 — the header/body carry the 16px gutters so
+  // the body can animate closed without fighting a card-level padding.
+  @include card.tb-card-shell(0);
   // No overflow clipping on the card itself — the header's info tooltip must
   // escape it even while collapsed. The animating body clips via .cc-body-wrap.
 
@@ -40,7 +40,9 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 12px 14px;
+  // The shared card padding all around: a collapsed card reads as a uniform
+  // frame, and the body below carries the same side gutters.
+  padding: card.$card-padding;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -111,10 +113,12 @@
 .cc-body {
   min-height: 0;
   overflow: hidden;
-  padding: 0 14px;
+  padding: 0 card.$card-padding;
   transition: padding 0.35s ease;
 }
 
+// The header's bottom padding already separates title from content, so the
+// expanded body only adds the bottom of the card's padding frame.
 .cc-body-wrap.expanded .cc-body {
-  padding: 4px 14px 14px;
+  padding: 0 card.$card-padding card.$card-padding;
 }

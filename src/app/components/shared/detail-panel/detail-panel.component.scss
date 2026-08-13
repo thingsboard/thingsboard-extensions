@@ -70,6 +70,7 @@
   padding: 14px 16px;
 }
 
+
 .dp-title-area {
   flex: 1 1 auto;
   min-width: 0;
@@ -107,4 +108,11 @@
   overflow-y: auto;
   overflow-x: hidden; // never scroll sideways — clip any slight overflow
   padding: 16px;
+
+  // Flush variant: no top padding, so the first content block starts directly
+  // under the header — the same Y where the device panel's tab pills sit,
+  // level with the dashboard navbar's divider.
+  &.dp-body--flush {
+    padding-top: 0;
+  }
 }

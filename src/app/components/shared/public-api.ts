@@ -16,6 +16,7 @@
 
 export * from "./slider-input.component";
 export * from "./mobile-hint-tooltip.directive";
+export * from "./card/card.component";
 export * from "./data-table/data-table.component";
 export * from "./copy-box/copy-box.component";
 export * from "./widget-header/widget-header.component";

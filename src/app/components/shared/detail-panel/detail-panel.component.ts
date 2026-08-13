@@ -49,6 +49,9 @@ export class DetailPanelComponent {
   @Input() title = "";
   /** Show a click-to-dismiss backdrop behind the panel (closes on click-off). */
   @Input() dismissible = false;
+  /** Drop the body's top padding so content starts flush under the header
+   *  (level with the dashboard navbar's divider line). */
+  @Input() flushBody = false;
 
   /** Emitted when the user closes the panel (close button, Escape, or backdrop). */
   @Output() closed = new EventEmitter<void>();

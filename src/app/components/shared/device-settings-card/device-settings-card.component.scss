@@ -26,14 +26,7 @@
   padding-bottom: 56px;
 }
 
-// Card shell matching the other side-panel widgets.
-.ds-card {
-  background-color: var(--c-bg-neutral-extralight);
-  border: 1px solid var(--c-border-neutral-light);
-  border-radius: 13px;
-  padding: 16px;
-  box-sizing: border-box;
-}
+// The identity card shell is the shared <tb-card> component (16px padding).
 
 .ds-form {
   display: flex;
