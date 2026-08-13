@@ -42,7 +42,13 @@ import { SegmentOption } from "../../../components/shared/segmented-control/segm
 import { MetricChartCardComponent, MetricChartSection } from "../../../components/shared/metric-chart-card/metric-chart-card.component";
 import { LineChartThreshold } from "../../../components/shared/line-chart/line-chart.component";
 import { LorawanSignalCardComponent } from "../../../components/shared/lorawan-signal-card/lorawan-signal-card.component";
-import { AttributeSelect, DeviceSettingControl, DeviceSettingObject, DeviceSettingObjectCard, DeviceSettingsCardComponent } from "../../../components/shared/device-settings-card/device-settings-card.component";
+import {
+  AttributeSelect,
+  DeviceSettingControl,
+  DeviceSettingObject,
+  DeviceSettingObjectCard,
+  DeviceSettingsCardComponent,
+} from "../../../components/shared/device-settings-card/device-settings-card.component";
 import { injectCss } from "../../../components/shared/cdn-loader";
 import { WidgetContext } from "@home/models/widget-component.models";
 
@@ -241,9 +247,7 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   /** Whether the alarms side panel is open. */
   alarmDialogOpen = false;
   /** Single-tab config for the alarms panel (the lone pill is hidden). */
-  readonly alarmPanelTabs: SegmentOption[] = [
-    { id: "alarms", label: "Alarms", icon: "notifications", tooltip: "Alarms" },
-  ];
+  readonly alarmPanelTabs: SegmentOption[] = [{ id: "alarms", label: "Alarms", icon: "notifications", tooltip: "Alarms" }];
   alarmSeverityFilter: string | null = null;
   /** Severity filter options (value matches the alarm severity, UPPER_CASE). */
   readonly alarmSeverities = [
@@ -258,6 +262,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
   detailAlarmSeverity: string | null = null;
   /** The selected device's alarms (after the Alarms-tab severity filter). */
   detailAlarms: AlarmRow[] = [];
+  /** Cards for the single-device panel — reporting variant per selected device. */
+  detailObjectCards: DeviceSettingObjectCard[] = this.cardsWithReporting(this.reportingCard("v1"));
   private readonly themeSettingKey = "darkMode";
   /** Colour of the temperature chart's alarm-threshold lines — the Major alarm
    *  severity orange (#f66716 light / #ff8a45 dark), resolved by the chart. */
@@ -285,14 +291,15 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     { kind: "toggle", key: "enable", label: "Enable" },
     { kind: "slider", key: "calibrationValue", label: "Calibration value", min: -10, max: 10, step: 1, unitFrom: this.tempUnitFrom },
   ];
+  // Threshold alarm: temperatureChnNAlarmConfig = {enable, alarmReleaseEnable,
+  // condition, thresholdMin, thresholdMax, alarmReportingTimes, alarmReportingInterval}.
+  // The per-channel card edits the threshold fields; the reporting fields live
   // Mutation alarm: temperatureChnNMutationAlarmConfig = {enable, mutation}.
   private readonly mutationFields: DeviceSettingControl[] = [
     { kind: "toggle", key: "enable", label: "Enable" },
     { kind: "slider", key: "mutation", label: "Mutation value", min: 0, max: 20, step: 1, unitFrom: this.tempUnitFrom },
   ];
-  // Threshold alarm: temperatureChnNAlarmConfig = {enable, alarmReleaseEnable,
-  // condition, thresholdMin, thresholdMax, alarmReportingTimes, alarmReportingInterval}.
-  // The per-channel card edits the threshold fields; the reporting fields live
+  // Alarm reporting: the release/reporting sub-fields of temperatureChnNAlarmConfig,
   // in the shared "Alarm reporting" card below (written to both channels).
   private readonly thresholdFields: DeviceSettingControl[] = [
     { kind: "toggle", key: "enable", label: "Enable" },
@@ -310,7 +317,10 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     { kind: "slider", key: "thresholdMin", label: "Min threshold", min: -40, max: 80, step: 1, unitFrom: this.tempUnitFrom },
     { kind: "slider", key: "thresholdMax", label: "Max threshold", min: -40, max: 80, step: 1, unitFrom: this.tempUnitFrom },
   ];
-  // Alarm reporting: the release/reporting sub-fields of temperatureChnNAlarmConfig,
+  // Two hardware versions store the alarm-reporting settings differently:
+  //  - Milesight-TS302 (V1): inside each channel's temperatureChnNAlarmConfig
+  //    ({alarmReleaseEnable, alarmReportingTimes, alarmReportingInterval}).
+  //  - Milesight-TS302-V2: globally, as a flat alarmReleaseEnable attribute
   // edited once and applied to both channels' configs (values shown from channel 1).
   private readonly alarmReportingFields: DeviceSettingControl[] = [
     {
@@ -339,10 +349,6 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       info: "Interval between alarm reports while the alarm condition persists.",
     },
   ];
-  // Two hardware versions store the alarm-reporting settings differently:
-  //  - Milesight-TS302 (V1): inside each channel's temperatureChnNAlarmConfig
-  //    ({alarmReleaseEnable, alarmReportingTimes, alarmReportingInterval}).
-  //  - Milesight-TS302-V2: globally, as a flat alarmReleaseEnable attribute
   //    plus alarmConfig = {alarmCounts, alarmInterval}.
   private readonly v2Type = "Milesight-TS302-V2";
   private readonly v1Type = "Milesight-TS302";
@@ -352,19 +358,6 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     { ...this.alarmReportingFields[1], key: "alarmCounts" },
     { ...this.alarmReportingFields[2], key: "alarmInterval" },
   ];
-  /** Alarm reporting card per hardware version (single-device panel). */
-  private reportingCard(version: "v1" | "v2"): DeviceSettingObjectCard {
-    const object: DeviceSettingObject =
-      version === "v2"
-        ? { key: "alarmConfig", label: "", fields: this.alarmReportingFieldsV2 }
-        : {
-            key: "temperatureChn1AlarmConfig",
-            label: "",
-            mirrorKeys: ["temperatureChn2AlarmConfig"],
-            fields: this.alarmReportingFields,
-          };
-    return { title: "Alarm reporting", flatFields: true, groups: [{ objects: [object] }] };
-  }
   /**
    * Bulk alarm reporting: one set of controls, routed per hardware version on
    * save — V1 devices get the values inside both channel configs, V2 devices
@@ -396,6 +389,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       },
     ],
   };
+  /** Cards for the bulk editor — reporting routed per device on save. */
+  readonly bulkObjectCards: DeviceSettingObjectCard[] = this.cardsWithReporting(this.bulkReportingCard);
   private readonly calibrationCard: DeviceSettingObjectCard = {
     title: "Calibration",
     info: "Adds a fixed offset to each channel's temperature reading.",
@@ -435,14 +430,6 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       },
     ],
   };
-  /** Cards for the single-device panel — reporting variant per selected device. */
-  detailObjectCards: DeviceSettingObjectCard[] = this.cardsWithReporting(this.reportingCard("v1"));
-  /** Cards for the bulk editor — reporting routed per device on save. */
-  readonly bulkObjectCards: DeviceSettingObjectCard[] = this.cardsWithReporting(this.bulkReportingCard);
-
-  private cardsWithReporting(reporting: DeviceSettingObjectCard): DeviceSettingObjectCard[] {
-    return [this.calibrationCard, reporting, this.thresholdCard, this.mutationCard];
-  }
   private alarmService: AlarmService;
   private alarmsSubscription: any;
   private devicesSubscription: any;
@@ -504,9 +491,7 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
    *  (for prefetch), across both hardware versions — deduped. */
   private get objectAttributeKeys(): string[] {
     const cards = [...this.cardsWithReporting(this.reportingCard("v1")), this.reportingCard("v2")];
-    const keys = cards.flatMap((c) =>
-      c.groups.flatMap((g) => g.objects.flatMap((o) => [o.key, ...o.fields.map((f) => f.flatKey).filter(Boolean) as string[]])),
-    );
+    const keys = cards.flatMap((c) => c.groups.flatMap((g) => g.objects.flatMap((o) => [o.key, ...(o.fields.map((f) => f.flatKey).filter(Boolean) as string[])])));
     return [...new Set(keys)];
   }
 
@@ -562,9 +547,10 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     this.bulkEditOpen = false;
   }
 
-  /** After a bulk save: close the panel, clear the checkboxes, refresh. */
+  /** After a bulk save: close the panel, exit select mode, refresh. */
   onBulkSaved(): void {
     this.bulkEditOpen = false;
+    this.selectMode = false;
     this.clearDeviceSelection();
     this.loadDevices();
   }
@@ -611,8 +597,6 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     this.detailAlarmSeverity = this.detailAlarmSeverity === value ? null : value;
     this.applyDetailAlarms();
   }
-  // Debounce the table refresh: coalesce a burst of telemetry into a single
-  // re-query shortly after the last change, so values update near-instantly
 
   ngOnInit(): void {
     this.ctx.$scope.qcLabMonitoringDashboardComponent = this;
@@ -637,6 +621,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
     clearTimeout(this.devicesRefreshTimer);
     this.stopClock();
   }
+  // Debounce the table refresh: coalesce a burst of telemetry into a single
+  // re-query shortly after the last change, so values update near-instantly
 
   ngAfterViewInit(): void {
     this.cd.detectChanges();
@@ -686,8 +672,6 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ error: () => (alarm.acknowledged = false) });
   }
-
-  // -- alarm popup ------------------------------------------------------------
 
   clearAlarm(alarm: AlarmRow): void {
     if (alarm.cleared) {
@@ -800,6 +784,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       });
   }
 
+  // -- alarm popup ------------------------------------------------------------
+
   /** Live "x ago" string for a past timestamp (ms): seconds → minutes → hours →
    *  days. Re-evaluated every second by the panel clock while open. */
   relativeTime(ts: number | null): string {
@@ -849,6 +835,24 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
       default:
         return 1; // WARNING / INDETERMINATE
     }
+  }
+
+  /** Alarm reporting card per hardware version (single-device panel). */
+  private reportingCard(version: "v1" | "v2"): DeviceSettingObjectCard {
+    const object: DeviceSettingObject =
+      version === "v2"
+        ? { key: "alarmConfig", label: "", fields: this.alarmReportingFieldsV2 }
+        : {
+            key: "temperatureChn1AlarmConfig",
+            label: "",
+            mirrorKeys: ["temperatureChn2AlarmConfig"],
+            fields: this.alarmReportingFields,
+          };
+    return { title: "Alarm reporting", flatFields: true, groups: [{ objects: [object] }] };
+  }
+
+  private cardsWithReporting(reporting: DeviceSettingObjectCard): DeviceSettingObjectCard[] {
+    return [this.calibrationCard, reporting, this.thresholdCard, this.mutationCard];
   }
 
   // -- data -------------------------------------------------------------------
@@ -1127,8 +1131,8 @@ export class QcLabMonitoringDashboardComponent implements OnInit, AfterViewInit,
         continue;
       }
       counts.set(a.originatorId, (counts.get(a.originatorId) ?? 0) + 1);
-      // "Channel 1/2 Threshold[ Alarm]" → flag that channel for this device.
-      if (a.type.includes("Threshold")) {
+      // "Channel 1/2 Temperature[ Alarm]" → flag that channel for this device.
+      if (a.type.includes("Temperature")) {
         const flags = chan.get(a.originatorId) ?? { chn1: false, chn2: false };
         if (a.type.includes("Channel 1")) {
           flags.chn1 = true;
