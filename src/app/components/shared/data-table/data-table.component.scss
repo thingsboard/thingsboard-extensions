@@ -68,20 +68,15 @@
 // shared by the cells and the inset row divider, so title, rows, and divider
 // all start on the same left edge.
 .dt-compact-title {
-  padding: 12px 16px;
+  // 16px above the title = the card's outside edge; 12px below keeps the
+  // title snug to its rows.
+  padding: 16px 16px 12px;
   font-size: 14px;
   font-weight: 700;
   color: var(--c-text-neutral-heavy);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-// Compact-header cards: the title row gives the top breathing room but the
-// last row only has its own cell padding, so pad the (fluid) scroll area to
-// even out the outside spacing.
-.dt-compact-header .dt-scroll.dt-fluid {
-  padding-bottom: 6px;
 }
 
 .dt-icon-btn {
@@ -236,12 +231,28 @@
   background-color: transparent;
 }
 
-// Inset row divider (single-column tables): the line matches the cell's 16px
-// horizontal padding instead of spanning the full card width. The last row
-// doesn't get a trailing divider.
+// Inset row divider (single-column alarm-style tables): the line matches the
+// cell's 16px horizontal padding instead of spanning the full card width, and
+// the last row doesn't get a trailing divider. Vertical rhythm: the cells keep
+// no padding of their own — the row content's 6px (.alarm-cell) sets the gap
+// around each divider, and the scroll area's 10px + that 6px give the card a
+// 16px outside edge top and bottom.
+.dt-inset-divider .dt-scroll.dt-fluid {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+// Compact-header (titled) cards: no extra padding under the title — the
+// title's own 12px + the first row's 6px keep it close to the rows.
+.dt-compact-header.dt-inset-divider .dt-scroll.dt-fluid {
+  padding-top: 0;
+}
+
 .dt-inset-divider .dt-table td.mat-mdc-cell {
   position: relative;
   border-bottom: none;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .dt-inset-divider .dt-table tr.mat-mdc-row:not(:last-of-type) td.mat-mdc-cell::after {
