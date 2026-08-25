@@ -11,12 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.execute = execute;
 exports.createServer = createServer;
 const architect_1 = require("@angular-devkit/architect");
-const express = require("express");
-const http = require("http");
+const express_1 = __importDefault(require("express"));
 const path_1 = require("path");
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
@@ -71,7 +73,7 @@ function createServer(options, context) {
         server.close();
         server = null;
     }
-    const app = express();
+    const app = (0, express_1.default)();
     const staticServeConfig = require((0, path_1.resolve)(context.workspaceRoot, options.staticServeConfig));
     for (const path of Object.keys(staticServeConfig)) {
         const route = staticServeConfig[path];
@@ -93,13 +95,12 @@ function createServer(options, context) {
     /*  app.get('/static/rulenode/rulenode-core-config.umd.js.map', (req, res) => {
         res.sendFile(resolve(context.workspaceRoot, 'dist/rulenode-core-config/bundles/rulenode-core-config.umd.js.map'));
       }); */
-    server = http.createServer(app);
-    const host = options.host || 'localhost';
+    const host = 'localhost';
+    server = app.listen(options.port, host, 511, () => {
+        context.logger.info(`==> 🌎  Listening on port ${options.port}. Open up http://localhost:${options.port}/ in your browser.`);
+    });
     server.on('error', (error) => {
         context.logger.error(error.message);
-    });
-    server.listen(options.port, host, 511, () => {
-        context.logger.info(`==> 🌎  Listening on port ${options.port} at host ${host}. Open up http://${host}:${options.port}/ in your browser.`);
     });
 }
 exports.default = (0, architect_1.createBuilder)(execute);

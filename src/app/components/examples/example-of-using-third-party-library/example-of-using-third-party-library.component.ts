@@ -8,10 +8,9 @@ import { WidgetContext } from '@home/models/widget-component.models';
 @Component({
   selector: 'tb-example-of-using-third-party-library',
   templateUrl: './example-of-using-third-party-library.component.html',
-  styleUrls: [
-
-  ],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: [],
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 
 export class ExampleOfUsingThirdPartyLibraryComponent implements OnInit {

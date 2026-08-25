@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { WidgetContext } from "@home/models/widget-component.models";
-import { formatValue, WidgetSubscriptionOptions } from "@core/public-api";
+import { Component, Input, OnInit } from '@angular/core';
+import { WidgetContext } from '@home/models/widget-component.models';
+import { formatValue, WidgetSubscriptionOptions } from '@core/public-api';
 import {
   AliasFilterType,
   BooleanOperation,
@@ -11,15 +11,18 @@ import {
   EntityKeyValueType,
   EntityType,
   FilterPredicateType,
-  widgetType,
-} from "@shared/public-api";
+  widgetType
+} from '@shared/public-api';
 
 @Component({
-  selector: "tb-example-table-custom-subscription",
-  templateUrl: "./example-table-custom-subscription.component.html",
-  styleUrls: ["./example-table-custom-subscription.component.scss"],
+  selector: 'tb-example-table-custom-subscription',
+  templateUrl: './example-table-custom-subscription.component.html',
+  styleUrls: ['./example-table-custom-subscription.component.scss'],
+  standalone: false
 })
+
 export class ExampleTableCustomSubscriptionComponent implements OnInit {
+
   @Input() ctx: WidgetContext;
 
   public tableValues: { [key: string]: any } = {};
@@ -31,59 +34,62 @@ export class ExampleTableCustomSubscriptionComponent implements OnInit {
         dataKeys: [
           {
             decimals: 0,
-            label: "Temperature",
-            name: "temperature",
+            label: 'Temperature',
+            name: 'temperature',
             settings: {},
-            type: DataKeyType.attribute,
-          },
+            type: DataKeyType.attribute
+          }
         ],
-        entityFilter: {
-          type: AliasFilterType.entityType,
-          entityType: EntityType.DEVICE,
-        },
+        entityFilter:
+          {
+            type: AliasFilterType.entityType,
+            entityType: EntityType.DEVICE
+          },
         keyFilters: [
           {
             key: {
-              key: "active",
-              type: EntityKeyType.ATTRIBUTE,
+              key: 'active',
+              type: EntityKeyType.ATTRIBUTE
             },
             predicate: {
               operation: BooleanOperation.EQUAL,
               type: FilterPredicateType.BOOLEAN,
               value: {
-                defaultValue: true,
-              },
+                defaultValue: true
+              }
             },
-            valueType: EntityKeyValueType.BOOLEAN,
-          },
-        ],
-      },
+            valueType: EntityKeyValueType.BOOLEAN
+          }
+        ]
+      }
     ];
 
     const options: WidgetSubscriptionOptions = {
       type: widgetType.latest,
       datasources,
-      callbacks: {
-        onDataUpdated: () => {
-          this.onDataUpdated();
-        },
-      },
+      callbacks:
+        {
+          onDataUpdated: () => {
+            this.onDataUpdated();
+          }
+        }
     };
 
-    this.ctx.subscriptionApi
-      .createSubscription(options, true)
-      .subscribe((subscription) => {
+    this.ctx.subscriptionApi.createSubscription(options, true).subscribe(
+      (subscription) => {
         this.ctx.defaultSubscription = subscription;
         this.ctx.data = subscription.data;
         this.ctx.datasources = subscription.datasources;
-      });
+      }
+    );
   }
 
   private onDataUpdated() {
     for (const key of this.ctx.data) {
       if (key.data.length) {
         const rowName: string = key.datasource.entity.name;
-        this.tableValues[rowName] = formatValue(key.data[0][1], 2, "°C", false);
+        const rowValue: string = formatValue(key.data[0][1], 2, '°C', false);
+        this.tableValues[rowName] = rowValue;
       }
     }
     this.ctx.detectChanges();

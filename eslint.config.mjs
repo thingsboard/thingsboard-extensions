@@ -7,14 +7,6 @@ import { defineConfig } from "eslint/config";
 export default defineConfig([
   {
     files: ["**/*.ts"],
-
-    extends: [
-      eslintJS.configs.recommended,
-      ...tsEslint.configs.recommended,
-      ...tsEslint.configs.stylistic,
-      ...angular.configs.tsRecommended,
-    ],
-
     languageOptions: {
       ecmaVersion: 5,
       sourceType: "script",
@@ -24,8 +16,13 @@ export default defineConfig([
         createDefaultProgram: true,
       },
     },
+    extends: [
+      eslintJS.configs.recommended,
+      ...tsEslint.configs.recommended,
+      ...tsEslint.configs.stylistic,
+      ...angular.configs.tsRecommended,
+    ],
     processor: angular.processInlineTemplates,
-
     rules: {
       "@typescript-eslint/explicit-member-accessibility": [
         "off",
@@ -63,6 +60,8 @@ export default defineConfig([
       "@typescript-eslint/consistent-indexed-object-style": "off",
       "@typescript-eslint/array-type": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "@angular-eslint/prefer-standalone": "off",
+      "@angular-eslint/prefer-inject": "off"
     },
   },
   {

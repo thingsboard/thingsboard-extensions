@@ -1,88 +1,170 @@
-<form #addEntityForm="ngForm" (ngSubmit)="save()"
-      [formGroup]="addEntityFormGroup" class="add-entity-form">
+<form #addEntityForm="ngForm" [formGroup]="addEntityFormGroup"
+      (ngSubmit)="save()" class="add-entity-form">
   <mat-toolbar color="primary">
-    <h2>{{ title || 'Edit entity' }}</h2>
+    <h2>Add entity</h2>
     <span class="flex-1"></span>
-    <button (click)="cancel()" mat-icon-button type="button">
+    <button mat-icon-button (click)="cancel()" type="button">
       <mat-icon class="material-icons">close</mat-icon>
     </button>
   </mat-toolbar>
-  <mat-progress-bar *ngIf="isLoading$ | async" color="warn" mode="indeterminate">
-  </mat-progress-bar>
-  <div *ngIf="(isLoading$ | async) === false" style="height: 4px;"></div>
-  <div class="mat-padding flex flex-col gap-4">
-    <div class="tb-form-panel">
-      <div class="tb-form-panel-title">General</div>
-      <mat-form-field appearance="fill" subscriptSizing="dynamic">
-        <mat-label>Name</mat-label>
-        <input formControlName="entityName" matInput required>
+  @if (isLoading$ | async) {
+    <mat-progress-bar color="warn" mode="indeterminate">
+    </mat-progress-bar>
+  }
+  @if ((isLoading$ | async) === false) {
+    <div style="height: 4px;"></div>
+  }
+  <div mat-dialog-content>
+    <div class="xs:flex-col xs:gap-0 flex flex-row gap-2">
+      <mat-form-field class="mat-block flex-1">
+        <mat-label>Entity Name</mat-label>
+        <input matInput formControlName="entityName" required>
+        @if (addEntityFormGroup.get('entityName').hasError('required')) {
+          <mat-error>
+            Entity name is required.
+          </mat-error>
+        }
       </mat-form-field>
-      <mat-form-field appearance="fill" subscriptSizing="dynamic">
-        <mat-label>Label</mat-label>
-        <input formControlName="entityLabel" matInput>
+      <mat-form-field class="mat-block flex-1">
+        <mat-label>Entity Label</mat-label>
+        <input matInput formControlName="entityLabel">
       </mat-form-field>
-      <tb-entity-autocomplete
-        (entityChanged)="onOwnerChanged($event)"
-        [entityType]="EntityType.CUSTOMER"
-        [useFullEntityId]="false"
-        appearance="fill"
-        formControlName="ownerId"
-        subscriptSizing="dynamic">
-      </tb-entity-autocomplete>
-      <div class="tb-form-row space-between" formGroupName="attributes">
-        <mat-slide-toggle
-          class="mat-mdc-slide-toggle mat-slide fixed-title-width mat-accent"
-          formControlName="isActive"
-          labelPosition="after">
-          Active
-        </mat-slide-toggle>
-      </div>
     </div>
-    <div class="tb-form-panel" formGroupName="attributes">
-      <div class="tb-form-panel-title">Location</div>
-      <div class="tb-form-row space-between">
-        <div>Address</div>
-        <div class="flex gap-2">
-          <button
-            (click)="geocodeAddress()"
-            [disabled]="isGeocoding"
-            class="tb-box-button relative"
-            mat-stroked-button
-            matTooltip="Geocode"
-            matTooltipPosition="above"
-            type="button">
-            <tb-icon *ngIf="!isGeocoding" matButtonIcon>pin_drop</tb-icon>
-            <mat-progress-spinner
-              *ngIf="isGeocoding"
-              color="primary"
-              diameter="20"
-              mode="indeterminate"
-              strokeWidth="3">
-            </mat-progress-spinner>
-          </button>
-          <mat-form-field appearance="outline" class="medium-width" subscriptSizing="dynamic">
-            <input formControlName="address" matInput placeholder="Set">
-          </mat-form-field>
+    <div class="xs:flex-col xs:gap-0 flex flex-row gap-2">
+      <tb-entity-type-select
+        class="mat-block"
+        formControlName="entityType"
+        [showLabel]="true"
+        [allowedEntityTypes]="allowedEntityTypes"
+      ></tb-entity-type-select>
+      @if (addEntityFormGroup.get('entityType').value === entityType.ASSET) {
+        <tb-entity-subtype-autocomplete
+          class="mat-block flex-1"
+          formControlName="type"
+          [required]="true"
+          [entityType]="entityType.ASSET"
+        ></tb-entity-subtype-autocomplete>
+      }
+      @if (addEntityFormGroup.get('entityType').value !== entityType.ASSET) {
+        <tb-entity-subtype-autocomplete
+          class="mat-block flex-1"
+          formControlName="type"
+          [required]="true"
+          [entityType]="entityType.DEVICE"
+        ></tb-entity-subtype-autocomplete>
+      }
+    </div>
+    <div class="flex flex-col" formGroupName="attributes">
+      <div class="xs:flex-col xs:gap-0 flex flex-row gap-2">
+        <mat-form-field class="mat-block flex-1">
+          <mat-label>Latitude</mat-label>
+          <input type="number" step="any" matInput formControlName="latitude">
+        </mat-form-field>
+        <mat-form-field class="mat-block flex-1">
+          <mat-label>Longitude</mat-label>
+          <input type="number" step="any" matInput formControlName="longitude">
+        </mat-form-field>
+      </div>
+      <div class="xs:flex-col xs:gap-0 flex flex-row gap-2">
+        <mat-form-field class="mat-block flex-1">
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+        <mat-form-field class="mat-block flex-1">
+          <mat-label>Owner</mat-label>
+          <input matInput formControlName="owner">
+        </mat-form-field>
+      </div>
+      <div class="xs:flex-col xs:gap-0 flex flex-row gap-2">
+        <mat-form-field class="mat-block flex-1">
+          <mat-label>Integer Value</mat-label>
+          <input type="number" step="1" matInput formControlName="number">
+          @if (addEntityFormGroup.get('attributes.number').hasError('pattern')) {
+            <mat-error>
+              Invalid integer value.
+            </mat-error>
+          }
+        </mat-form-field>
+        <div class="boolean-value-input flex flex-1 flex-col items-center">
+          <span class="checkbox-label">Boolean Value</span>
+          <mat-checkbox formControlName="booleanValue" style="margin-bottom: 40px;">
+            {{ (addEntityFormGroup.get('attributes.booleanValue').value ? "value.true" : "value.false") | translate }}
+          </mat-checkbox>
         </div>
       </div>
-      <div class="tb-form-row space-between">
-        <div>Latitude</div>
-        <mat-form-field appearance="outline" class="medium-width" subscriptSizing="dynamic">
-          <input formControlName="latitude" matInput placeholder="Set">
-        </mat-form-field>
+    </div>
+    <div class="relations-list">
+      <div class="mat-body-1" style="padding-bottom: 10px; color: rgba(0,0,0,0.57);">Relations</div>
+      <div class="body" [ngClass]="{'hidden': !relations().length}">
+        @for (relation of relations().controls; track relation; let i = $index) {
+          <div class="row flex flex-row" formArrayName="relations">
+            <div [formGroupName]="i" class="mat-elevation-z2 flex flex-1 flex-row items-center" style="padding: 5px 0 5px 5px;">
+              <div class="flex flex-1 flex-col">
+                <div class="xs:flex-col xs:gap-0 flex flex-row gap-2">
+                  <mat-form-field class="mat-block" style="min-width: 100px;">
+                    <mat-label>Direction</mat-label>
+                    <mat-select formControlName="direction" name="direction">
+                      @for (direction of entitySearchDirection | keyvalue; track direction) {
+                        <mat-option [value]="direction.value">
+                          {{ ("relation.search-direction." + direction.value) | translate }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                    @if (relation.get('direction').hasError('required')) {
+                      <mat-error>
+                        Relation direction is required.
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                  <tb-relation-type-autocomplete
+                    class="mat-block flex-1"
+                    formControlName="relationType"
+                    [required]="true">
+                  </tb-relation-type-autocomplete>
+                </div>
+                <div class="xs:flex-col flex flex-row">
+                  <tb-entity-select
+                    class="mat-block flex-1"
+                    [required]="true"
+                    formControlName="relatedEntity">
+                  </tb-entity-select>
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <button mat-icon-button color="primary"
+                        aria-label="Remove"
+                        type="button"
+                        (click)="removeRelation(i)"
+                        matTooltip="Remove relation"
+                        matTooltipPosition="above">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
-      <div class="tb-form-row space-between gap-16">
-        <div>Longitude</div>
-        <mat-form-field appearance="outline" class="medium-width" subscriptSizing="dynamic">
-          <input formControlName="longitude" matInput placeholder="Set">
-        </mat-form-field>
+      <div>
+        <button mat-raised-button color="primary"
+                type="button"
+                (click)="addRelation()"
+                matTooltip="Add Relation"
+                matTooltipPosition="above">
+          Add
+        </button>
       </div>
     </div>
   </div>
-  <div class="flex flex-row place-content-end" mat-dialog-actions>
-    <button [disabled]="(isLoading$ | async) || addEntityForm.invalid || !addEntityForm.dirty" color="primary" mat-button
-            mat-raised-button
-            type="submit">
+  <div mat-dialog-actions class="flex flex-row place-content-end">
+    <button mat-button color="primary"
+            type="button"
+            [disabled]="(isLoading$ | async)"
+            (click)="cancel()" cdkFocusInitial>
+      Cancel
+    </button>
+    <button mat-button mat-raised-button color="primary"
+            type="submit"
+            [disabled]="(isLoading$ | async) || addEntityForm.invalid || !addEntityForm.dirty">
       Create
     </button>
   </div>
