@@ -70,8 +70,7 @@ function execute(options, context) {
 }
 function createServer(options, context) {
     if (server) {
-        server.close();
-        server = null;
+        return;
     }
     const app = (0, express_1.default)();
     const staticServeConfig = require((0, path_1.resolve)(context.workspaceRoot, options.staticServeConfig));
@@ -95,9 +94,9 @@ function createServer(options, context) {
     /*  app.get('/static/rulenode/rulenode-core-config.umd.js.map', (req, res) => {
         res.sendFile(resolve(context.workspaceRoot, 'dist/rulenode-core-config/bundles/rulenode-core-config.umd.js.map'));
       }); */
-    const host = 'localhost';
+    const host = options.host || 'localhost';
     server = app.listen(options.port, host, 511, () => {
-        context.logger.info(`==> 🌎  Listening on port ${options.port}. Open up http://localhost:${options.port}/ in your browser.`);
+        context.logger.info(`==> 🌎  Listening on port ${options.port} at host ${host}. Open up http://localhost:${options.port}/ in your browser.`);
     });
     server.on('error', (error) => {
         context.logger.error(error.message);

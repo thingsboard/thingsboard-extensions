@@ -17,6 +17,9 @@ import { execSync } from 'child_process';
 interface StaticServeOptions extends NgPackagrBuilderOptions {
   staticServeConfig: string;
   port: number;
+  // Fork addition: bind host (e.g. 0.0.0.0 so IPv4 proxies like
+  // `tailscale serve` can reach the server). Declared in schema.json.
+  host?: string;
 }
 
 interface StaticServeConfig {
@@ -87,9 +90,12 @@ export function execute(
 }
 
 export function createServer(options: StaticServeOptions, context: BuilderContext) {
+  // Fork change: reuse the server across rebuilds. The routes only reference
+  // workspace paths, so nothing needs recreating — and the upstream
+  // close-then-listen cycle races itself (async close vs. next listen →
+  // EADDRINUSE, leaving no listener at all).
   if (server) {
-    server.close();
-    server = null;
+    return;
   }
   const app = express();
 
@@ -115,9 +121,12 @@ export function createServer(options: StaticServeOptions, context: BuilderContex
       res.sendFile(resolve(context.workspaceRoot, 'dist/rulenode-core-config/bundles/rulenode-core-config.umd.js.map'));
     }); */
 
-  const host = 'localhost';
+  // Fork addition: honour --host (the upstream builder hardcodes 'localhost',
+  // which Node may bind IPv6-only (::1) — an IPv4 reverse proxy such as
+  // `tailscale serve` dialling 127.0.0.1 then gets connection-refused → 502).
+  const host = options.host || 'localhost';
   server = app.listen(options.port, host, 511, () => {
-    context.logger.info(`==> 🌎  Listening on port ${options.port}. Open up http://localhost:${options.port}/ in your browser.`);
+    context.logger.info(`==> 🌎  Listening on port ${options.port} at host ${host}. Open up http://localhost:${options.port}/ in your browser.`);
   });
   server.on('error', (error) => {
     context.logger.error(error.message);
