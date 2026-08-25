@@ -5,7 +5,7 @@
   "description": "ThingsBoard Extension Widgets",
   "scripts": {
     "ng": "ng",
-    "start": "yarn run build:scss && node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve",
+    "start": "yarn run build:scss && CI=true node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve",
     "build": "yarn run build:scss && node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build && node install.js",
     "build:scss": "npx postcss ./src/app/scss/style.scss -o ./src/app/scss/style.comp.scss",
     "upload": "yarn run build && ./venv/bin/python3 ./scripts/load-extensions.py",

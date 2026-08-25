@@ -1,0 +1,124 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+@use "../styles/card";
+
+:host {
+  display: block;
+}
+
+.cc-card {
+  // Shared card shell; padding 0 — the header/body carry the 16px gutters so
+  // the body can animate closed without fighting a card-level padding.
+  @include card.tb-card-shell(0);
+  // No overflow clipping on the card itself — the header's info tooltip must
+  // escape it even while collapsed. The animating body clips via .cc-body-wrap.
+
+  // Once fully expanded, let overflowing children (e.g. a select dropdown
+  // panel) escape the body instead of being clipped.
+  &.cc-overflow-visible .cc-body-wrap,
+  &.cc-overflow-visible .cc-body {
+    overflow: visible;
+  }
+}
+
+.cc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  // The shared card padding all around: a collapsed card reads as a uniform
+  // frame, and the body below carries the same side gutters.
+  padding: card.$card-padding;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: var(--c-text-neutral-heavy);
+  user-select: none; // don't text-select the title on click / double-click
+  -webkit-user-select: none;
+}
+
+.cc-icon {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--c-icon-neutral-normal);
+}
+
+.cc-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Info icon beside the title.
+.cc-info {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+}
+
+// Pushes the chevron to the far right.
+.cc-spacer {
+  flex: 1 1 auto;
+}
+
+.cc-chevron {
+  flex: 0 0 auto;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--c-icon-neutral-light);
+  transition: transform 0.35s ease;
+
+  &.collapsed {
+    transform: rotate(180deg);
+  }
+}
+
+// Smoothly animate the body height by transitioning the grid track 0fr → 1fr.
+// Clipping lives here (not on the card) so the header tooltip is never cut
+// off; the radius matches the card's rounded bottom corners.
+.cc-body-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+  overflow: hidden;
+  border-radius: 0 0 12px 12px;
+
+  &.expanded {
+    grid-template-rows: 1fr;
+  }
+}
+
+.cc-body {
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 card.$card-padding;
+  transition: padding 0.35s ease;
+}
+
+// The header's bottom padding already separates title from content, so the
+// expanded body only adds the bottom of the card's padding frame.
+.cc-body-wrap.expanded .cc-body {
+  padding: 0 card.$card-padding card.$card-padding;
+}

@@ -52,7 +52,8 @@
                 <mat-icon>devices_other</mat-icon>{{ row.deviceCount }}
               </span>
               <span class="cell-meta-divider"></span>
-              <span class="wm-site-alarms" [matTooltip]="'Alarms (' + row.alarmCount + ')'">
+              <span class="wm-site-alarms" [class.zero]="row.alarmCount === 0"
+                    [matTooltip]="'Alarms (' + row.alarmCount + ')'">
                 <mat-icon>warning</mat-icon>{{ row.alarmCount }}
               </span>
             </div>

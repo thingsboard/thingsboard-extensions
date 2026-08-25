@@ -1,0 +1,147 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+:host {
+  display: inline-flex;
+}
+
+.seg-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 2.5rem; // match the theme-toggle button height
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  border: 1px solid light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+  background: var(--c-bg-neutral-light);
+}
+
+.seg-btn {
+  position: relative; // anchor for the hover tooltip
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 14px;
+  // Transparent border so hover/active can add one without shifting layout.
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--c-text-neutral-light);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none; // don't text-select the label on click / double-click
+  -webkit-user-select: none;
+  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease, box-shadow 0.1s ease;
+
+  // Hover (non-active): a bordered pill matching the container's border colour.
+  &:hover:not(.active) {
+    color: var(--c-text-neutral-heavy);
+    background: light-dark(var(--c-text-neutral-min), var(--c-bg-neutral-extralight-hover));
+    border-color: light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+  }
+
+  // Selected segment: filled pill (white in light, near-black in dark) with the
+  // same border colour as the container.
+  &.active {
+    background: light-dark(var(--c-text-neutral-min), var(--c-bg-neutral-min));
+    color: var(--c-text-neutral-heavy);
+    border-color: light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  // Icon variant: square-ish padding, icon inherits the button colour.
+  &.seg-icon-btn {
+    padding: 0 12px;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: inherit;
+  }
+
+  // Icon + its count badge, so the badge anchors to the icon's corner (not the
+  // full-width button).
+  .seg-icon-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Notification-style count badge on the icon's top-right.
+  .seg-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--c-bg-error-normal);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  &:hover .seg-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// Hover tooltip — same look as the theme-toggle button's, opening above.
+.seg-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: light-dark(var(--c-bg-neutral-heavy), var(--c-bg-neutral-bold)); // navy / slate
+  color: light-dark(var(--c-text-neutral-min), var(--c-text-neutral-heavy)); // white-ish both
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--shadow-box-modal-normal);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 10;
+
+  // Downward caret centred under the tooltip, pointing at the button.
+  &::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: light-dark(var(--c-bg-neutral-heavy), var(--c-bg-neutral-bold));
+  }
+}

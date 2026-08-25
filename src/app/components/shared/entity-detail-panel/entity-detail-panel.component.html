@@ -1,0 +1,39 @@
+<tb-detail-panel [open]="open" [dismissible]="dismissible" [flushBody]="flushBody" (closed)="closed.emit()">
+  <!-- Header summary: icon badge + name/subtitle (replaces the plain title). -->
+  <div dp-title class="edp-summary">
+    <div class="edp-badge"><mat-icon>{{ icon }}</mat-icon></div>
+    <div class="edp-id">
+      <div class="edp-name">{{ name }}</div>
+      <div *ngIf="subtitle" class="edp-sub">{{ subtitle }}</div>
+    </div>
+  </div>
+
+  <!-- Forward an optional header-actions slot (e.g. a status pill) to the panel. -->
+  <span dp-header-actions class="edp-header-actions">
+    <ng-content select="[header-actions]"></ng-content>
+  </span>
+
+  <!-- View switcher (icon pills with hover tooltips). Hidden when there's only
+       one view — a lone pill is just noise (e.g. the bulk-settings panel). -->
+  <tb-segmented-control *ngIf="tabs.length > 1" dp-tabs class="edp-tabs" [options]="tabs" [selected]="activeTab"
+                        (selectedChange)="activeTab = $event"></tb-segmented-control>
+
+  <!-- Per-tab views (kept in the DOM via [hidden] so projected state persists). -->
+  <div [hidden]="activeTab !== 'insights'" class="edp-view">
+    <ng-content select="[insights]"></ng-content>
+  </div>
+  <div [hidden]="activeTab !== 'alarms'" class="edp-view">
+    <ng-content select="[alarms]">
+      <div class="edp-placeholder">
+        <mat-icon>notifications</mat-icon><span>Alarms coming soon</span>
+      </div>
+    </ng-content>
+  </div>
+  <div [hidden]="activeTab !== 'settings'" class="edp-view">
+    <ng-content select="[settings]">
+      <div class="edp-placeholder">
+        <mat-icon>settings</mat-icon><span>Settings coming soon</span>
+      </div>
+    </ng-content>
+  </div>
+</tb-detail-panel>

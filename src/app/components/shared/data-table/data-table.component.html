@@ -1,5 +1,10 @@
-<section class="dt-card" [class.dt-reserve-search]="reserveSearchSpace" [class.dt-searching]="searchOpen">
-  <tb-widget-header [icon]="icon" [title]="title">
+<section class="dt-card" [class.dt-reserve-search]="reserveSearchSpace" [class.dt-searching]="searchOpen"
+         [class.dt-no-header]="!showHeader" [class.dt-inset-divider]="insetRowDivider"
+         [class.dt-no-row-hover]="!rowHover" [class.dt-compact-header]="compactHeader">
+  <!-- Compact variant: plain title row styled like a collapsible-card header. -->
+  <div *ngIf="showHeader && compactHeader" class="dt-compact-title">{{ title }}</div>
+
+  <tb-widget-header *ngIf="showHeader && !compactHeader" [icon]="icon" [title]="title">
     <span widget-header-actions class="dt-actions" *ngIf="searchEnabled || actions.length">
       <button *ngFor="let action of actions; trackBy: trackByActionId" (click)="actionClick.emit(action.id)"
               [class.active]="action.active" [attr.aria-label]="action.tooltip" [matTooltip]="action.tooltip || ''"
@@ -25,10 +30,33 @@
   <!-- Optional consumer-projected filter bar (rendered below the header/search). -->
   <ng-content select="[dt-filter-bar]"></ng-content>
 
-  <div class="dt-scroll">
-    <table [dataSource]="dataSource" class="dt-table" mat-table>
+  <div #scroll class="dt-scroll" [class.dt-fluid]="!paginated"
+       [style.minHeight.px]="fitPageSize ? fitHeightPx : null"
+       [style.maxHeight.px]="fitPageSize ? fitHeightPx : null">
+    <table [dataSource]="dataSource" [trackBy]="trackByRow" class="dt-table" mat-table>
+      <!-- Leading checkbox column for bulk selection (rendered only when multiSelect,
+           via displayedColumns). Header is select-all with an indeterminate dash. -->
+      <ng-container matColumnDef="__select">
+        <th *matHeaderCellDef mat-header-cell class="dt-select-cell">
+          <button type="button" role="checkbox" class="dt-checkbox" [class.checked]="allChecked"
+                  [class.indeterminate]="someChecked && !allChecked"
+                  [attr.aria-checked]="someChecked && !allChecked ? 'mixed' : allChecked"
+                  [attr.aria-label]="allChecked ? 'Deselect all' : 'Select all'" (click)="toggleAll(!allChecked)">
+            <mat-icon>{{ allChecked ? "check" : "remove" }}</mat-icon>
+          </button>
+        </th>
+        <td *matCellDef="let row" mat-cell class="dt-select-cell" (click)="$event.stopPropagation()">
+          <button type="button" role="checkbox" class="dt-checkbox" [class.checked]="isChecked(row)"
+                  [attr.aria-checked]="isChecked(row)" aria-label="Select row" (click)="toggleRow(row)">
+            <mat-icon>check</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
       <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
-        <th *matHeaderCellDef mat-header-cell [class.dt-align-right]="col.align === 'right'">{{ col.header }}</th>
+        <th *matHeaderCellDef mat-header-cell [class.dt-align-right]="col.align === 'right'">
+          {{ showColumnHeaders ? col.header : "" }}
+        </th>
         <td *matCellDef="let row" mat-cell [class.dt-align-right]="col.align === 'right'">
           <ng-container *ngIf="cellTemplate(col.key) as customCell; else builtinCell">
             <ng-container *ngTemplateOutlet="customCell; context: { $implicit: row, row: row }"></ng-container>
@@ -54,15 +82,24 @@
         </td>
       </ng-container>
 
-      <tr *matHeaderRowDef="columnKeys; sticky: true" mat-header-row [style.display]="showColumnHeaders ? '' : 'none'"></tr>
-      <tr *matRowDef="let row; columns: columnKeys" mat-row></tr>
+      <tr *matHeaderRowDef="displayedColumns; sticky: true" mat-header-row
+          [style.display]="showColumnHeaders || multiSelect ? '' : 'none'"></tr>
+      <tr *matRowDef="let row; columns: displayedColumns" mat-row
+          [class.dt-row-clickable]="selectable || multiSelect" [class.dt-row-selected]="isRowSelected(row)"
+          [attr.role]="selectable || multiSelect ? 'button' : null"
+          [attr.tabindex]="selectable || multiSelect ? 0 : null"
+          (click)="onRowClick(row)" (keydown.enter)="onRowClick(row)"></tr>
       <tr *matNoDataRow class="dt-no-data">
-        <td [attr.colspan]="columnKeys.length" class="dt-no-data-cell">
-          {{ loading ? loadingText : emptyText }}
+        <td [attr.colspan]="displayedColumns.length" class="dt-no-data-cell">
+          <div class="dt-empty">
+            <mat-icon *ngIf="emptyIcon && !loading" class="dt-empty-icon">{{ emptyIcon }}</mat-icon>
+            <span>{{ loading ? loadingText : emptyText }}</span>
+          </div>
         </td>
       </tr>
     </table>
   </div>
 
-  <mat-paginator #paginator [hidePageSize]="true" [pageSize]="pageSize" showFirstLastButtons></mat-paginator>
+  <mat-paginator *ngIf="paginated" #paginator [hidePageSize]="true" [pageSize]="pageSize"
+                 showFirstLastButtons></mat-paginator>
 </section>

@@ -1,0 +1,5 @@
+<button *ngFor="let tab of tabs" (click)="activeChange.emit(tab.id)" [class.active]="active === tab.id"
+        class="tb-tab" type="button">
+  <mat-icon>{{ tab.icon }}</mat-icon>
+  <span>{{ tab.label }}</span>
+</button>

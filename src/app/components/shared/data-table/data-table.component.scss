@@ -17,6 +17,7 @@
 // Self-contained, themed data table. Colours come from the dashboard's `--c-*`
 // tokens (inherited from an ancestor), so it adapts to light/dark.
 
+@use "../styles/card";
 @use "../styles/icon-button";
 
 :host {
@@ -24,18 +25,58 @@
 }
 
 .dt-card {
-  display: block;
-  background-color: var(--c-bg-neutral-extralight);
-  border: 1px solid var(--c-border-neutral-light);
-  border-radius: 13px;
-  box-sizing: border-box;
+  // Shared card shell; padding 0 — the header/cells sit on the 16px grid.
+  @include card.tb-card-shell(0);
+  // Clip children to the rounded shape so a hover/focus background never bleeds
+  // into the corners and squares them off. (No cell here uses a pop-out menu, so
+  // clipping is safe.)
+  overflow: hidden;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// The card and its wrappers aren't interactive. Some hosts (ThingsBoard, the
+// browser default) draw a focus/hover outline on them when the table area is
+// interacted with; because :host and the <section>/<table> have no
+// border-radius, that box shows square just outside the rounded card. Suppress
+// it on these non-interactive containers (real controls keep their focus styles).
+// `!important` is needed to beat ThingsBoard's global focus styling.
+:host:hover,
+:host:focus,
+:host:focus-visible,
+:host:focus-within,
+.dt-card:hover,
+.dt-card:focus,
+.dt-card:focus-visible,
+.dt-card:focus-within,
+.dt-scroll:hover,
+.dt-scroll:focus,
+.dt-scroll:focus-visible,
+.dt-table:hover,
+.dt-table:focus,
+.dt-table:focus-visible {
+  outline: none !important;
 }
 
 .dt-actions {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+// Compact header: same text treatment as the collapsible-card title
+// (.cc-title — 14px bold), no icon or actions. Sides align to the 16px grid
+// shared by the cells and the inset row divider, so title, rows, and divider
+// all start on the same left edge.
+.dt-compact-title {
+  // 16px above the title = the card's outside edge; 12px below keeps the
+  // title snug to its rows.
+  padding: 16px 16px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-neutral-heavy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dt-icon-btn {
@@ -110,6 +151,13 @@
   overflow-y: auto;
 }
 
+// Unpaginated: grow with the content and let the surrounding container scroll.
+.dt-scroll.dt-fluid {
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
 // reserveSearchSpace: when the search bar is closed, grow the scroll area by the
 // search bar's footprint (~46px) so the card height matches the open state and
 // doesn't jump when search is toggled.
@@ -123,11 +171,15 @@
   background: transparent;
 
   th.mat-mdc-header-cell {
+    // Muted, uppercase, letter-spaced "label" style. --c-text-neutral-light is the
+    // dark-mode-safe muted tone (same as the device-id subtext).
     color: var(--c-text-neutral-light);
     font-size: 12px;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     border-bottom: 1px solid var(--c-border-neutral-light);
-    padding: 8px 16px;
+    padding: 6px 16px;
     background-color: var(--c-bg-neutral-extralight);
   }
 
@@ -138,15 +190,79 @@
     padding: 10px 16px;
   }
 
+  // The host ThingsBoard app's Material styles pad the first/last cell of a
+  // row to 24px at high specificity, shifting the text off the 16px grid the
+  // inset row divider sits on. Re-pin them so text and divider share one edge.
+  td.mat-mdc-cell:first-of-type,
+  th.mat-mdc-header-cell:first-of-type {
+    padding-left: 16px;
+  }
+
+  td.mat-mdc-cell:last-of-type,
+  th.mat-mdc-header-cell:last-of-type {
+    padding-right: 16px;
+  }
+
   tr.mat-mdc-row {
     height: 48px;
 
-    // Subtle row hover so it doesn't overpower an action button's hover/active
-    // highlight (which uses --c-bg-neutral-light).
+    // Row hover uses the shared row-hover token (a lighter wash than the
+    // control-hover fill, so a hovered action button still reads over it).
+    // Suppressed by [rowHover]="false" (.dt-no-row-hover) on the card.
     &:hover {
-      background-color: var(--c-bg-neutral-extralight-hover);
+      background-color: var(--c-bg-hover-row, var(--c-bg-neutral-extralight-hover));
+    }
+
+    // Clickable (selectable) rows show a pointer; the selected row keeps a
+    // distinct brand-tinted highlight even over hover.
+    &.dt-row-clickable {
+      cursor: pointer;
+    }
+
+    &.dt-row-selected,
+    &.dt-row-selected:hover {
+      background-color: light-dark(var(--c-bg-brand-light), var(--c-bg-neutral-light));
     }
   }
+}
+
+// rowHover=false: no row highlight (only the row's action buttons react).
+.dt-card.dt-no-row-hover .dt-table tr.mat-mdc-row:hover {
+  background-color: transparent;
+}
+
+// Inset row divider (single-column alarm-style tables): the line matches the
+// cell's 16px horizontal padding instead of spanning the full card width, and
+// the last row doesn't get a trailing divider. Vertical rhythm: the cells keep
+// no padding of their own — the row content's 6px (.alarm-cell) sets the gap
+// around each divider, and the scroll area's 10px + that 6px give the card a
+// 16px outside edge top and bottom.
+.dt-inset-divider .dt-scroll.dt-fluid {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+// Compact-header (titled) cards: no extra padding under the title — the
+// title's own 12px + the first row's 6px keep it close to the rows.
+.dt-compact-header.dt-inset-divider .dt-scroll.dt-fluid {
+  padding-top: 0;
+}
+
+.dt-inset-divider .dt-table td.mat-mdc-cell {
+  position: relative;
+  border-bottom: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.dt-inset-divider .dt-table tr.mat-mdc-row:not(:last-of-type) td.mat-mdc-cell::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 1px;
+  background: var(--c-border-neutral-light);
 }
 
 .dt-chip {
@@ -191,15 +307,93 @@
   }
 }
 
-.dt-no-data-cell {
+// Multi-select checkbox column.
+.dt-select-cell {
+  width: 1%; // shrink to content
+  white-space: nowrap;
+  padding-right: 0 !important;
+}
+
+.dt-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // Centre on the line rather than the baseline, so it lines up with the header
+  // title text (and the row content) instead of sitting low.
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1.5px solid var(--c-border-neutral-normal);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    color: #fff;
+    opacity: 0; // only shown once checked/indeterminate
+  }
+
+  &:hover {
+    border-color: var(--c-icon-brand-light);
+  }
+
+  &.checked,
+  &.indeterminate {
+    background: var(--c-bg-brand-normal);
+    border-color: var(--c-bg-brand-normal);
+
+    mat-icon {
+      opacity: 1;
+    }
+  }
+}
+
+// `td.` prefix out-specifies the `td.mat-mdc-cell` border rule above, so the
+// empty-state cell doesn't draw a divider just inside the card's own bottom
+// border (which read as a stray line at the bottom of the widget).
+td.dt-no-data-cell {
   padding: 20px 16px;
   text-align: center;
   color: var(--c-text-neutral-light);
   font-size: 13px;
+  border-bottom: none;
+}
+
+// Belt-and-braces: kill any cell border Angular Material puts on the no-data row
+// regardless of which class it lands on.
+:host ::ng-deep tr.mat-mdc-no-data-row td {
+  border-bottom: none !important;
+}
+
+// Empty state: optional icon above the text.
+.dt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 0;
+}
+
+// Match the empty text colour so it adapts to light/dark (--c-icon-neutral-light
+// doesn't flip and renders near-black in dark mode). `!important` is required to
+// beat ThingsBoard's global mat-icon colour rule, which otherwise wins.
+mat-icon.dt-empty-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--c-text-neutral-light) !important;
 }
 
 :host ::ng-deep .mat-mdc-paginator {
-  --mat-paginator-enabled-icon-color: var(--c-icon-neutral-normal);
+  // Match the widget-header icon-button mixin: same icon colour, same hover fill.
+  --mat-paginator-enabled-icon-color: var(--c-icon-neutral-light);
   --mat-paginator-disabled-icon-color: var(--c-icon-neutral-extralight);
   background: transparent;
   border-top: 1px solid var(--c-border-neutral-light);
@@ -220,8 +414,14 @@
     padding: 4px;
   }
 
+  // Enabled nav buttons: hover matches the header icon-button mixin
+  // (`var(--c-bg-neutral-light)` in both modes, theme-adapted).
+  .mat-mdc-icon-button:not(:disabled):not([aria-disabled="true"]):hover {
+    background-color: var(--c-bg-neutral-light);
+  }
+
   .mat-mdc-icon-button:not(:disabled):not([aria-disabled="true"]) .mat-mdc-paginator-icon {
-    fill: var(--c-icon-neutral-normal) !important;
+    fill: var(--c-icon-neutral-light) !important;
   }
 
   .mat-mdc-icon-button[aria-disabled="true"] .mat-mdc-paginator-icon,

@@ -1,0 +1,329 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+:host {
+  display: block;
+}
+
+// Stack of cards; leave room so the floating actions don't cover the last one.
+.ds-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 56px;
+}
+
+// The identity card shell is the shared <tb-card> component (16px padding).
+
+.ds-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ds-field {
+  display: flex;
+  flex-direction: column;
+}
+
+// Boolean toggles laid out two-up so they don't waste vertical space.
+.ds-toggle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+// Divider between channel/section configs in an object card.
+.ds-divider {
+  height: 1px;
+  border: 0;
+  background: light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+}
+
+// A section of objects under an optional static heading (e.g. "Channel 1").
+.ds-object-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// Section heading (e.g. "Channel 1") — small grey bold so it reads as a distinct
+// middle tier between the card title and the gate headers.
+.ds-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-text-neutral-light);
+}
+
+// A single JSON-object attribute (gate switch + its fields).
+.ds-object {
+  display: flex;
+  flex-direction: column;
+  // No flex gap: the body's spacing rides on .ds-object-body-wrap's animated
+  // margin, so a collapsed (zero-height) body leaves no stray gap.
+}
+
+.ds-object-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-text-neutral-light);
+}
+
+// Gate switch row: switch takes the width, optional "Set Null" sits to its right.
+.ds-gate-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ds-gate-switch {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+// "Set Null" toggle — a tb-ext-checkbox-styled box + label.
+.ds-setnull {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  .ds-setnull-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    border: 1px solid var(--c-border-neutral-normal);
+    border-radius: 4px;
+    background: var(--c-bg-neutral-min);
+    transition: background 0.1s ease, border-color 0.1s ease;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+  }
+
+  .ds-setnull-label {
+    font-size: 13px;
+    color: var(--c-text-neutral-light);
+    white-space: nowrap;
+  }
+
+  &:hover:not(.checked) .ds-setnull-box {
+    border-color: var(--c-icon-brand-light);
+  }
+
+  &.checked .ds-setnull-box {
+    background: var(--c-bg-brand-normal);
+    border-color: var(--c-bg-brand-normal);
+
+    mat-icon {
+      opacity: 1;
+    }
+  }
+}
+
+// Indented block of a gated object's fields, with a left accent line so each
+// object (e.g. Mutation alarm vs Threshold alarm) reads as a distinct unit.
+// Animated reveal of an object's fields when its gate switch turns on — the
+// same grid-track 0fr → 1fr transition the collapsible cards use. The 12px
+// gap to the gate row is a transitioned margin so it collapses away too.
+.ds-object-body-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  transition: grid-template-rows 0.35s ease, margin-top 0.35s ease;
+
+  &.expanded {
+    grid-template-rows: 1fr;
+    margin-top: 12px;
+  }
+}
+
+.ds-object-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+  overflow: hidden;
+  margin-left: 7px; // centre the rule under the switch
+  padding: 4px 0 4px 16px;
+  border-left: 1px solid light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+  transition: padding 0.35s ease;
+}
+
+// While collapsed, drop the body's vertical padding so the grid track really
+// reaches zero height (mirrors the collapsible card's padding transition).
+.ds-object-body-wrap:not(.expanded) .ds-object-body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+// Once the expand transition settles, release the clip so field tooltips can
+// escape the body (same idea as the collapsible card's cc-overflow-visible).
+// Collapsing re-clips immediately — .settled drops as soon as the gate is off.
+.ds-object-body-wrap.settled .ds-object-body {
+  overflow: visible;
+}
+
+// Flat variant: no grouping accent line / indent.
+.ds-form--flat .ds-object-body {
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+
+// Segmented button groups (e.g. Temperature unit + Time format) on one row —
+// first left-aligned, second pushed to the right edge.
+.ds-segmented-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 18px 28px;
+
+  .ds-field {
+    flex: 0 0 auto;
+  }
+}
+
+.ds-label {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--c-text-neutral-light);
+}
+
+// Label + info icon on one line (the row owns the bottom margin).
+.ds-label-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+
+  .ds-label {
+    margin-bottom: 0;
+  }
+}
+
+// Text boxes match the copy-box component (neutral-normal border, min bg).
+.ds-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--c-border-neutral-normal);
+  border-radius: 8px;
+  background: var(--c-bg-neutral-min);
+  color: var(--c-text-neutral-heavy);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  transition: border-color 0.1s ease;
+
+  &::placeholder {
+    color: var(--c-text-neutral-extralight);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-icon-brand-light);
+  }
+}
+
+.ds-textarea {
+  resize: vertical;
+  min-height: 64px;
+}
+
+// Read-only field (e.g. hostname) — same box, greyed text.
+.ds-readonly {
+  padding: 10px 12px;
+  border: 1px solid var(--c-border-neutral-normal);
+  border-radius: 8px;
+  background: var(--c-bg-neutral-min);
+  color: var(--c-text-neutral-light);
+  font-size: 13px;
+}
+
+.ds-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ds-group-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--c-bg-neutral-extralight-hover);
+  color: var(--c-text-neutral-light);
+  border: 1px solid light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+}
+
+// Floating actions, pinned to the bottom-right of the (positioned) panel.
+.ds-actions {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+}
+
+.ds-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-box-button-bold);
+  transition: background 0.1s ease, border-color 0.1s ease;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.ds-btn--ghost {
+  background: light-dark(var(--c-text-neutral-min), var(--c-bg-neutral-light));
+  color: var(--c-text-neutral-heavy);
+  border-color: light-dark(var(--c-border-neutral-light), var(--c-border-neutral-normal));
+
+  &:hover {
+    background: light-dark(var(--c-bg-neutral-light), var(--c-bg-neutral-extralight-hover));
+  }
+}
+
+.ds-btn--primary {
+  background: var(--c-bg-brand-normal);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: var(--c-bg-brand-normal-hover);
+  }
+}
+

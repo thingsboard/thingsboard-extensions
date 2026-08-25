@@ -1,0 +1,18 @@
+<section class="cc-card" [class.cc-overflow-visible]="overflowVisible">
+  <button (click)="toggle()" [attr.aria-expanded]="expanded" class="cc-header" type="button">
+    <mat-icon *ngIf="icon" class="cc-icon">{{ icon }}</mat-icon>
+    <span class="cc-title">{{ title }}</span>
+    <span *ngIf="info" class="cc-info">
+      <tb-info-icon [text]="info"></tb-info-icon>
+    </span>
+    <span class="cc-spacer"></span>
+    <mat-icon class="cc-chevron" [class.collapsed]="!expanded">expand_less</mat-icon>
+  </button>
+  <!-- Animated open/close: the wrapper transitions grid-template-rows 0fr→1fr
+       so the body smoothly grows/collapses (content stays mounted). -->
+  <div class="cc-body-wrap" [class.expanded]="expanded" (transitionend)="onBodyTransitionEnd()">
+    <div class="cc-body">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</section>

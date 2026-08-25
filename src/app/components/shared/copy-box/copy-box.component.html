@@ -1,5 +1,6 @@
-<button (click)="copy()" [class.tb-copy-box--full]="fullWidth" [style.width]="width || null"
-        [attr.aria-label]="'Copy ' + value" class="tb-copy-box" type="button">
+<button (click)="copy()" [class.tb-copy-box--full]="fullWidth" [class.tb-copy-box--muted]="muted"
+        [class.tb-copy-box--input]="inputSized" [style.width]="width || null" [attr.aria-label]="'Copy ' + value"
+        class="tb-copy-box" type="button">
   <span class="tb-copy-text">{{ value }}</span>
   <span [class.copied]="copied" class="tb-copy-btn">
     <mat-icon>{{ copied ? "check" : "content_copy" }}</mat-icon>

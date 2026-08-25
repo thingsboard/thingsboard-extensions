@@ -1,0 +1,26 @@
+<!-- Click-to-dismiss backdrop (only when dismissible) — closes the panel on click-off. -->
+<div *ngIf="open && dismissible" class="dp-backdrop" (click)="closed.emit()"></div>
+
+<!-- Escape is handled document-wide in the component (the panel rarely holds focus). -->
+<div *ngIf="open" class="dp-panel" tabindex="-1">
+  <div class="dp-header">
+    <div class="dp-title-area">
+      <!-- Custom header content (e.g. an entity summary); falls back to the title text. -->
+      <ng-content select="[dp-title]"></ng-content>
+      <span *ngIf="title" class="dp-title">{{ title }}</span>
+    </div>
+    <!-- Optional header actions (e.g. a status pill), shown left of the close button. -->
+    <ng-content select="[dp-header-actions]"></ng-content>
+    <button (click)="closed.emit()" class="dp-close" type="button" aria-label="Close" matTooltip="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <!-- Optional non-scrolling region (e.g. a tab/pill group) below the header.
+       overflow:visible so hover tooltips can open upward without being clipped. -->
+  <div class="dp-tabs">
+    <ng-content select="[dp-tabs]"></ng-content>
+  </div>
+  <div class="dp-body" [class.dp-body--flush]="flushBody">
+    <ng-content></ng-content>
+  </div>
+</div>

@@ -1,0 +1,174 @@
+<div class="ds-cards">
+  <!-- Per-device identity fields — hidden when editing several devices at once. -->
+  <tb-card *ngIf="!isBulk">
+    <div class="ds-form" [formGroup]="form">
+      <div class="ds-field">
+        <span class="ds-label">Name</span>
+        <tb-copy-box [value]="hostname || '—'" [fullWidth]="true" [muted]="true" [inputSized]="true"></tb-copy-box>
+      </div>
+
+      <div class="ds-field">
+        <span class="ds-label">Name (Label)</span>
+        <input class="ds-input" type="text" formControlName="label" placeholder="Set a name" aria-label="Name (Label)" />
+      </div>
+
+      <div class="ds-field" *ngIf="groups.length">
+        <span class="ds-label">Groups</span>
+        <div class="ds-groups">
+          <span class="ds-group-chip" *ngFor="let g of groups">{{ g }}</span>
+        </div>
+      </div>
+
+      <div class="ds-field">
+        <span class="ds-label">Note</span>
+        <textarea class="ds-input ds-textarea" formControlName="description" rows="3" placeholder="Add a note"
+                  aria-label="Note"></textarea>
+      </div>
+    </div>
+  </tb-card>
+
+  <!-- Attribute-backed selects (e.g. Sensor channels). -->
+  <tb-collapsible-card *ngIf="attributeSelects.length" [title]="attributeCardTitle">
+    <div class="ds-form" [formGroup]="form">
+      <div class="ds-field" *ngFor="let sel of attributeSelects">
+        <span class="ds-label">{{ sel.label }}</span>
+        <tb-select [options]="sel.options" [formControlName]="sel.key"></tb-select>
+      </div>
+    </div>
+  </tb-collapsible-card>
+
+  <!-- SHARED_SCOPE device settings (toggles / button groups / inputs). -->
+  <tb-collapsible-card *ngIf="deviceSettings.length" [title]="deviceSettingsTitle">
+    <div class="ds-form" [formGroup]="form">
+      <!-- Boolean toggles stacked. -->
+      <div class="ds-toggle-grid" *ngIf="toggleSettings.length">
+        <tb-ext-checkbox *ngFor="let s of toggleSettings; let i = index" [label]="s.label" [info]="s.info || ''"
+                         [infoAlign]="i % 2 === 1 ? 'right' : 'left'" [triState]="isBulk"
+                         [formControlName]="s.key"></tb-ext-checkbox>
+      </div>
+
+      <!-- Segmented button groups laid out side by side on one row. -->
+      <div class="ds-segmented-row" *ngIf="segmentedSettings.length">
+        <div class="ds-field" *ngFor="let s of segmentedSettings">
+          <span class="ds-label">{{ s.label }}</span>
+          <tb-button-group [options]="s.options || []" [formControlName]="s.key"></tb-button-group>
+        </div>
+      </div>
+
+      <!-- Everything else stacked. -->
+      <ng-container *ngFor="let s of otherSettings">
+        <!-- Button group on its own row. -->
+        <div class="ds-field" *ngIf="s.kind === 'buttons'">
+          <span class="ds-label">{{ s.label }}</span>
+          <tb-button-group [options]="s.options || []" [formControlName]="s.key"></tb-button-group>
+        </div>
+
+        <!-- Themed dropdown. -->
+        <div class="ds-field" *ngIf="s.kind === 'select'">
+          <span class="ds-label">{{ s.label }}</span>
+          <tb-select [options]="s.options || []" [formControlName]="s.key"></tb-select>
+        </div>
+
+        <!-- Numeric input. -->
+        <div class="ds-field" *ngIf="s.kind === 'number'">
+          <span class="ds-label">{{ s.label }}</span>
+          <input class="ds-input" type="number" [formControlName]="s.key" [attr.aria-label]="s.label" />
+        </div>
+
+        <!-- Slider + stepper. -->
+        <div class="ds-field" *ngIf="s.kind === 'slider'">
+          <span class="ds-label-row">
+            <span class="ds-label">{{ s.label }}</span>
+            <tb-info-icon *ngIf="s.info" [text]="s.info"></tb-info-icon>
+          </span>
+          <tb-slider-stepper [min]="s.min ?? 0" [max]="s.max ?? 100" [step]="s.step ?? 1" [unit]="s.unit || ''"
+                             [formControlName]="s.key"></tb-slider-stepper>
+        </div>
+      </ng-container>
+    </div>
+  </tb-collapsible-card>
+
+  <!-- SHARED_SCOPE JSON-object attributes (e.g. Calibration, Alarms). -->
+  <tb-collapsible-card *ngFor="let card of objectCards" [title]="card.title" [info]="card.info || ''">
+    <div class="ds-form" [class.ds-form--flat]="card.flatFields" [formGroup]="form">
+      <ng-container *ngFor="let grp of card.groups; let first = first">
+        <!-- Divider between channel/section configs. -->
+        <div *ngIf="!first" class="ds-divider"></div>
+
+        <div class="ds-object-section">
+          <span *ngIf="grp.title" class="ds-section-title">{{ grp.title }}</span>
+
+          <div class="ds-object" *ngFor="let obj of grp.objects">
+            <!-- Gate switch (object enable) + a bulk-only "Set Null" to its right
+                 that forces the setting off (disabled) across the selected devices. -->
+            <ng-container *ngIf="gateOf(obj) as gate; else plainLabel">
+              <div class="ds-gate-row">
+                <tb-ext-switch class="ds-gate-switch" [label]="obj.label" [heading]="true"
+                               [formControlName]="objCtrl(obj.key, gate.key)"></tb-ext-switch>
+                <button *ngIf="isBulk" type="button" class="ds-setnull" [class.checked]="isSetNull(obj)"
+                        [attr.aria-pressed]="isSetNull(obj)" (click)="toggleSetNull(obj)">
+                  <span class="ds-setnull-box"><mat-icon>check</mat-icon></span>
+                  <span class="ds-setnull-label">Disable</span>
+                </button>
+              </div>
+            </ng-container>
+            <ng-template #plainLabel>
+              <span *ngIf="obj.label" class="ds-object-label">{{ obj.label }}</span>
+            </ng-template>
+
+            <!-- Remaining fields — revealed while the gate is on, with the same
+                 grid-track animation as the collapsible cards. Content stays
+                 mounted; `inert` blocks focus/interaction while collapsed. -->
+            <div class="ds-object-body-wrap" [class.expanded]="isObjGateOn(obj)" [class.settled]="isObjSettled(obj)"
+                 [attr.inert]="isObjGateOn(obj) ? null : ''"
+                 (transitionend)="onObjBodyTransitionEnd(obj, $event)">
+              <div class="ds-object-body">
+              <ng-container *ngFor="let f of fieldsOf(obj)">
+                <!-- Boolean toggle. -->
+                <tb-ext-checkbox *ngIf="f.kind === 'toggle'" [label]="f.label" [info]="f.info || ''"
+                                 [formControlName]="ctrlName(obj, f)"></tb-ext-checkbox>
+
+                <!-- Single-select button group. -->
+                <div class="ds-field" *ngIf="f.kind === 'buttons' || f.kind === 'segmented'">
+                  <span class="ds-label">{{ f.label }}</span>
+                  <tb-button-group [options]="f.options || []"
+                                   [formControlName]="ctrlName(obj, f)"></tb-button-group>
+                </div>
+
+                <!-- Themed dropdown. -->
+                <div class="ds-field" *ngIf="f.kind === 'select'">
+                  <span class="ds-label">{{ f.label }}</span>
+                  <tb-select [options]="f.options || []" [formControlName]="ctrlName(obj, f)"></tb-select>
+                </div>
+
+                <!-- Numeric input. -->
+                <div class="ds-field" *ngIf="f.kind === 'number'">
+                  <span class="ds-label">{{ f.label }}</span>
+                  <input class="ds-input" type="number" [formControlName]="ctrlName(obj, f)"
+                         [attr.aria-label]="f.label" />
+                </div>
+
+                <!-- Slider + stepper (unit may be derived live via unitFrom). -->
+                <div class="ds-field" *ngIf="f.kind === 'slider'">
+                  <span class="ds-label-row">
+                    <span class="ds-label">{{ f.label }}</span>
+                    <tb-info-icon *ngIf="f.info" [text]="f.info"></tb-info-icon>
+                  </span>
+                  <tb-slider-stepper [min]="f.min ?? 0" [max]="f.max ?? 100" [step]="f.step ?? 1" [unit]="unitFor(f)"
+                                     [formControlName]="ctrlName(obj, f)"></tb-slider-stepper>
+                </div>
+              </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </tb-collapsible-card>
+</div>
+
+<!-- Floating actions — only while the form has unsaved edits. -->
+<div class="ds-actions" *ngIf="dirty">
+  <button class="ds-btn ds-btn--ghost" type="button" (click)="cancel()">Cancel</button>
+  <button class="ds-btn ds-btn--primary" type="button" (click)="apply()" [disabled]="saving">Apply changes</button>
+</div>

@@ -1,0 +1,170 @@
+///
+/// Copyright © 2016-2025 The Thingsboard Authors
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
+:host {
+  display: block;
+  position: relative;
+}
+
+// Trigger — matches the copy-box text inputs.
+.tbs-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--c-border-neutral-normal);
+  border-radius: 8px;
+  background: var(--c-bg-neutral-min);
+  color: var(--c-text-neutral-heavy);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.1s ease;
+
+  &.tbs-open {
+    border-color: var(--c-icon-brand-light);
+
+    // Tint the chevron with the light brand blue while open (text stays neutral).
+    .tbs-chevron {
+      color: var(--c-icon-brand-light);
+    }
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.tbs-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tbs-placeholder {
+  color: var(--c-text-neutral-extralight);
+}
+
+.tbs-chevron {
+  flex: 0 0 auto;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--c-icon-neutral-light);
+  transition: transform 0.15s ease;
+}
+
+.tbs-open .tbs-chevron {
+  transform: rotate(180deg);
+}
+
+// Dropdown panel — animated open/close via grid-template-rows 0fr→1fr.
+.tbs-panel-wrap {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-rows: 0fr;
+  pointer-events: none; // not interactive while collapsed
+  border-radius: 10px;
+  // Shadow is dropped only once collapsed (delayed) so it stays visible through
+  // the whole close animation — mirroring the open animation exactly. Without
+  // the delay the 0-height wrap would cast a thin shadow line while closed.
+  box-shadow: none;
+  // ease-in-out is symmetric, so the open (0fr→1fr) and close (1fr→0fr) motions
+  // mirror each other (plain `ease` is asymmetric and looks different reversed).
+  transition: grid-template-rows 0.09s ease-in-out, box-shadow 0s linear 0.09s;
+
+  &.open {
+    grid-template-rows: 1fr;
+    pointer-events: auto;
+    box-shadow: var(--shadow-box-modal-normal); // on the wrap so the clip doesn't cut it
+    transition: grid-template-rows 0.09s ease-in-out, box-shadow 0s linear 0s;
+  }
+}
+
+// Clip layer: collapses to 0 height with the grid track (hides the panel's
+// border/shadow cleanly while closed).
+.tbs-panel-clip {
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.tbs-panel {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px; // keep highlighted options from bleeding together
+  padding: 6px;
+  box-sizing: border-box;
+  background: var(--c-bg-neutral-min); // match the text-box trigger, not the card
+  border: 1px solid var(--c-border-neutral-normal);
+  border-radius: 10px;
+}
+
+.tbs-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-text-neutral-heavy);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--c-bg-neutral-light);
+  }
+
+  &.tbs-selected {
+    font-weight: 600;
+    background: var(--c-bg-neutral-light);
+
+    .tbs-check {
+      visibility: visible;
+    }
+  }
+}
+
+.tbs-check {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--c-text-brand-normal);
+  visibility: hidden;
+}
+
+.tbs-option-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

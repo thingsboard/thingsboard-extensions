@@ -1,0 +1,20 @@
+<div class="ss-row" [class.ss-disabled]="disabled">
+  <input type="range" class="ss-slider" [min]="min" [max]="max" [step]="step" [value]="value" [disabled]="disabled"
+         [style.--ss-fill]="fillPercent" (input)="onSlider($event)" aria-label="Slider" />
+
+  <div class="ss-box">
+    <input type="number" class="ss-num" [min]="min" [max]="max" [step]="step" [ngModel]="value"
+           (ngModelChange)="setValue($any($event))" [disabled]="disabled" inputmode="numeric" aria-label="Value" />
+    <span class="ss-unit" *ngIf="unit">{{ unit }}</span>
+    <div class="ss-steppers">
+      <button type="button" class="ss-step" [disabled]="disabled || value >= max" (click)="stepBy(1)"
+              aria-label="Increase">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+      <button type="button" class="ss-step" [disabled]="disabled || value <= min" (click)="stepBy(-1)"
+              aria-label="Decrease">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

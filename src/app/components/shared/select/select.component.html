@@ -1,0 +1,19 @@
+<button type="button" class="tbs-trigger" [class.tbs-open]="open" [disabled]="disabled" (click)="toggle()"
+        [attr.aria-expanded]="open" aria-haspopup="listbox">
+  <span class="tbs-value" [class.tbs-placeholder]="!hasValue">{{ selectedLabel }}</span>
+  <mat-icon class="tbs-chevron">expand_more</mat-icon>
+</button>
+
+<!-- Animated open/close: the wrapper transitions grid-template-rows 0fr→1fr so
+     the panel smoothly grows/collapses (same animation as the collapsible card). -->
+<div class="tbs-panel-wrap" [class.open]="open">
+  <div class="tbs-panel-clip">
+    <div class="tbs-panel" role="listbox">
+      <button *ngFor="let o of options" type="button" class="tbs-option" [class.tbs-selected]="o.value === value"
+              role="option" [attr.aria-selected]="o.value === value" (click)="select(o)">
+        <mat-icon class="tbs-check">check</mat-icon>
+        <span class="tbs-option-label">{{ o.label }}</span>
+      </button>
+    </div>
+  </div>
+</div>

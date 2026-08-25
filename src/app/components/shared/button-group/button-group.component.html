@@ -1,0 +1,7 @@
+<div class="bg-group" role="group">
+  <button *ngFor="let o of options" type="button" class="bg-btn" [class.active]="o.value === value"
+          [disabled]="disabled" [attr.aria-pressed]="o.value === value" (click)="select(o)">
+    {{ o.label }}
+    <span class="bg-tip" *ngIf="o.tooltip">{{ o.tooltip }}</span>
+  </button>
+</div>

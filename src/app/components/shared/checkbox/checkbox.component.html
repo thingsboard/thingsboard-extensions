@@ -1,0 +1,11 @@
+<div class="cb-wrap">
+  <button type="button" class="cb" [class.checked]="value === true" [class.indeterminate]="value === null"
+          [disabled]="disabled" role="checkbox" [attr.aria-checked]="value === null ? 'mixed' : value === true"
+          (click)="toggle()">
+    <span class="cb-box">
+      <mat-icon class="cb-check">{{ value === null ? "remove" : "check" }}</mat-icon>
+    </span>
+    <span class="cb-label" [class.cb-label--heading]="heading">{{ label }}</span>
+  </button>
+  <tb-info-icon *ngIf="info" [text]="info" [align]="infoAlign"></tb-info-icon>
+</div>
