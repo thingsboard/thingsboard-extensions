@@ -8,7 +8,7 @@ This migration updates the codebase from Angular 18 to Angular 20.
 
 ### Steps
 
-1. **Pull the latest changes** from the corresponding `release/*` branch and install dependencies:
+1. **Pull the latest changes** from the corresponding `release-*` branch and install dependencies:
    ```bash
    yarn install
    ```
