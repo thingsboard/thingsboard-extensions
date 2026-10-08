@@ -1,0 +1,76 @@
+<div class="rem-tc">
+
+  <!-- Controls: shared interval + compare range legend -->
+  <div class="rem-tc-toolbar">
+    <mat-form-field appearance="outline" class="rem-tc-interval">
+      <mat-label>Interval</mat-label>
+      <mat-select [(ngModel)]="selectedIntervalMs" (ngModelChange)="onIntervalChange()">
+        <mat-option *ngFor="let iv of intervals" [value]="iv.ms">{{ iv.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Data-reload controls grouped with the interval selector: auto-refresh, then refresh -->
+    <mat-form-field appearance="outline" class="rem-tc-interval rem-tc-autorefresh">
+      <mat-label>Auto-refresh</mat-label>
+      <mat-select [(ngModel)]="refreshIntervalMs" (ngModelChange)="onRefreshIntervalChange()">
+        <mat-option *ngFor="let r of refreshIntervals" [value]="r.value">{{ r.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-icon-button
+            class="rem-tc-refresh-icon"
+            matTooltip="Refresh"
+            [disabled]="compareActive"
+            (click)="onRefreshClick()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <div class="rem-tc-range-legend" *ngIf="compareActive">
+      <span class="rem-tc-range-item">
+        <span class="rem-tc-range-swatch rem-tc-range-swatch--base"></span>Base range
+      </span>
+      <span class="rem-tc-range-item">
+        <span class="rem-tc-range-swatch rem-tc-range-swatch--compare"></span>Comparison range
+      </span>
+    </div>
+  </div>
+
+  <div class="rem-tc-loading" *ngIf="initialLoading">
+    <mat-progress-spinner mode="indeterminate" diameter="28"></mat-progress-spinner>
+  </div>
+
+  <div class="rem-tc-error" *ngIf="!initialLoading && errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    {{ errorMessage }}
+  </div>
+
+  <div class="rem-tc-charts">
+    <div class="rem-tc-section" *ngFor="let section of sections">
+      <div class="rem-tc-section-title">{{ section.title }}</div>
+      <div class="rem-tc-chart-block" *ngFor="let chart of section.charts">
+        <div class="rem-tc-chart-header">
+          <span class="rem-tc-chart-subtitle" *ngIf="chart.title">{{ chart.title }}</span>
+          <div class="rem-tc-legend">
+            <div class="rem-tc-legend-item"
+                 *ngFor="let def of chart.series"
+                 [class.rem-inactive]="!seriesVisible[def.key]"
+                 (click)="toggleSeries(chart.id, def.key)">
+              <span class="rem-legend-dot" [style.background]="def.color"></span>
+              <span>{{ labelFor(def.key) }}</span>
+              <span class="rem-tc-legend-stat" *ngIf="statsByKey[def.key] as st">
+                Last <b>{{ st.last }}</b> · Max <b>{{ st.max }}</b>
+              </span>
+              <mat-icon #seriesTip="matTooltip"
+                        class="rem-tc-legend-info"
+                        [matTooltip]="descriptionFor(def)"
+                        matTooltipPosition="above"
+                        (click)="$event.stopPropagation(); seriesTip.toggle()">info_outline</mat-icon>
+            </div>
+          </div>
+        </div>
+        <div #chartContainer class="rem-tc-chart"></div>
+      </div>
+    </div>
+  </div>
+
+</div>

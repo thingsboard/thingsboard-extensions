@@ -1,69 +1,66 @@
 import { NgModule } from '@angular/core';
-import { ExampleTableComponent } from './example-table/example-table.component';
 import { CommonModule } from '@angular/common';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SharedModule } from '@shared/public-api';
 import {
   BasicWidgetConfigModule,
   HomeComponentsModule,
   WidgetConfigComponentsModule
 } from '@home/components/public-api';
-import { ChartModule } from 'primeng/chart';
-import { AddEntityComponent } from './example-action/add-entity.component';
-import {
-  ExampleTableCustomSettingsComponent
-} from './example-table-with-custom-settings/example-table-custom-settings.component';
-import {
-  ExampleTableAdvancedConfigComponent
-} from './example-table-with-custom-settings/advanced-config/example-table-advanced-config.component';
-import {
-  ExampleTableBasicConfigComponent
-} from './example-table-with-custom-settings/basic-config/example-table-basic-config.component';
-import {
-  DataKeySettingsComponent
-} from './example-table-with-custom-settings/data-key-settings/data-key-settings.component';
-import {
-  ExampleTableCustomSubscriptionComponent
-} from './example-table-with-custom-subscription/example-table-custom-subscription.component';
-import {
-  ExampleOfUsingThirdPartyLibraryComponent
-} from './example-of-using-third-party-library/example-of-using-third-party-library.component';
-import { ExampleChartComponent } from './example-chart/example-chart.component';
-import { ExampleChartSettingsComponent } from './example-chart/chart-settings/example-chart-settings.component';
+import { RuleEngineMonitoringComponent } from './rule-engine-monitoring/rule-engine-monitoring.component';
+import { FilterBarComponent } from './rule-engine-monitoring/filter-bar.component';
+import { KpiCardsComponent } from './rule-engine-monitoring/kpi-cards.component';
+import { TrendChartComponent } from './rule-engine-monitoring/trend-chart.component';
+import { StatTableComponent } from './rule-engine-monitoring/stat-table.component';
+import { ExecutionPathsComponent } from './rule-engine-monitoring/execution-paths.component';
+import { TracingComponent } from './rule-engine-monitoring/tracing.component';
+import { TracesComponent } from './rule-engine-monitoring/traces.component';
+import { TraceDetailsComponent } from './rule-engine-monitoring/trace-details.component';
+import { PaginatorComponent } from './rule-engine-monitoring/paginator.component';
+import { TimeRangeSelectorComponent } from './rule-engine-monitoring/time-range-selector.component';
 
 @NgModule({
   declarations: [
-    ExampleTableComponent,
-    AddEntityComponent,
-    ExampleTableCustomSettingsComponent,
-    ExampleTableAdvancedConfigComponent,
-    ExampleTableBasicConfigComponent,
-    DataKeySettingsComponent,
-    ExampleTableCustomSubscriptionComponent,
-    ExampleOfUsingThirdPartyLibraryComponent,
-    ExampleChartComponent,
-    ExampleChartSettingsComponent
+    RuleEngineMonitoringComponent,
+    FilterBarComponent,
+    KpiCardsComponent,
+    TrendChartComponent,
+    StatTableComponent,
+    ExecutionPathsComponent,
+    TracingComponent,
+    TracesComponent,
+    TraceDetailsComponent,
+    PaginatorComponent,
+    TimeRangeSelectorComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
     HomeComponentsModule,
-    ChartModule,
     BasicWidgetConfigModule,
-    WidgetConfigComponentsModule
+    WidgetConfigComponentsModule,
+    MatExpansionModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
+    MatSnackBarModule
   ],
   exports: [
-    ExampleTableComponent,
-    AddEntityComponent,
-    ExampleTableCustomSettingsComponent,
-    ExampleTableAdvancedConfigComponent,
-    ExampleTableBasicConfigComponent,
-    DataKeySettingsComponent,
-    ExampleTableCustomSubscriptionComponent,
-    ExampleOfUsingThirdPartyLibraryComponent,
-    ExampleChartComponent,
-    ExampleChartSettingsComponent
+    RuleEngineMonitoringComponent,
+    FilterBarComponent,
+    KpiCardsComponent,
+    TrendChartComponent,
+    StatTableComponent,
+    ExecutionPathsComponent,
+    TracingComponent,
+    TracesComponent,
+    TraceDetailsComponent,
+    PaginatorComponent,
   ]
 })
-
 export class ExamplesModule {
 }

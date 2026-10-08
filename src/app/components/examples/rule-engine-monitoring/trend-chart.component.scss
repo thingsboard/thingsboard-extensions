@@ -1,0 +1,207 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.rem-tc {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 8px;
+}
+
+.rem-tc-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rem-tc-interval {
+  width: 120px;
+  flex-shrink: 0;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.rem-tc-autorefresh {
+  width: 140px;
+
+  ::ng-deep .mat-mdc-floating-label {
+    // Keep the "Auto-refresh" label on one line so it isn't clipped
+    max-width: none;
+  }
+}
+
+.rem-tc-refresh-icon {
+  flex-shrink: 0;
+}
+
+.rem-tc-range-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.rem-tc-range-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.rem-tc-range-swatch {
+  display: inline-block;
+  width: 24px;
+  height: 12px;
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
+
+  &--base {
+    background: rgba(84, 112, 198, 0.15);
+    border-color: rgba(84, 112, 198, 0.6);
+  }
+
+  &--compare {
+    background: rgba(255, 152, 0, 0.15);
+    border-color: rgba(255, 152, 0, 0.7);
+  }
+}
+
+.rem-tc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rem-tc-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.76);
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+
+  // Vertical separator between metrics
+  &:not(:first-child) {
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    padding-left: 12px;
+  }
+
+  &.rem-inactive {
+    opacity: 0.35;
+    text-decoration: line-through;
+  }
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.rem-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rem-tc-legend-stat {
+  margin-left: 4px;
+  font-size: 0.7rem;
+  color: rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+
+  b {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+.rem-tc-legend-info {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.38);
+  cursor: pointer;
+
+  &:hover { color: rgba(0, 0, 0, 0.6); }
+}
+
+.rem-tc-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.rem-tc-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #f44336;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.rem-tc-charts {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;        // scroll like the table when charts don't fit the available height
+  gap: 8px;
+}
+
+// Sections don't form their own flex box — their title + chart blocks participate directly in
+// the parent column so every chart block sizes evenly regardless of how many charts a section has.
+.rem-tc-section {
+  display: contents;
+}
+
+.rem-tc-section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.76);
+  margin-top: 4px;
+}
+
+.rem-tc-chart-block {
+  display: flex;
+  flex-direction: column;
+  // Charts share the available height proportionally (flex grow/shrink). The min-height is the
+  // minimum *readable* chart height: above it, all charts shrink to fit the viewport with no scroll;
+  // once the viewport is too short to honour it for every chart, .rem-tc-charts scrolls instead of clipping.
+  flex: 1 1 0;
+  min-height: 100px;
+  gap: 4px;
+}
+
+.rem-tc-chart-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.rem-tc-chart-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.rem-tc-chart {
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 0;           // fills its block; the block's min-height drives the scroll threshold
+}

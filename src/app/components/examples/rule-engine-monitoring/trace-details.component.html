@@ -1,0 +1,178 @@
+<div class="rem-td" *ngIf="trace as t">
+
+  <button type="button" class="rem-td-back" (click)="onBack()">
+    <mat-icon>arrow_back</mat-icon> Back to traces
+  </button>
+
+  <!-- Header metadata strip -->
+  <div class="rem-td-meta"
+       (mousedown)="stopDashboardDrag($event)"
+       (click)="stopDashboardDrag($event)"
+       (dblclick)="stopDashboardDrag($event)">
+    <div class="rem-td-meta-item">
+      <span class="rem-td-meta-label">Trace ID</span>
+      <span class="rem-td-meta-value rem-td-meta-value--mono">{{ traceId }}
+        <button type="button" class="rem-td-copy" (click)="copyTraceId()"
+                [matTooltip]="copied ? 'Copied' : 'Copy Trace ID'">
+          <mat-icon>{{ copied ? 'check' : 'content_copy' }}</mat-icon>
+        </button>
+      </span>
+    </div>
+    <span class="rem-td-meta-sep"></span>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label">Start</span><span class="rem-td-meta-value">{{ startLabel }}</span></div>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label">End</span><span class="rem-td-meta-value">{{ endLabel }}</span></div>
+    <span class="rem-td-meta-sep"></span>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label" matTooltip="Wall-clock time from first span start to last span end.">Duration</span><span class="rem-td-meta-value">{{ durationLabel }}</span></div>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label" matTooltip="Time during the trace when no rule node was running (waiting in queues). Part of Duration.">In Queue Time</span><span class="rem-td-meta-value">{{ inQueueLabel }}</span></div>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label" matTooltip="Sum of all rule-node durations. Exceeds Duration when nodes run in parallel.">Processing Time</span><span class="rem-td-meta-value">{{ spanTimeLabel }}</span></div>
+    <span class="rem-td-meta-sep"></span>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label">Rule Node Executions</span><span class="rem-td-meta-value">{{ nodes }}</span></div>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label">Rule Node Failed Executions</span><span class="rem-td-meta-value" [class.rem-td-meta-value--error]="errors">{{ errors }}</span></div>
+    <span class="rem-td-meta-sep"></span>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label" matTooltip="Spans where a message was reprocessed (same message ID seen twice among siblings)">Retries</span><span class="rem-td-meta-value" [class.rem-td-meta-value--retry]="retries">{{ retries }}</span></div>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label" matTooltip="Timed-out branches where the message was canceled">Timed out (canceled)</span><span class="rem-td-meta-value" [class.rem-td-meta-value--canceled]="timedOutCanceled">{{ timedOutCanceled }}</span></div>
+    <div class="rem-td-meta-item"><span class="rem-td-meta-label" matTooltip="Timed-out branches where processing continued despite the timeout">Timed out (continued)</span><span class="rem-td-meta-value" [class.rem-td-meta-value--continued]="timedOutContinued">{{ timedOutContinued }}</span></div>
+  </div>
+
+  <!-- Rule Nodes (hierarchy) + Timeline, row-aligned -->
+  <div class="rem-td-body">
+
+    <div class="rem-td-tree">
+      <div class="rem-td-section-title">Rule Nodes</div>
+      <!-- spacer matching the timeline marker row so the first tree row lines up with the first timeline row -->
+      <div class="rem-td-tl-header rem-td-subhead-spacer" aria-hidden="true"></div>
+      <div class="rem-td-tree-rows" #treeRows (scroll)="onScroll('tree')">
+        <div class="rem-td-row rem-td-tree-row"
+             *ngFor="let r of rows"
+             [class.rem-td-row--selected]="isSelected(r.span)"
+             [class.rem-td-row--hover]="hoveredSpan === r.span"
+             [ngClass]="rowStatusClass(r.span)"
+             (mouseenter)="onRowEnter(r.span)" (mouseleave)="onRowLeave()"
+             (click)="onSpanClick(r.span)">
+          <span class="rem-td-indent" [style.width.px]="r.level * 16"></span>
+          <span class="rem-td-glyph">{{ r.hasChildren ? '├' : '└' }}</span>
+          <span class="rem-td-span-name" [matTooltip]="r.span.type">
+            <span class="rem-td-span-primary">{{ r.span.name }}</span>
+            <span class="rem-td-span-secondary" *ngIf="r.span.type">{{ r.span.type }}</span>
+          </span>
+          <span class="rem-td-badge rem-td-badge--retry" *ngIf="r.span.retry">RETRY</span>
+          <span class="rem-td-row-right">
+            <span class="rem-td-badge rem-td-badge--queue" *ngIf="r.span.queueName">{{ r.span.queueName }}</span>
+            <span class="rem-td-span-service" *ngIf="r.span.serviceId">[{{ r.span.serviceId }}]</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rem-td-timeline">
+      <div class="rem-td-section-title rem-td-section-title--row">
+        <span>Timeline</span>
+        <span class="rem-td-legend">
+          <span class="rem-td-legend-item" *ngFor="let l of legend">
+            <span class="rem-td-legend-swatch rem-td-legend-swatch--{{ l.status }}"></span>{{ l.label }}
+          </span>
+        </span>
+      </div>
+      <div class="rem-td-tl-header">
+        <span class="rem-td-tl-marker" *ngFor="let m of timelineMarkers()" [style.left.%]="m.pct">{{ m.label }}</span>
+      </div>
+      <div class="rem-td-tl-rows" #tlRows (scroll)="onScroll('tl')">
+        <div class="rem-td-row rem-td-tl-row"
+             *ngFor="let r of rows"
+             [class.rem-td-row--selected]="isSelected(r.span)"
+             [class.rem-td-row--hover]="hoveredSpan === r.span"
+             (mouseenter)="onRowEnter(r.span)" (mouseleave)="onRowLeave()"
+             (click)="onSpanClick(r.span)">
+          <span class="rem-td-bar"
+                [class.rem-td-bar--error]="r.span.status === 'error'"
+                [class.rem-td-bar--canceled]="r.span.status === 'timeoutCanceled'"
+                [class.rem-td-bar--continued]="r.span.status === 'timeoutContinued'"
+                [style.left.%]="barLeft(r.span)"
+                [style.width.%]="barWidth(r.span)"
+                [matTooltip]="r.span.name + ' · ' + fmtDuration(r.span.durationMs)"></span>
+          <span class="rem-td-bar-dur" [class.rem-td-bar-dur--flip]="barDurFlip(r.span)"
+                [style.left.%]="barDurLeft(r.span)">{{ fmtDuration(r.span.durationMs) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Span details: stable bottom panel; opens ~32% on selection, resizable / collapsible / maximizable -->
+  <div class="rem-td-detail"
+       [class.rem-td-detail--empty]="!selectedSpan"
+       [class.rem-td-detail--collapsed]="selectedSpan && collapsed"
+       [class.rem-td-detail--open]="selectedSpan && !collapsed && !maximized && !detailHeightPx"
+       [class.rem-td-detail--max]="selectedSpan && !collapsed && maximized"
+       [style.height.px]="selectedSpan && !collapsed && !maximized && detailHeightPx ? detailHeightPx : null">
+
+    <!-- visible resize handle (drag the divider between the trace view and the details) -->
+    <div class="rem-td-resize" *ngIf="selectedSpan && !collapsed"
+         (mousedown)="startResize($event)" title="Drag to resize">
+      <span class="rem-td-resize-grip"></span>
+    </div>
+
+    <!-- header — always visible -->
+    <div class="rem-td-detail-header" *ngIf="selectedSpan as span; else emptyHeader"
+         (mousedown)="stopDashboardDrag($event)"
+         (click)="stopDashboardDrag($event)"
+         (dblclick)="onDetailHeaderDblClick($event)">
+      <div class="rem-td-detail-title">
+        <span class="rem-td-detail-primary">{{ span.name }}</span>
+        <span class="rem-td-detail-secondary" *ngIf="span.type">{{ span.type }}</span>
+      </div>
+      <span class="rem-td-detail-status" [class.rem-td-detail-status--error]="span.error">{{ span.error ? 'ERROR' : 'OK' }}</span>
+      <span class="rem-td-detail-dur">{{ fmtDuration(span.durationMs) }}</span>
+      <span class="rem-td-detail-spacer"></span>
+      <button type="button" class="rem-td-icon-btn" (click)="toggleCollapse()"
+              [title]="collapsed ? 'Expand' : 'Collapse'">
+        <mat-icon>{{ collapsed ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      <button type="button" class="rem-td-icon-btn" (click)="toggleMaximize()"
+              [title]="maximized ? 'Restore' : 'Maximize'">
+        <mat-icon>{{ maximized ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+      </button>
+      <button type="button" class="rem-td-icon-btn rem-td-icon-btn--close" (click)="closeDetail()" title="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <ng-template #emptyHeader>
+      <div class="rem-td-detail-header rem-td-detail-header--empty">
+        <mat-icon>ads_click</mat-icon>
+        <span>Span Details — select a span to inspect it</span>
+      </div>
+    </ng-template>
+
+    <!-- body — scrolls internally; hidden when collapsed or empty -->
+    <div class="rem-td-detail-body" *ngIf="selectedSpan && !collapsed"
+         (mousedown)="stopDashboardDrag($event)"
+         (click)="stopDashboardDrag($event)"
+         (dblclick)="stopDashboardDrag($event)">
+
+      <!-- exception for an error span — the span's status message -->
+      <div class="rem-td-error" *ngIf="spanErrorMessage as err">
+        <div class="rem-td-error-title"><mat-icon>error_outline</mat-icon> Error</div>
+        <pre class="rem-td-error-stack">{{ err }}</pre>
+      </div>
+
+      <div class="rem-td-tags-head">
+        <div class="rem-td-tags-title">Tags ({{ selectedAttributes.length }})</div>
+        <button type="button" class="rem-td-open-node" *ngIf="ruleNodeLink" (click)="openRuleNode()">
+          <mat-icon>open_in_new</mat-icon> Open Rule Node
+        </button>
+      </div>
+      <table class="rem-td-tags">
+        <tr *ngFor="let a of selectedAttributes">
+          <td class="rem-td-tag-key">{{ a.key }}</td>
+          <td class="rem-td-tag-val">
+            <div class="rem-td-tag-val-wrap" [class.rem-td-tag-val-wrap--json]="a.json">
+              <pre class="rem-td-tag-json" *ngIf="a.json; else plainAttr">{{ a.value }}</pre>
+              <ng-template #plainAttr><span class="rem-td-tag-text">{{ a.value }}</span></ng-template>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div class="rem-td-tags-empty" *ngIf="!selectedAttributes.length">No attributes available</div>
+    </div>
+  </div>
+
+</div>
