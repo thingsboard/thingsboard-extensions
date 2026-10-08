@@ -1,0 +1,179 @@
+<div class="rem-tg">
+
+  <!-- Shared tracing header: sibling-view tabs · status · Trace Settings -->
+  <div class="rem-tg-header">
+    <div class="rem-tg-tabs">
+      <button type="button" class="rem-tg-tab"
+              [class.rem-tg-tab--active]="activeView === 'paths'"
+              (click)="setView('paths')">Trace Groups</button>
+      <button type="button" class="rem-tg-tab"
+              [class.rem-tg-tab--active]="activeView === 'traces'"
+              (click)="setView('traces')">Saved Traces</button>
+    </div>
+
+    <div class="rem-tg-actions">
+      <span class="rem-tg-status" *ngIf="settings">
+        <ng-container *ngIf="settings.enabled; else tracingOff">
+          Tracing: On <span class="rem-tg-status-sep">·</span>
+          {{ settings.tracesPerInterval }} traces / {{ settings.interval }}s
+        </ng-container>
+        <ng-template #tracingOff>Tracing: Off</ng-template>
+      </span>
+
+      <button type="button" class="rem-tg-settings-btn" (click)="openSettings()" [disabled]="!settings">
+        <mat-icon>settings</mat-icon> Trace Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- Sibling views (kept mounted so filters/selection survive navigation). Toggled via a plain
+       wrapper div: a parent set to display:none hides its subtree regardless of the child component's
+       own :host display, which a [hidden] directly on the host would not. The time-range picker is rendered
+       inside each view's filter toolbar; its selection is shared here so it persists across tab switches. -->
+  <div class="rem-tg-views" [hidden]="showDetails">
+    <div [hidden]="activeView !== 'paths'">
+      <tb-rem-execution-paths
+          [filterState]="pathsFilterState"
+          [injector]="injector"
+          [rangePreset]="pathsRangePreset"
+          [rangeCustomStart]="pathsRangeCustomStart"
+          [rangeCustomEnd]="pathsRangeCustomEnd"
+          (rangeChange)="onPathsRangeChange($event)"
+          (viewTraces)="onViewTraces($event)">
+      </tb-rem-execution-paths>
+    </div>
+
+    <div [hidden]="activeView !== 'traces'">
+      <tb-rem-traces
+          [filterState]="tracesFilterState"
+          [injector]="injector"
+          [pathFilter]="pathFilter"
+          [rangePreset]="tracesRangePreset"
+          [rangeCustomStart]="tracesRangeCustomStart"
+          [rangeCustomEnd]="tracesRangeCustomEnd"
+          (rangeChange)="onTracesRangeChange($event)"
+          (openTrace)="onOpenTrace($event)"
+          (clearPathFilter)="onClearPathFilter()">
+      </tb-rem-traces>
+    </div>
+  </div>
+
+  <!-- Shared Trace Details (overlays whichever sibling view is active) -->
+  <div class="rem-tg-details" *ngIf="showDetails">
+    <div class="rem-tg-detail-loading" *ngIf="detailLoading && !detailTrace">Loading trace…</div>
+    <tb-rem-trace-details *ngIf="detailTrace"
+        [trace]="detailTrace"
+        (back)="onBackFromDetails()">
+    </tb-rem-trace-details>
+  </div>
+
+  <!-- Trace Settings drawer -->
+  <div class="rem-tg-drawer-backdrop" *ngIf="settingsOpen" (click)="closeSettings()"></div>
+  <div class="rem-tg-drawer" *ngIf="settingsOpen && draft" role="dialog" aria-label="Trace Settings">
+    <div class="rem-tg-drawer-header">
+      <span class="rem-tg-drawer-title">Trace Settings</span>
+      <button type="button" class="rem-tg-drawer-close" (click)="closeSettings()" aria-label="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="rem-tg-drawer-body">
+
+      <!-- Tracing -->
+      <div class="rem-tg-field-section">Tracing</div>
+      <label class="rem-tg-field-check">
+        <input type="checkbox" [(ngModel)]="draft.enabled" />
+        Enable tracing
+      </label>
+
+      <!-- everything below is meaningful only while tracing is enabled -->
+      <ng-container *ngIf="draft.enabled">
+
+        <!-- Capture limit -->
+        <div class="rem-tg-field-section">Capture limit</div>
+
+        <div class="rem-tg-field">
+          <label>Traces per interval</label>
+          <input type="number" min="1" class="rem-tg-num" [(ngModel)]="draft.tracesPerInterval" />
+          <div class="rem-tg-field-error" *ngIf="fieldInvalid(draft.tracesPerInterval)">Must be greater than 0</div>
+        </div>
+
+        <div class="rem-tg-field">
+          <label>Interval</label>
+          <div class="rem-tg-field-inline">
+            <input type="number" min="1" step="1" class="rem-tg-num" [(ngModel)]="draft.interval" />
+            <span class="rem-tg-field-unit">seconds</span>
+          </div>
+          <div class="rem-tg-field-error" *ngIf="fieldInvalid(draft.interval)">Must be greater than 0</div>
+        </div>
+
+        <div class="rem-tg-field">
+          <label>Max traces per message pack</label>
+          <label class="rem-tg-field-check rem-tg-field-check--inline">
+            <input type="checkbox" [(ngModel)]="packUnlimited" /> Unlimited
+          </label>
+          <input type="number" min="1" step="1" class="rem-tg-num" *ngIf="!packUnlimited" [(ngModel)]="draft.tracesPerPack" />
+          <div class="rem-tg-field-error" *ngIf="packCountInvalid(draft.tracesPerPack)">Must be a positive whole number</div>
+        </div>
+
+        <div class="rem-tg-field">
+          <label>Max trace groups per day</label>
+          <label class="rem-tg-field-check rem-tg-field-check--inline">
+            <input type="checkbox" [(ngModel)]="groupsUnlimited" /> Unlimited
+          </label>
+          <input type="number" min="1" step="1" class="rem-tg-num" *ngIf="!groupsUnlimited" [(ngModel)]="draft.maxTraceGroupsPerDay" />
+          <div class="rem-tg-field-error" *ngIf="groupsCountInvalid(draft.maxTraceGroupsPerDay)">Must be a positive whole number</div>
+        </div>
+
+        <!-- Saved traces -->
+        <div class="rem-tg-field-section">Saved traces</div>
+        <div class="rem-tg-field">
+          <label>Save one trace per path every</label>
+          <div class="rem-tg-field-inline">
+            <input type="number" min="1" class="rem-tg-num" [(ngModel)]="sampleValue" />
+            <select class="rem-tg-unit-select" [(ngModel)]="sampleUnit">
+              <option value="seconds">seconds</option>
+              <option value="minutes">minutes</option>
+            </select>
+          </div>
+          <div class="rem-tg-field-hint">Path metrics still count every trace; this only limits stored drill-down traces</div>
+          <div class="rem-tg-field-error" *ngIf="fieldInvalid(draft.relatedTraceSampleInterval)">Must be greater than 0</div>
+        </div>
+
+        <!-- Payload -->
+        <div class="rem-tg-field-section">Payload</div>
+        <div class="rem-tg-field">
+          <label>Payload recording mode</label>
+          <select class="rem-tg-unit-select rem-tg-select-wide" [(ngModel)]="draft.messagePayloadRecording">
+            <option value="NONE">Do not record</option>
+            <option value="FIRST_SPAN">Root message only</option>
+            <option value="ALL_SPANS">All rule nodes</option>
+          </select>
+        </div>
+
+        <!-- Rule Engine Rotation -->
+        <div class="rem-tg-field-section">Rule Engine Rotation</div>
+        <label class="rem-tg-field-check">
+          <input type="checkbox" [(ngModel)]="draft.ruleEngineRotation" />
+          Enable rotation
+        </label>
+        <div class="rem-tg-field">
+          <label>Rotation interval</label>
+          <div class="rem-tg-field-inline">
+            <input type="number" min="1" class="rem-tg-num" [(ngModel)]="switchMinutes" [disabled]="!draft.ruleEngineRotation" />
+            <span class="rem-tg-field-unit">minutes</span>
+          </div>
+          <div class="rem-tg-field-error" *ngIf="draft.ruleEngineRotation && fieldInvalid(draft.ruleEngineSwitchInterval)">Must be greater than 0</div>
+        </div>
+
+      </ng-container>
+    </div>
+
+    <div class="rem-tg-drawer-footer">
+      <button type="button" class="rem-tg-btn" (click)="closeSettings()">Cancel</button>
+      <button type="button" class="rem-tg-btn rem-tg-btn--primary"
+              [disabled]="!settingsValid || settingsSaving" (click)="saveSettings()">Save</button>
+    </div>
+  </div>
+
+</div>
