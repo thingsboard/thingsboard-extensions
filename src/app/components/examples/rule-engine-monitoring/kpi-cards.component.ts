@@ -136,8 +136,7 @@ export class KpiCardsComponent implements OnChanges, OnDestroy {
       queueId: r.queueId, ruleChainId: r.ruleChainId, ruleNodeId: r.ruleNodeId, serviceId: r.serviceId,
       execCount: r.execCount.baseValue, errorCount: r.errorCount.baseValue,
       totalDurationMs: r.totalDurationMs.baseValue, avgDurationMs: r.avgDurationMs.baseValue,
-      maxDurationMs: r.maxDurationMs.baseValue,
-      p95DurationMs: r.p95DurationMs.baseValue, timeoutCount: r.timeoutCount.baseValue,
+      maxDurationMs: r.maxDurationMs.baseValue, timeoutCount: r.timeoutCount.baseValue,
     };
   }
 
@@ -146,8 +145,7 @@ export class KpiCardsComponent implements OnChanges, OnDestroy {
       queueId: r.queueId, ruleChainId: r.ruleChainId, ruleNodeId: r.ruleNodeId, serviceId: r.serviceId,
       execCount: r.execCount.compareValue, errorCount: r.errorCount.compareValue,
       totalDurationMs: r.totalDurationMs.compareValue, avgDurationMs: r.avgDurationMs.compareValue,
-      maxDurationMs: r.maxDurationMs.compareValue,
-      p95DurationMs: r.p95DurationMs.compareValue, timeoutCount: r.timeoutCount.compareValue,
+      maxDurationMs: r.maxDurationMs.compareValue, timeoutCount: r.timeoutCount.compareValue,
     };
   }
 

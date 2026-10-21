@@ -49,7 +49,6 @@ export interface NodeStatsRow {
   totalDurationMs: number | null;
   avgDurationMs: number | null;
   maxDurationMs: number | null;
-  p95DurationMs: number | null;
   tenantId: string | null;
   serviceId: string | null;
   queueId: string | null;
@@ -78,7 +77,6 @@ export interface NodeTsEntry {
   totalDurationMs: number | null;
   avgDurationMs: number | null;
   maxDurationMs: number | null;
-  p95DurationMs: number | null;
 }
 
 // Matches backend QueueTimeseriesEntry JSON fields
@@ -104,7 +102,6 @@ export interface MergedStatsTableRow {
   totalDurationMs: number | null;
   avgDurationMs:   number | null;
   maxDurationMs:   number | null;
-  p95DurationMs:   number | null;
   timeoutCount:    number | null;
 }
 
@@ -134,7 +131,6 @@ export interface MergedStatsDelta {
   totalDurationMs: MetricDelta;
   avgDurationMs:   MetricDelta;
   maxDurationMs:   MetricDelta;
-  p95DurationMs:   MetricDelta;
   timeoutCount:    MetricDelta;
 }
 
@@ -152,7 +148,6 @@ export interface MergedTableRow {
   avgDurationMs: number | null;
   totalDurationMs: number | null;
   maxDurationMs: number | null;
-  p95DurationMs: number | null;
   timeoutCount: number | null;
 }
 
