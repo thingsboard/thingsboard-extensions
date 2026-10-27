@@ -95,6 +95,7 @@
         <div class="rem-tg-field">
           <label>Traces per interval</label>
           <input type="number" min="1" class="rem-tg-num" [(ngModel)]="draft.tracesPerInterval" />
+          <div class="rem-tg-field-hint">Applies to each rule engine instance separately</div>
           <div class="rem-tg-field-error" *ngIf="fieldInvalid(draft.tracesPerInterval)">Must be greater than 0</div>
         </div>
 
@@ -149,21 +150,6 @@
             <option value="FIRST_SPAN">Root message only</option>
             <option value="ALL_SPANS">All rule nodes</option>
           </select>
-        </div>
-
-        <!-- Rule Engine Rotation -->
-        <div class="rem-tg-field-section">Rule Engine Rotation</div>
-        <label class="rem-tg-field-check">
-          <input type="checkbox" [(ngModel)]="draft.ruleEngineRotation" />
-          Enable rotation
-        </label>
-        <div class="rem-tg-field">
-          <label>Rotation interval</label>
-          <div class="rem-tg-field-inline">
-            <input type="number" min="1" class="rem-tg-num" [(ngModel)]="switchMinutes" [disabled]="!draft.ruleEngineRotation" />
-            <span class="rem-tg-field-unit">minutes</span>
-          </div>
-          <div class="rem-tg-field-error" *ngIf="draft.ruleEngineRotation && fieldInvalid(draft.ruleEngineSwitchInterval)">Must be greater than 0</div>
         </div>
 
       </ng-container>

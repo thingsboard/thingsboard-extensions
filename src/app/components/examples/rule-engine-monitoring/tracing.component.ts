@@ -214,15 +214,6 @@ export class TracingComponent implements OnChanges {
     this.cdr.detectChanges();
   }
 
-  get switchMinutes(): number | null {
-    if (!this.draft) { return null; }
-    return this.draft.ruleEngineSwitchInterval / 60;
-  }
-  set switchMinutes(v: number | null) {
-    if (!this.draft) { return; }
-    this.draft.ruleEngineSwitchInterval = (v ?? 0) * 60;
-  }
-
   get sampleValue(): number | null {
     if (!this.draft) { return null; }
     return this.sampleUnit === 'minutes' ? this.draft.relatedTraceSampleInterval / 60 : this.draft.relatedTraceSampleInterval;
@@ -288,8 +279,7 @@ export class TracingComponent implements OnChanges {
       && !this.packCountInvalid(this.draft.tracesPerPack)
       && !this.groupsCountInvalid(this.draft.maxTraceGroupsPerDay)
       && !this.fieldInvalid(this.draft.interval)
-      && !this.fieldInvalid(this.draft.relatedTraceSampleInterval)
-      && (!this.draft.ruleEngineRotation || !this.fieldInvalid(this.draft.ruleEngineSwitchInterval));
+      && !this.fieldInvalid(this.draft.relatedTraceSampleInterval);
   }
 
   saveSettings(): void {

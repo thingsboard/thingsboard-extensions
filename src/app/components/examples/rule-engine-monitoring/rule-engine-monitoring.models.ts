@@ -263,8 +263,6 @@ export interface TraceSettings {
   tracesPerInterval: number;        // max traces collected per interval
   tracesPerPack: number;            // max traced messages per pack per tenant; 0 = unlimited
   interval: number;                 // collection interval, seconds
-  ruleEngineRotation: boolean;      // whether tracing rotates across rule engine instances
-  ruleEngineSwitchInterval: number; // how often tracing rotates to another rule engine, seconds (when rotation is on)
   relatedTraceSampleInterval: number; // min spacing between drill-down traces persisted per path, seconds
   messagePayloadRecording: MessagePayloadRecording; // controls message data/metadata capture
   maxTraceGroupsPerDay: number;     // max trace groups (paths) tracked per tenant per day; 0 = unlimited
@@ -276,8 +274,6 @@ export interface ApiTraceCoverageSetting {
   tracesPerInterval: number;
   tracesPerPack: number;
   intervalSeconds: number;
-  ruleEngineRotation: boolean;
-  switchPeriodSeconds: number;
   relatedTraceSampleIntervalSeconds: number;
   messagePayloadRecording?: ApiMessagePayloadRecording;
   maxTraceGroupsPerDay: number;
