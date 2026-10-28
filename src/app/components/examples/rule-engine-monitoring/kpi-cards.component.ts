@@ -89,7 +89,7 @@ export class KpiCardsComponent implements OnChanges, OnDestroy {
     // Compare mode active but no range brushed yet — show N/A metrics, but still surface current lag
     if (this.compareState !== null && this.compareState.baseRange === null) {
       this.sub = lag$.subscribe({
-        next: (lag: number) => {
+        next: (lag: number | null) => {
           this.cards = this.buildCards(this.naMetrics(), null, lag);
           this.loading = false;
           this.cdr.detectChanges();
@@ -108,7 +108,7 @@ export class KpiCardsComponent implements OnChanges, OnDestroy {
 
     if (cmpFilter) {
       this.sub = combineLatest([this.service!.getStatsTableCompare(filter, cmpFilter), lag$]).subscribe({
-        next: ([deltaRows, lag]: [MergedStatsDelta[], number]) => {
+        next: ([deltaRows, lag]: [MergedStatsDelta[], number | null]) => {
           this.cards = this.buildCards(
             this.computeMetrics(deltaRows.map(r => this.toBaseRow(r))),
             this.computeMetrics(deltaRows.map(r => this.toCompareRow(r))),
@@ -121,7 +121,7 @@ export class KpiCardsComponent implements OnChanges, OnDestroy {
       });
     } else {
       this.sub = combineLatest([this.service!.getStatsTable(filter), lag$]).subscribe({
-        next: ([rows, lag]: [MergedStatsTableRow[], number]) => {
+        next: ([rows, lag]: [MergedStatsTableRow[], number | null]) => {
           this.cards = this.buildCards(this.computeMetrics(rows), null, lag);
           this.loading = false;
           this.cdr.detectChanges();
@@ -171,7 +171,7 @@ export class KpiCardsComponent implements OnChanges, OnDestroy {
     };
   }
 
-  private buildCards(current: KpiMetrics, compare: KpiMetrics | null, currentLag: number): KpiCard[] {
+  private buildCards(current: KpiMetrics, compare: KpiMetrics | null, currentLag: number | null): KpiCard[] {
     const fmtNum  = (v: number | null): string => (v ?? 0).toLocaleString();
     const fmtDur  = (v: number | null): string => formatDuration(v ?? 0);
     const fmtRate = (v: number | null): string => `${(v ?? 0).toFixed(1)}%`;
@@ -214,7 +214,7 @@ export class KpiCardsComponent implements OnChanges, OnDestroy {
     // Current queue lag has no before/after/delta even in compare mode (excluded from comparison),
     // so it is rendered as a plain single value via null before/delta fields.
     const lagCard: KpiCard = {
-      key: 'currentQueueLag', label: 'Current Queue Lag', primaryValue: fmtNum(currentLag),
+      key: 'currentQueueLag', label: 'Current Queue Lag', primaryValue: currentLag === null ? 'N/A' : fmtNum(currentLag),
       beforeValue: null, deltaLabel: null, deltaColour: null,
     };
 

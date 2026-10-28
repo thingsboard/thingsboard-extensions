@@ -230,13 +230,14 @@ export class RuleEngineMonitoringWidgetService {
     }).pipe(catchError(this.rethrow));
   }
 
-  // Last-known total queue lag. Backend returns a single number (the "all queues" aggregate when queueIds is empty).
-  getCurrentQueueLag(queueIds?: string[]): Observable<number> {
+  // Last-known total queue lag. Backend returns a single number (the "all queues" aggregate when queueIds is empty),
+  // or null when no queue has a recent sample (lag unknown, e.g. Kafka unreachable).
+  getCurrentQueueLag(queueIds?: string[]): Observable<number | null> {
     let params = new HttpParams();
     for (const id of queueIds ?? []) {
       params = params.append('queueIds', id);
     }
-    return this.http.get<number>('/api/ruleEngineMonitoring/queueLagStats/last', {
+    return this.http.get<number | null>('/api/ruleEngineMonitoring/queueLagStats/last', {
       params,
       ...this.authHeader()
     }).pipe(catchError(this.rethrow));
