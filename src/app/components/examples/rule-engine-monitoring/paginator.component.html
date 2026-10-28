@@ -1,0 +1,26 @@
+<div class="rem-pg" *ngIf="total > 0">
+  <div class="rem-pg-size">
+    <label>Rows per page</label>
+    <select [ngModel]="pageSize" (ngModelChange)="onSize($event)">
+      <option *ngFor="let s of pageSizeOptions" [ngValue]="s">{{ s }}</option>
+    </select>
+  </div>
+
+  <div class="rem-pg-range">{{ rangeStart }}–{{ rangeEnd }} of {{ total }}</div>
+
+  <div class="rem-pg-nav">
+    <button type="button" (click)="first()" [disabled]="page === 0" title="First page">
+      <mat-icon>first_page</mat-icon>
+    </button>
+    <button type="button" (click)="prev()" [disabled]="page === 0" title="Previous page">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="rem-pg-page">Page {{ page + 1 }} of {{ totalPages }}</span>
+    <button type="button" (click)="next()" [disabled]="page >= totalPages - 1" title="Next page">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button type="button" (click)="last()" [disabled]="page >= totalPages - 1" title="Last page">
+      <mat-icon>last_page</mat-icon>
+    </button>
+  </div>
+</div>

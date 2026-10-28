@@ -1,0 +1,171 @@
+:host {
+  display: block;
+}
+
+.rem-fb {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rem-fb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.rem-fb-filters {
+  gap: 12px;
+}
+
+.rem-fb-label {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.54);
+  white-space: nowrap;
+}
+
+/* Custom date inputs */
+.rem-datetime-input {
+  font-size: 0.8125rem;
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+  height: 30px;
+  box-sizing: border-box;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.rem-to {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+/* Filter dropdowns */
+.rem-select-field {
+  width: 180px;
+
+  &--wide {
+    width: 240px;
+  }
+
+  &.rem-time-field {
+    width: 160px;
+  }
+
+  &.rem-refresh-interval-field {
+    width: 150px;
+
+    ::ng-deep .mat-mdc-floating-label {
+      // Keep the floating label on a single line so it isn't clipped
+      max-width: none;
+    }
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+/* Search box inside mat-select panel */
+.rem-option-search {
+  padding: 6px 12px 4px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.rem-add-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0 2px;
+  font-size: 0.875rem;
+  color: #305680;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.rem-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  padding: 2px 0;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.38);
+  }
+}
+
+.rem-chain-hint {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 0.8rem;
+}
+
+.rem-no-results {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.38) !important;
+}
+
+/* Reset / Refresh buttons */
+.rem-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rem-reset-btn,
+.rem-refresh-btn {
+  height: 36px;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+    margin-right: 2px;
+  }
+}
+
+@keyframes rem-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.rem-spin {
+  animation: rem-spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+.rem-fb-actions {
+  gap: 16px;
+}
+
+/* Compare toggle */
+.rem-compare-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

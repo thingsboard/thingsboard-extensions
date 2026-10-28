@@ -1,0 +1,54 @@
+:host { display: block; }
+
+.rem-pg {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 8px 4px 0;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  flex-wrap: wrap;
+}
+
+.rem-pg-size {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  select {
+    height: 28px;
+    padding: 0 6px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+  }
+}
+
+.rem-pg-range { white-space: nowrap; }
+
+.rem-pg-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.7);
+
+    mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.06); }
+    &:disabled { color: rgba(0, 0, 0, 0.26); cursor: default; }
+  }
+}
+
+.rem-pg-page { white-space: nowrap; padding: 0 4px; }

@@ -1,0 +1,108 @@
+<div class="rem-widget">
+
+  <!-- Top-level dashboard tabs — only the selected panel is shown; both stay mounted -->
+  <div class="rem-dash-tabs">
+    <button type="button" class="rem-dash-tab"
+            [class.rem-dash-tab--active]="activeDashboard === 'performance'"
+            (click)="activeDashboard = 'performance'">Performance</button>
+    <button type="button" class="rem-dash-tab"
+            [class.rem-dash-tab--active]="activeDashboard === 'tracing'"
+            (click)="activeDashboard = 'tracing'">Tracing</button>
+  </div>
+
+  <div class="rem-dash-panels">
+
+  <!-- Performance dashboard -->
+  <div class="rem-dashboard-panel rem-performance-panel" [hidden]="activeDashboard !== 'performance'">
+
+  <div class="rem-error" *ngIf="errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="rem-filter-section" *ngIf="filterOptions">
+    <tb-rem-filter-bar
+        [filterOptions]="filterOptions"
+        [locked]="compareActive"
+        [externalFilterState]="filterState"
+        (filterChange)="onFilterChange($event)"
+        (compareToggle)="onCompareToggle($event)"
+        (resetClick)="onResetClick()"
+        (refreshClick)="onRefreshClick()">
+    </tb-rem-filter-bar>
+  </div>
+
+  <nav class="rem-breadcrumb" *ngIf="filterState" aria-label="Drill-down path">
+    <button type="button"
+            class="rem-crumb"
+            [class.rem-crumb--current]="breadcrumbItems.length === 0"
+            [disabled]="compareActive"
+            (click)="onBreadcrumbAll()">All</button>
+    <ng-container *ngFor="let item of breadcrumbItems; let last = last">
+      <mat-icon class="rem-crumb-sep">chevron_right</mat-icon>
+      <button type="button"
+              class="rem-crumb"
+              [class.rem-crumb--current]="last"
+              [disabled]="compareActive || last"
+              (click)="onBreadcrumbClick(item.type)">
+        <span class="rem-crumb-prefix">{{ item.prefix }}:</span> {{ item.label }}
+      </button>
+    </ng-container>
+  </nav>
+
+  <div class="rem-kpi-section" *ngIf="filterState">
+    <tb-rem-kpi-cards
+        [filterState]="filterState"
+        [compareState]="compareState"
+        [injector]="injector">
+    </tb-rem-kpi-cards>
+  </div>
+
+  <div class="rem-bottom-row" [class.rem-bottom-row--dragging]="splitDragging" *ngIf="filterState">
+    <div class="rem-chart-section" [style.flex-basis.%]="chartPanePct">
+      <tb-rem-trend-chart
+          [filterState]="filterState"
+          [rangeSelectActive]="rangeSelectActive"
+          [compareActive]="compareActive"
+          [injector]="injector"
+          (rangeSelected)="onRangeSelected($event)"
+          (refresh)="onChartRefresh()">
+      </tb-rem-trend-chart>
+    </div>
+
+    <!-- drag the divider to rebalance charts vs table; double-click restores the default split -->
+    <div class="rem-split-handle"
+         (mousedown)="startSplitResize($event)"
+         (dblclick)="resetSplit()"
+         title="Drag to resize, double-click to reset">
+      <span class="rem-split-grip"></span>
+    </div>
+
+    <div class="rem-table-section">
+      <tb-rem-stat-table
+          [filterState]="filterState"
+          [compareState]="compareState"
+          [filterOptions]="filterOptions"
+          [injector]="injector"
+          (filterChange)="onTableFilterChange($event)">
+      </tb-rem-stat-table>
+    </div>
+  </div>
+
+  </div>
+  <!-- end Performance dashboard -->
+
+  <!-- Tracing dashboard (Execution Paths + Traces nested tabs) -->
+  <div class="rem-dashboard-panel rem-tracing-panel" *ngIf="filterState" [hidden]="activeDashboard !== 'tracing'">
+    <div class="rem-paths-section">
+      <tb-rem-tracing
+          [filterState]="filterState"
+          [injector]="injector">
+      </tb-rem-tracing>
+    </div>
+  </div>
+
+  </div>
+  <!-- end dashboard panels -->
+
+</div>

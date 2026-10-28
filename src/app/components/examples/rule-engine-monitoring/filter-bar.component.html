@@ -1,0 +1,134 @@
+<div class="rem-fb">
+
+  <!-- Filters: data scope (with data-reload controls pushed to the right) -->
+  <div class="rem-fb-row">
+
+    <mat-form-field appearance="outline" class="rem-select-field rem-time-field">
+      <mat-label>Time Range</mat-label>
+      <mat-select [(ngModel)]="activePreset"
+                  (ngModelChange)="onTimeRangeChange()"
+                  [disabled]="locked">
+        <mat-option *ngFor="let p of presets" [value]="p.value">{{ p.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <ng-container *ngIf="showCustomRange">
+      <input class="rem-datetime-input"
+             type="datetime-local"
+             [(ngModel)]="customStart"
+             (change)="onCustomRangeChange()"
+             [disabled]="locked" />
+      <span class="rem-to">–</span>
+      <input class="rem-datetime-input"
+             type="datetime-local"
+             [(ngModel)]="customEnd"
+             (change)="onCustomRangeChange()"
+             [disabled]="locked" />
+    </ng-container>
+
+    <mat-form-field appearance="outline" class="rem-select-field">
+      <mat-label>Queue</mat-label>
+      <mat-select multiple
+                  [(ngModel)]="selectedQueueIds"
+                  (ngModelChange)="onQueueChange()"
+                  [disabled]="locked">
+        <div class="rem-option-search" (click)="$event.stopPropagation()">
+          <input class="rem-search-input"
+                 placeholder="Search queues…"
+                 [(ngModel)]="queueSearch"
+                 [ngModelOptions]="{standalone: true}" />
+          <div class="rem-add-option" *ngIf="canAddQueue()" (click)="addCustomQueue()">
+            <mat-icon>add</mat-icon> Add "{{ queueSearch.trim() }}"
+          </div>
+        </div>
+        <mat-option *ngFor="let q of filteredQueues" [value]="q.id">{{ queueLabel(q) }}</mat-option>
+        <mat-option *ngIf="!filteredQueues.length" disabled class="rem-no-results">No results</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="rem-select-field">
+      <mat-label>Rule Chain</mat-label>
+      <mat-select multiple
+                  [(ngModel)]="selectedChainIds"
+                  (ngModelChange)="onChainChange()"
+                  [disabled]="locked">
+        <div class="rem-option-search" (click)="$event.stopPropagation()">
+          <input class="rem-search-input"
+                 placeholder="Search rule chains…"
+                 [(ngModel)]="chainSearch"
+                 [ngModelOptions]="{standalone: true}" />
+          <div class="rem-add-option" *ngIf="canAddChain()" (click)="addCustomChain()">
+            <mat-icon>add</mat-icon> Add "{{ chainSearch.trim() }}"
+          </div>
+        </div>
+        <mat-option *ngFor="let c of filteredChains" [value]="c.id">{{ c.name }}</mat-option>
+        <mat-option *ngIf="!filteredChains.length" disabled class="rem-no-results">No results</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="rem-select-field rem-select-field--wide">
+      <mat-label>Rule Node</mat-label>
+      <mat-select multiple
+                  [(ngModel)]="selectedNodeIds"
+                  (ngModelChange)="onNodeChange()"
+                  [disabled]="locked">
+        <div class="rem-option-search" (click)="$event.stopPropagation()">
+          <input class="rem-search-input"
+                 placeholder="Search rule nodes…"
+                 [(ngModel)]="nodeSearch"
+                 [ngModelOptions]="{standalone: true}" />
+          <div class="rem-add-option" *ngIf="canAddNode()" (click)="addCustomNode()">
+            <mat-icon>add</mat-icon> Add "{{ nodeSearch.trim() }}"
+          </div>
+        </div>
+        <mat-option *ngFor="let n of visibleNodes" [value]="n.id">
+          {{ n.name }} <span class="rem-chain-hint">({{ n.ruleChainName }})</span>
+        </mat-option>
+        <mat-option *ngIf="!visibleNodes.length" disabled class="rem-no-results">No results</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="rem-select-field">
+      <mat-label>Service</mat-label>
+      <mat-select multiple
+                  [(ngModel)]="selectedServiceIds"
+                  (ngModelChange)="onServiceChange()"
+                  [disabled]="locked">
+        <div class="rem-option-search" (click)="$event.stopPropagation()">
+          <input class="rem-search-input"
+                 placeholder="Search services…"
+                 [(ngModel)]="serviceSearch"
+                 [ngModelOptions]="{standalone: true}" />
+          <div class="rem-add-option" *ngIf="canAddService()" (click)="addCustomService()">
+            <mat-icon>add</mat-icon> Add "{{ serviceSearch.trim() }}"
+          </div>
+        </div>
+        <mat-option *ngFor="let s of filteredServices" [value]="s">{{ s }}</mat-option>
+        <mat-option *ngIf="!filteredServices.length" disabled class="rem-no-results">No results</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </div>
+
+  <!-- Analysis controls: compare mode + temporary view reset -->
+  <div class="rem-fb-row rem-fb-actions">
+
+    <div class="rem-compare-toggle">
+      <span class="rem-fb-label">Compare</span>
+      <mat-slide-toggle
+          [checked]="compareActive"
+          (change)="onCompareToggle()">
+      </mat-slide-toggle>
+    </div>
+
+    <button mat-icon-button
+            *ngIf="compareActive"
+            class="rem-reset-btn"
+            matTooltip="Reset view — clear selected comparison windows"
+            (click)="onReset()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+  </div>
+
+</div>

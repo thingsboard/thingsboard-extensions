@@ -1,0 +1,89 @@
+:host {
+  display: block;
+}
+
+.rem-kpi-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.rem-kpi-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #f44336;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.rem-kpi-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rem-kpi-card {
+  flex: 1 1 140px;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-sizing: border-box;
+}
+
+.rem-kpi-label {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.54);
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rem-kpi-info {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.38);
+  cursor: pointer;
+
+  &:hover { color: rgba(0, 0, 0, 0.6); }
+}
+
+.rem-kpi-value {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+  line-height: 1.25;
+  margin-top: 2px;
+
+  &.rem-delta--green { color: #4caf50; }
+  &.rem-delta--red   { color: #f44336; }
+}
+
+.rem-kpi-delta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin-top: 6px;
+
+  &.rem-delta--green { color: #4caf50; }
+  &.rem-delta--red   { color: #f44336; }
+  &.rem-delta--neutral { color: rgba(0, 0, 0, 0.38); }
+}
+
+.rem-kpi-before {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.38);
+  margin-top: 1px;
+}

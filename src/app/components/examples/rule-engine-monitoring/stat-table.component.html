@@ -1,0 +1,170 @@
+<div class="rem-st">
+
+  <div class="rem-st-toolbar">
+    <mat-form-field class="rem-st-groupby" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Group by</mat-label>
+      <mat-select multiple [(ngModel)]="selectedGroupBy" (ngModelChange)="onGroupByChange()">
+        <mat-option *ngFor="let opt of groupOptions" [value]="opt.value">{{ opt.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-button class="rem-st-clear-sort" (click)="clearSort()">
+      <mat-icon>sort</mat-icon> Clear sorting
+    </button>
+  </div>
+
+  <div class="rem-st-legend" *ngIf="compareMode">
+    <mat-icon class="rem-st-legend-icon">swap_vert</mat-icon>
+    <span>— sorted by absolute delta value desc</span>
+  </div>
+
+
+  <div class="rem-st-loading" *ngIf="initialLoading">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+
+  <div class="rem-st-error" *ngIf="!initialLoading && errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="rem-st-table-wrap" *ngIf="!initialLoading && !errorMessage">
+    <table mat-table [dataSource]="rows" [trackBy]="trackByRow" class="rem-st-table">
+
+      <ng-container matColumnDef="queue">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('queue')">
+          <span class="rem-st-col-label">Queue <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'queue' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.queueDisplay }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ruleChain">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('ruleChain')">
+          <span class="rem-st-col-label">Rule Chain <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'ruleChain' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <a *ngIf="ruleChainLink(row) as link; else chainPlain"
+             class="rem-st-link"
+             [href]="link"
+             target="_blank"
+             (click)="$event.stopPropagation()">{{ row.ruleChainDisplay }}</a>
+          <ng-template #chainPlain>{{ row.ruleChainDisplay }}</ng-template>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ruleNode">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('ruleNode')">
+          <span class="rem-st-col-label">Rule Node <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'ruleNode' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <a *ngIf="ruleNodeLink(row) as link; else nodePlain"
+             class="rem-st-link"
+             [href]="link"
+             target="_blank"
+             (click)="$event.stopPropagation()">{{ row.ruleNodeDisplay }}</a>
+          <ng-template #nodePlain>{{ row.ruleNodeDisplay }}</ng-template>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="service">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('service')">
+          <span class="rem-st-col-label">Service <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'service' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.serviceDisplay }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="execCount">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('execCount')">
+          <span class="rem-st-col-label">Rule Node Executions <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'execCount' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngTemplateOutlet="metricCell; context: { $implicit: row.execCount }"></ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="avgDuration">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('avgDuration')">
+          <span class="rem-st-col-label">Avg Rule Node Duration <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'avgDuration' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngTemplateOutlet="metricCell; context: { $implicit: row.avgDuration }"></ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="maxDuration">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('maxDuration')">
+          <span class="rem-st-col-label">Max Rule Node Duration <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'maxDuration' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngTemplateOutlet="metricCell; context: { $implicit: row.maxDuration }"></ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalDuration">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('totalDuration')">
+          <span class="rem-st-col-label">Total Rule Node Execution Duration <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'totalDuration' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngTemplateOutlet="metricCell; context: { $implicit: row.totalDuration }"></ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="errorCount">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('errorCount')">
+          <span class="rem-st-col-label">Rule Node Failed Executions <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'errorCount' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngTemplateOutlet="metricCell; context: { $implicit: row.errorCount, semantic: 'error' }"></ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="timeoutCount">
+        <th mat-header-cell *matHeaderCellDef class="rem-st-sort-col" (click)="onHeaderClick('timeoutCount')">
+          <span class="rem-st-col-label">Queue Timeout Last-Node Hits <ng-container *ngTemplateOutlet="sortBadge; context: { col: 'timeoutCount' }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngTemplateOutlet="metricCell; context: { $implicit: row.timeoutCount, semantic: 'timeout' }"></ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          class="rem-st-row"
+          (click)="onRowClick(row)"></tr>
+
+    </table>
+
+    <div class="rem-st-empty" *ngIf="rows.length === 0">No data</div>
+  </div>
+
+</div>
+
+<ng-template #metricCell let-cell let-semantic="semantic">
+  <div class="rem-st-cell">
+    <span class="rem-st-primary"
+          [class.rem-semantic-value--error]="semantic === 'error' && cell.rawValue != null && cell.rawValue > 0"
+          [class.rem-semantic-value--timeout]="semantic === 'timeout' && cell.rawValue != null && cell.rawValue > 0"
+          [class.rem-semantic-value--zero]="semantic && cell.rawValue === 0"
+          [class.rem-semantic-value--missing]="semantic && cell.rawValue === null"
+          [class.rem-delta--green]="cell.deltaColour === 'green'"
+          [class.rem-delta--red]="cell.deltaColour === 'red'">{{ cell.primary }}</span>
+    <span class="rem-st-secondary"
+          *ngIf="cell.deltaLabel"
+          [class.rem-delta--green]="cell.deltaColour === 'green'"
+          [class.rem-delta--red]="cell.deltaColour === 'red'">{{ cell.deltaLabel }}</span>
+  </div>
+</ng-template>
+
+<ng-template #sortBadge let-col="col">
+  <ng-container *ngIf="isActiveMetricCol(col)">
+    <mat-icon class="rem-st-sort-icon">swap_vert</mat-icon>
+  </ng-container>
+  <ng-container *ngIf="!isActiveMetricCol(col)">
+    <ng-container *ngIf="getSortRule(col) as rule">
+      <mat-icon class="rem-st-sort-icon"
+                [matTooltip]="rule.direction === 'asc' ? 'Ascending' : 'Descending'">
+        {{ rule.direction === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+      </mat-icon>
+      <span class="rem-st-sort-num" *ngIf="sortRules.length > 1">{{ rule.priority }}</span>
+    </ng-container>
+  </ng-container>
+</ng-template>

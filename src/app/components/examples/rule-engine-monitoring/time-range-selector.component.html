@@ -1,0 +1,16 @@
+<div class="rem-trs">
+  <mat-form-field appearance="outline" class="rem-trs-field">
+    <mat-label>Time Range</mat-label>
+    <mat-select [(ngModel)]="preset" (ngModelChange)="onPresetChange()">
+      <mat-option *ngFor="let p of visiblePresets" [value]="p.value">{{ p.label }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <ng-container *ngIf="showCustomRange">
+    <input class="rem-trs-datetime" [type]="granularity === 'day' ? 'date' : 'datetime-local'"
+           [(ngModel)]="customStart" (change)="onCustomRangeChange()" />
+    <span class="rem-trs-to">–</span>
+    <input class="rem-trs-datetime" [type]="granularity === 'day' ? 'date' : 'datetime-local'"
+           [(ngModel)]="customEnd" (change)="onCustomRangeChange()" />
+  </ng-container>
+</div>
