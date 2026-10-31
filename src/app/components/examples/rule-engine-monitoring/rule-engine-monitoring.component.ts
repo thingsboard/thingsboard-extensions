@@ -74,6 +74,11 @@ export class RuleEngineMonitoringComponent implements OnInit {
 
   onDataUpdated(): void {}
 
+  setActiveDashboard(dashboard: 'performance' | 'tracing'): void {
+    this.activeDashboard = dashboard;
+    this.ctx.detectChanges();
+  }
+
   onFilterChange(state: FilterState): void {
     this.filterState = { ...state };
     this.ctx.detectChanges();

@@ -4,10 +4,10 @@
   <div class="rem-dash-tabs">
     <button type="button" class="rem-dash-tab"
             [class.rem-dash-tab--active]="activeDashboard === 'performance'"
-            (click)="activeDashboard = 'performance'">Performance</button>
+            (click)="setActiveDashboard('performance')">Performance</button>
     <button type="button" class="rem-dash-tab"
             [class.rem-dash-tab--active]="activeDashboard === 'tracing'"
-            (click)="activeDashboard = 'tracing'">Tracing</button>
+            (click)="setActiveDashboard('tracing')">Tracing</button>
   </div>
 
   <div class="rem-dash-panels">
