@@ -5,7 +5,7 @@
 import { BuilderContext, BuilderOutput, createBuilder } from '@angular-devkit/architect';
 import express from 'express';
 import { Server } from 'http';
-import { NgPackagrBuilderOptions } from '@angular-devkit/build-angular';
+import { NgPackagrBuilderOptions } from '@angular/build';
 import { resolve } from 'path';
 import { from, Observable } from 'rxjs';
 import { mapTo, switchMap, tap } from 'rxjs/operators';
@@ -96,11 +96,12 @@ export function createServer(options: StaticServeOptions, context: BuilderContex
   const staticServeConfig: StaticServeConfig = require(resolve(context.workspaceRoot, options.staticServeConfig));
   for (const path of Object.keys(staticServeConfig)) {
     const route = staticServeConfig[path];
-    app.get(path, (req, res) => {
+    const isWildcard = path.endsWith('*');
+    app.get(isWildcard ? `${path}splat` : path, (req, res) => {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
-      if (path.endsWith('*')) {
-        const target = req.params[0];
+      if (isWildcard) {
+        const target = (req.params as any).splat.join('/');
         res.sendFile(resolve(context.workspaceRoot, route.target + target));
       } else {
         res.sendFile(resolve(context.workspaceRoot, route.target));

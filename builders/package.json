@@ -8,6 +8,9 @@
   },
   "dependencies": {
     "@angular-devkit/architect": "0.2003.41",
+    "@types/express": "^5.0.3",
+    "chokidar": "^4.0.3",
+    "express": "^5.2.1",
     "rxjs": "~7.8.2",
     "typescript": "~5.9.3"
   },
@@ -17,7 +20,6 @@
   "devDependencies": {
     "@angular-devkit/core": "20.3.41",
     "@angular-devkit/architect": "0.2003.41",
-    "@angular-devkit/build-angular": "20.3.41",
     "@angular/compiler": "20.3.34",
     "@angular/compiler-cli": "20.3.34",
     "@angular/build": "20.3.41",
