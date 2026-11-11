@@ -1,0 +1,364 @@
+<div class="rem-ep">
+
+  <div class="rem-ep-header" *ngIf="!selectedPath && mainSort.length">
+    <span class="rem-ep-header-spacer"></span>
+
+    <button type="button" class="rem-ep-clear-sort" (click)="clearMainSort()">
+      <mat-icon>sort</mat-icon> Clear sorting
+    </button>
+  </div>
+
+  <div class="rem-ep-loading" *ngIf="initialLoading">
+    <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+  </div>
+
+  <div class="rem-ep-error" *ngIf="!initialLoading && errorMessage">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- Entry-point filters -->
+  <div class="rem-ep-filters" *ngIf="!initialLoading && !errorMessage" [hidden]="selectedPath">
+    <tb-rem-time-range
+        granularity="day"
+        [preset]="rangePreset"
+        [customStart]="rangeCustomStart"
+        [customEnd]="rangeCustomEnd"
+        (rangeChange)="rangeChange.emit($event)">
+    </tb-rem-time-range>
+
+    <mat-form-field appearance="outline" class="rem-ep-select">
+      <mat-label>Root Queue</mat-label>
+      <mat-select [(ngModel)]="queueFilter" (ngModelChange)="applyFilters()">
+        <div class="rem-option-search" (click)="$event.stopPropagation()">
+          <input class="rem-search-input" placeholder="Search queues…"
+                 [(ngModel)]="queueSearch" [ngModelOptions]="{standalone: true}" />
+        </div>
+        <mat-option [value]="null">All</mat-option>
+        <mat-option *ngFor="let q of filteredQueues" [value]="q">{{ q }}</mat-option>
+        <mat-option *ngIf="!filteredQueues.length" disabled class="rem-no-results">No results</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="rem-ep-select">
+      <mat-label>Root Message Type</mat-label>
+      <mat-select [(ngModel)]="messageTypeFilter" (ngModelChange)="applyFilters()">
+        <div class="rem-option-search" (click)="$event.stopPropagation()">
+          <input class="rem-search-input" placeholder="Search or enter a message type…"
+                 [(ngModel)]="messageTypeSearch" [ngModelOptions]="{standalone: true}" />
+          <div class="rem-add-option" *ngIf="canAddMessageType()" (click)="addCustomMessageType()">
+            <mat-icon>add</mat-icon> Add "{{ messageTypeSearch.trim() }}"
+          </div>
+        </div>
+        <mat-option [value]="null">All</mat-option>
+        <mat-option *ngFor="let m of filteredMessageTypes" [value]="m">{{ m }}</mat-option>
+        <mat-option *ngIf="!filteredMessageTypes.length && !canAddMessageType()" disabled class="rem-no-results">No results</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="rem-ep-select">
+      <mat-label>Root Rule Chain</mat-label>
+      <mat-select [(ngModel)]="ruleChainFilter" (ngModelChange)="applyFilters()">
+        <div class="rem-option-search" (click)="$event.stopPropagation()">
+          <input class="rem-search-input" placeholder="Search rule chains…"
+                 [(ngModel)]="ruleChainSearch" [ngModelOptions]="{standalone: true}" />
+        </div>
+        <mat-option [value]="null">All</mat-option>
+        <mat-option *ngFor="let c of filteredRuleChains" [value]="c">{{ c }}</mat-option>
+        <mat-option *ngIf="!filteredRuleChains.length" disabled class="rem-no-results">No results</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button type="button" class="rem-ep-clear-filters" [disabled]="!hasActiveFilters" (click)="clearFilters()">
+      Clear filters
+    </button>
+    <button type="button" class="rem-ep-reload-btn" (click)="reload()" [disabled]="loading" title="Refresh data">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <div class="rem-ep-table-wrap" *ngIf="!initialLoading && !errorMessage" [hidden]="selectedPath">
+    <table mat-table [dataSource]="pagedRows" [trackBy]="trackByRow" class="rem-ep-table">
+
+      <ng-container matColumnDef="pathId">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-col-pathid">Group ID</th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-col-pathid">
+          <span class="rem-ep-pathid">
+            <span class="rem-ep-pathid-text" [matTooltip]="row.pathId">{{ row.pathId | slice:0:6 }}</span>
+            <button type="button" class="rem-ep-pathid-copy"
+                    (click)="copyPathId(row.pathId, $event)"
+                    [matTooltip]="copiedPathId === row.pathId ? 'Copied' : 'Copy full Group ID'">
+              <mat-icon>{{ copiedPathId === row.pathId ? 'check' : 'content_copy' }}</mat-icon>
+            </button>
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="queue">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-col-text rem-ep-sort-col" (click)="onMainSort('queue')">
+          <span class="rem-ep-col-label">Root Queue
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('queue'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-col-text">{{ row.queueName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="messageType">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-col-text rem-ep-sort-col" (click)="onMainSort('messageType')">
+          <span class="rem-ep-col-label">Root Message Type
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('messageType'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-col-text">{{ row.messageType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ruleChain">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-col-text rem-ep-sort-col" (click)="onMainSort('ruleChain')">
+          <span class="rem-ep-col-label">Root Rule Chain
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('ruleChain'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-col-text">{{ row.ruleChainName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="traceCount">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-num" (click)="onMainSort('traceCount')">
+          <span class="rem-ep-col-label">Processed Traces
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('traceCount'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-num">{{ row.traceCount ? row.traceCountDisplay : '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="storedTraces">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-num" (click)="onMainSort('storedTraces')">
+          <span class="rem-ep-col-label">Saved Traces
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('storedTraces'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-num">
+          <button type="button" class="rem-ep-traces-link"
+                  [disabled]="!row.storedTraceCount"
+                  (click)="$event.stopPropagation(); onViewTraces(row)"
+                  title="View stored traces">{{ row.storedTraceCount ? row.storedTraceCountDisplay : '—' }}</button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="lastObserved">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-col-time rem-ep-group-start" (click)="onMainSort('lastObserved')">
+          <span class="rem-ep-col-label">Last Observed
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('lastObserved'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-col-time rem-ep-group-start" [matTooltip]="row.lastObservedExact">{{ row.lastObservedDisplay }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="timeoutTraces">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-rate rem-ep-group-start"
+            (click)="onMainSort('timeoutTraces')">
+          <span class="rem-ep-col-label">Timeout Rate
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('timeoutTraces'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-rate rem-ep-group-start">
+          <span class="rem-semantic-value"
+                [class.rem-semantic-value--timeout]="row.timeoutTraces > 0"
+                [class.rem-semantic-value--zero]="row.timeoutTraces === 0">{{ row.timeoutRateDisplay }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="errorTraces">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-rate"
+            (click)="onMainSort('errorTraces')">
+          <span class="rem-ep-col-label">Error Rate
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('errorTraces'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-rate">
+          <span class="rem-semantic-value"
+                [class.rem-semantic-value--error]="row.failedTraces > 0"
+                [class.rem-semantic-value--zero]="row.failedTraces === 0">{{ row.errorRateDisplay }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="avgTime">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-duration rem-ep-group-start" (click)="onMainSort('avgTime')">
+          <span class="rem-ep-col-label">Avg Duration
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('avgTime'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-duration rem-ep-group-start">{{ row.avgDisplay }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="avgInQueueTime">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-duration" (click)="onMainSort('avgInQueueTime')">
+          <span class="rem-ep-col-label">Avg In Queue
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('avgInQueueTime'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-duration">{{ row.avgInQueueDisplay }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="avgRuleNodeProcessingTime">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-duration" (click)="onMainSort('avgRuleNodeProcessingTime')">
+          <span class="rem-ep-col-label">Avg Processing
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('avgRuleNodeProcessingTime'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-duration">{{ row.avgRuleNodeProcessingDisplay }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="maxTime">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num rem-ep-col-duration" (click)="onMainSort('maxTime')">
+          <span class="rem-ep-col-label">Max Duration
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: mainSortRule('maxTime'), count: mainSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-num rem-ep-col-duration">{{ row.maxDisplay }}</td>
+      </ng-container>
+
+      <!-- soaks up remaining width so data columns stay compact (not evenly distributed) -->
+      <ng-container matColumnDef="spacer">
+        <th mat-header-cell *matHeaderCellDef class="rem-ep-col-spacer"></th>
+        <td mat-cell *matCellDef="let row" class="rem-ep-col-spacer"></td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="rem-ep-column-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          class="rem-ep-row"
+          (click)="openPath(row)"></tr>
+
+    </table>
+
+    <div class="rem-ep-empty" *ngIf="filtered.length === 0">No trace groups match the current filters.</div>
+  </div>
+
+  <tb-rem-paginator *ngIf="!initialLoading && !errorMessage && !selectedPath"
+      [total]="total" [page]="page" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+      (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+  </tb-rem-paginator>
+
+  <!-- Path Details view (replaces the table when a path is selected) -->
+  <div class="rem-ep-details" *ngIf="selectedPath as path">
+    <button type="button" class="rem-ep-back" (click)="backToPaths()">
+      <mat-icon>arrow_back</mat-icon> Back to trace groups
+    </button>
+
+    <div class="rem-ep-summary">
+      <div class="rem-ep-summary-title">{{ path.queueName }} / {{ path.messageType }} / {{ path.ruleChainName }}</div>
+      <span class="rem-ep-summary-spacer"></span>
+      <button type="button" class="rem-ep-view-traces" [disabled]="!path.storedTraceCount" (click)="onViewTraces(path)">
+        <mat-icon>list</mat-icon> View saved traces
+      </button>
+    </div>
+
+    <div class="rem-ep-detail">
+
+      <div class="rem-ep-detail-block">
+        <div class="rem-ep-detail-heading">Group graph</div>
+        <div class="rem-ep-graph">
+          <ng-container *ngTemplateOutlet="graphTree; context: { $implicit: path.graphRoots, level: 0 }"></ng-container>
+        </div>
+      </div>
+
+      <div class="rem-ep-detail-block rem-ep-detail-block--narrow">
+
+        <div class="rem-ep-detail-heading">Group metrics</div>
+        <div class="rem-ep-path-metrics">
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Last Observed</span><span class="rem-ep-pm-value" [matTooltip]="path.lastObservedExact">{{ path.lastObservedDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Timeout Rate</span><span class="rem-ep-pm-value rem-semantic-value" [class.rem-semantic-value--timeout]="path.timeoutTraces > 0" [class.rem-semantic-value--zero]="path.timeoutTraces === 0">{{ path.timeoutRateDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Avg Duration</span><span class="rem-ep-pm-value">{{ path.avgDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Processed Traces</span><span class="rem-ep-pm-value">{{ path.traceCountDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Error Rate</span><span class="rem-ep-pm-value rem-semantic-value" [class.rem-semantic-value--error]="path.failedTraces > 0" [class.rem-semantic-value--zero]="path.failedTraces === 0">{{ path.errorRateDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Avg In Queue</span><span class="rem-ep-pm-value">{{ path.avgInQueueDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Saved Traces</span><span class="rem-ep-pm-value">{{ path.storedTraceCountDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Avg Processing</span><span class="rem-ep-pm-value">{{ path.avgRuleNodeProcessingDisplay }}</span></div>
+          <div class="rem-ep-pm-item"><span class="rem-ep-pm-label">Max Duration</span><span class="rem-ep-pm-value">{{ path.maxDisplay }}</span></div>
+        </div>
+
+        <div class="rem-ep-detail-heading">Rule node metrics</div>
+
+        <!-- Per-rule-node metrics -->
+        <div class="rem-ep-node-wrap">
+          <table mat-table [dataSource]="path.nodeMetrics" [trackBy]="trackByNode" class="rem-ep-node-table">
+
+            <ng-container matColumnDef="ruleChain">
+              <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col" (click)="onNodeSort(path, 'ruleChain')">
+                <span class="rem-ep-col-label">Rule Chain
+                  <ng-container *ngTemplateOutlet="sortBadge; context: { rule: nodeSortRule('ruleChain'), count: nodeSort.length }"></ng-container></span>
+              </th>
+              <td mat-cell *matCellDef="let n">{{ n.ruleChainName || 'Unknown Rule Chain' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col" (click)="onNodeSort(path, 'name')">
+                <span class="rem-ep-col-label">Rule Node
+                  <ng-container *ngTemplateOutlet="sortBadge; context: { rule: nodeSortRule('name'), count: nodeSort.length }"></ng-container></span>
+              </th>
+              <td mat-cell *matCellDef="let n">{{ n.ruleNodeName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="totalDuration">
+              <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num" (click)="onNodeSort(path, 'totalDuration')">
+                <span class="rem-ep-col-label">Total Time
+                  <ng-container *ngTemplateOutlet="sortBadge; context: { rule: nodeSortRule('totalDuration'), count: nodeSort.length }"></ng-container></span>
+              </th>
+              <td mat-cell *matCellDef="let n" class="rem-ep-num">{{ fmtDuration(n.totalDurationMs) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="execCount">
+              <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num" (click)="onNodeSort(path, 'execCount')">
+                <span class="rem-ep-col-label">Executions
+                  <ng-container *ngTemplateOutlet="sortBadge; context: { rule: nodeSortRule('execCount'), count: nodeSort.length }"></ng-container></span>
+              </th>
+              <td mat-cell *matCellDef="let n" class="rem-ep-num">{{ (n.executionCount || 0).toLocaleString() }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="avgDuration">
+              <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num" (click)="onNodeSort(path, 'avgDuration')">
+                <span class="rem-ep-col-label">Avg Duration
+                  <ng-container *ngTemplateOutlet="sortBadge; context: { rule: nodeSortRule('avgDuration'), count: nodeSort.length }"></ng-container></span>
+              </th>
+              <td mat-cell *matCellDef="let n" class="rem-ep-num">{{ fmtAvg(n.avgDurationMs) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="failedCount">
+              <th mat-header-cell *matHeaderCellDef class="rem-ep-sort-col rem-ep-num" (click)="onNodeSort(path, 'failedCount')">
+                <span class="rem-ep-col-label">Errors
+                  <ng-container *ngTemplateOutlet="sortBadge; context: { rule: nodeSortRule('failedCount'), count: nodeSort.length }"></ng-container></span>
+              </th>
+              <td mat-cell *matCellDef="let n" class="rem-ep-num">
+                <span class="rem-semantic-value"
+                      [class.rem-semantic-value--error]="(n.failedExecutionCount ?? 0) > 0"
+                      [class.rem-semantic-value--zero]="n.failedExecutionCount === 0"
+                      [class.rem-semantic-value--missing]="n.failedExecutionCount == null">{{ n.failedExecutionCount == null ? '—' : n.failedExecutionCount.toLocaleString() }}</span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="nodeColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let n; columns: nodeColumns;"></tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<ng-template #sortBadge let-rule="rule" let-count="count">
+  <ng-container *ngIf="rule">
+    <mat-icon class="rem-ep-sort-icon">{{ rule.direction === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+    <span class="rem-ep-sort-num" *ngIf="count > 1">{{ rule.priority }}</span>
+  </ng-container>
+</ng-template>
+
+<!-- Recursive path-graph tree, rendered like the Rule Nodes span tree: flat indented rows
+     with a ├/└ glyph, a bold primary name + muted secondary (node type), and badges. -->
+<ng-template #graphTree let-nodes let-level="level">
+  <ng-container *ngFor="let node of nodes">
+    <div class="rem-ep-span"
+         [class.rem-ep-span--branch]="node.children.length">
+      <span class="rem-ep-span-indent" [style.width.px]="level * 16"></span>
+      <span class="rem-ep-span-glyph">{{ node.children.length ? '├' : '└' }}</span>
+      <span class="rem-ep-span-name" [matTooltip]="node.type">
+        <span class="rem-ep-span-primary">{{ node.name }}</span>
+        <span class="rem-ep-span-secondary">{{ node.type }}</span>
+      </span>
+      <span class="rem-ep-span-relation" *ngIf="node.relation">{{ node.relation }}</span>
+      <span class="rem-ep-span-chain">{{ node.ruleChain }}</span>
+      <span class="rem-ep-span-queue" *ngIf="node.queueName">{{ node.queueName }}</span>
+    </div>
+    <ng-container *ngIf="node.children.length"
+                  [ngTemplateOutlet]="graphTree"
+                  [ngTemplateOutletContext]="{ $implicit: node.children, level: level + 1 }"></ng-container>
+  </ng-container>
+</ng-template>

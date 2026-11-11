@@ -1,0 +1,29 @@
+<div class="rem-kpi-loading" *ngIf="initialLoading">
+  <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+</div>
+
+<div class="rem-kpi-error" *ngIf="!initialLoading && errorMessage">
+  <mat-icon>error_outline</mat-icon>
+  {{ errorMessage }}
+</div>
+
+<div class="rem-kpi-cards" *ngIf="!initialLoading && !errorMessage">
+  <div class="rem-kpi-card" *ngFor="let card of cards; trackBy: trackByCard">
+    <div class="rem-kpi-label">
+      <span>{{ card.label }}</span>
+      <mat-icon *ngIf="cardDescription(card.key) as desc"
+                #cardTip="matTooltip"
+                class="rem-kpi-info"
+                [matTooltip]="desc"
+                matTooltipPosition="above"
+                (click)="cardTip.toggle()">info_outline</mat-icon>
+    </div>
+    <div class="rem-kpi-value">{{ card.primaryValue }}</div>
+    <div class="rem-kpi-before" *ngIf="card.beforeValue">{{ card.beforeValue }}</div>
+    <div class="rem-kpi-delta" *ngIf="card.deltaLabel"
+         [class.rem-delta--green]="card.deltaColour === 'green'"
+         [class.rem-delta--red]="card.deltaColour === 'red'">
+      {{ card.deltaLabel }}
+    </div>
+  </div>
+</div>

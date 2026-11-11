@@ -1,0 +1,91 @@
+{
+  "title": "Rule Engine Tracing Demo",
+  "image": null,
+  "mobileHide": false,
+  "mobileOrder": null,
+  "configuration": {
+    "description": "Full-screen local demonstration of rule-engine performance statistics and persisted traces.",
+    "widgets": {
+      "a7b21615-49e7-4d7e-9c02-eac5b3139801": {
+        "typeFullFqn": "tenant.rule_engine_monitoring_demo",
+        "type": "static",
+        "sizeX": 24,
+        "sizeY": 12,
+        "config": {
+          "datasources": [],
+          "showTitle": false,
+          "backgroundColor": "#f5f5f5",
+          "color": "rgba(0,0,0,0.87)",
+          "padding": "0",
+          "settings": {},
+          "dropShadow": false,
+          "enableFullscreen": true,
+          "useDashboardTimewindow": false,
+          "displayTimewindow": false,
+          "actions": {},
+          "widgetStyle": {},
+          "widgetCss": ""
+        },
+        "row": 0,
+        "col": 0,
+        "id": "a7b21615-49e7-4d7e-9c02-eac5b3139801"
+      }
+    },
+    "states": {
+      "default": {
+        "name": "Rule Engine Tracing Demo",
+        "root": true,
+        "layouts": {
+          "main": {
+            "widgets": {
+              "a7b21615-49e7-4d7e-9c02-eac5b3139801": {
+                "sizeX": 24,
+                "sizeY": 12,
+                "row": 0,
+                "col": 0
+              }
+            },
+            "gridSettings": {
+              "layoutType": "default",
+              "backgroundColor": "#f5f5f5",
+              "columns": 24,
+              "margin": 0,
+              "outerMargin": false,
+              "backgroundSizeMode": "100%",
+              "minColumns": 24,
+              "viewFormat": "grid",
+              "autoFillHeight": true,
+              "rowHeight": 70,
+              "backgroundImageUrl": null,
+              "mobileAutoFillHeight": true,
+              "mobileRowHeight": 70
+            }
+          }
+        }
+      }
+    },
+    "entityAliases": {},
+    "filters": {},
+    "settings": {
+      "stateControllerId": "entity",
+      "showTitle": false,
+      "showDashboardsSelect": false,
+      "showEntitiesSelect": false,
+      "showDashboardTimewindow": false,
+      "showDashboardExport": true,
+      "toolbarAlwaysOpen": false
+    },
+    "timewindow": {
+      "selectedTab": 0,
+      "realtime": {
+        "realtimeType": 0,
+        "interval": 1000,
+        "timewindowMs": 3600000
+      },
+      "aggregation": {
+        "type": "NONE",
+        "limit": 25000
+      }
+    }
+  }
+}

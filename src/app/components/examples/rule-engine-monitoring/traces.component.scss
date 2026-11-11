@@ -1,0 +1,549 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.rem-tr {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.rem-tr-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rem-tr-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.rem-tr-subtitle {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.rem-tr-header-spacer {
+  flex: 1 1 auto;
+}
+
+.rem-tr-reload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.87);
+  }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.rem-tr-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.rem-tr-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.rem-tr-filter-btn {
+  position: relative;
+}
+
+::ng-deep .rem-tr-filter-menu.mat-mdc-menu-panel,
+::ng-deep .rem-tr-filter-menu.mat-menu-panel {
+  max-width: calc(100vw - 24px) !important;
+  max-height: calc(100vh - 96px) !important;
+  overflow: hidden !important;
+}
+
+.rem-tr-filter-panel {
+  width: min(680px, calc(100vw - 24px));
+  max-height: calc(100vh - 96px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.rem-tr-filter-panel-body {
+  overflow-y: auto;
+  padding: 14px 16px 10px;
+}
+
+.rem-tr-filter-section {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+}
+
+.rem-tr-filter-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.62);
+  margin-bottom: 8px;
+}
+
+.rem-tr-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+@media (max-width: 640px) {
+  .rem-tr-filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rem-tr-filter-panel-actions {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.rem-tr-panel-btn {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.74);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.rem-tr-panel-btn--primary {
+  background: #1565c0;
+  border-color: #1565c0;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #0d47a1;
+    border-color: #0d47a1;
+  }
+}
+
+// a labeled group of related filters (Trace / Topology / Message / Status)
+.rem-tr-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rem-tr-filter-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+}
+
+.rem-tr-filter-group-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.rem-tr-select {
+  width: 100%;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }   // drop the empty hint row
+}
+
+.rem-tr-select--wide {
+  width: 100%;
+}
+
+.rem-tr-toggles {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+// In-panel searchable-dropdown styles. The options render in the mat-select CDK overlay, but emulated
+// view encapsulation tags those elements with this component's attribute, so these scoped rules apply.
+.rem-option-search {
+  padding: 6px 12px 4px;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.rem-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  padding: 2px 0;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+
+  &::placeholder { color: rgba(0, 0, 0, 0.38); }
+}
+
+.rem-no-results {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.38) !important;
+}
+
+.rem-tr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+
+  &--grow { flex: 1 1 220px; }
+  &--num { min-width: 110px; max-width: 130px; }
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  input, select {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.87);
+
+    &:focus {
+      outline: none;
+      border-color: #3f73e3;
+    }
+  }
+}
+
+.rem-tr-clear {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.74);
+
+  &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.04); }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.rem-tr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rem-tr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px 3px 10px;
+  border-radius: 14px;
+  background: rgba(63, 115, 227, 0.1);
+  color: #2b58b8;
+  font-size: 12px;
+
+  &-x {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+
+    &:hover { color: #163a8c; }
+  }
+}
+
+.rem-tr-error {
+  color: #c0392b;
+  font-size: 13px;
+}
+
+.rem-tr-loading {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.rem-tr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rem-tr-table-wrap {
+  overflow: auto;
+  flex: 1 1 0;        // fill the available height (independent of row count); paginator stays anchored below
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.rem-tr-paginator {
+  flex: 0 0 auto;
+}
+
+.rem-tr-table {
+  width: 100%;
+
+  th.mat-mdc-header-cell {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  td.mat-mdc-cell {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.84);
+  }
+
+  .rem-tr-num { text-align: right; }
+  .rem-tr-mono { font-family: 'Roboto Mono', monospace; font-size: 12px; }
+
+  .rem-tr-sort-col {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+
+  .rem-tr-sort-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  th.rem-tr-num .rem-tr-sort-label {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .rem-tr-sort-label mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .rem-tr-sort-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .rem-tr-sort-num {
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.62);
+  }
+}
+
+.rem-tr-clear-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.62);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0 8px;
+  height: 28px;
+  font-size: 12px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.rem-tr-traceid {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.rem-tr-traceid-text {
+  display: inline-block;
+  max-width: 54px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.56);
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.rem-tr-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.42);
+  padding: 0;
+  cursor: pointer;
+  border-radius: 3px;
+  flex: 0 0 auto;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.74);
+  }
+}
+
+.rem-tr-row {
+  cursor: pointer;
+  &:hover { background: rgba(63, 115, 227, 0.06); }
+}
+
+.rem-tr-status {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.6);
+
+  &--ok { background: rgba(39, 174, 96, 0.14); color: #1e8449; }
+  &--fail { background: rgba(192, 57, 43, 0.14); color: #c0392b; }
+  &--timeout { background: rgba(243, 156, 18, 0.18); color: #b9770e; }
+}
+
+.rem-tr-flag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.55);
+
+  &--on { background: rgba(192, 57, 43, 0.14); color: #c0392b; }
+}
+
+.rem-tr-empty {
+  padding: 24px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 13px;
+}
+
+.rem-tr-foot {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}

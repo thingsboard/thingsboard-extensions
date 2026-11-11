@@ -1,0 +1,262 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.rem-tg {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;   // containing block for the settings drawer/backdrop (scoped to this section)
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+// the active sibling view fills the height below the header so its table can stretch
+.rem-tg-views {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.rem-tg-views > div {
+  height: 100%;
+  min-height: 0;
+}
+
+// NOTE: do NOT set `display`/`height` on tb-rem-execution-paths / tb-rem-traces here — those element
+// selectors outrank the child components' own `:host { display: flex; height: 100% }` and would force the
+// host back to `display: block`, collapsing the table to 0 height. The components fill the wrapper themselves.
+
+// shared Trace Details overlay area fills the section; the trace-details view scrolls internally
+.rem-tg-details {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// flex only (no display/height) so we don't outrank tb-rem-trace-details' own :host rules
+.rem-tg-details > tb-rem-trace-details {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+// ── shared header ──
+.rem-tg-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding-bottom: 8px;
+}
+
+.rem-tg-tabs {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.rem-tg-tab {
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+  border-bottom: 2px solid transparent;
+
+  &:hover { color: rgba(0, 0, 0, 0.8); background: rgba(0, 0, 0, 0.03); }
+
+  &--active {
+    color: #2b58b8;
+    border-bottom-color: #3f73e3;
+  }
+}
+
+.rem-tg-status {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+
+  .rem-tg-status-sep { color: rgba(0, 0, 0, 0.26); margin: 0 2px; }
+}
+
+.rem-tg-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rem-tg-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.74);
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.04); }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.rem-tg-detail-loading {
+  padding: 16px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 13px;
+}
+
+// ── settings drawer ──
+// Scoped to this tracing section: positioned within .rem-tg (position:relative), so the backdrop/drawer
+// span exactly the Execution Paths / Traces section height and align to its top/bottom — not the whole page.
+// The high z-index keeps both above all section content, including the sticky table header (z-index ~2).
+.rem-tg-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 1000;
+}
+
+.rem-tg-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 92%;
+  background: #fff;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.18);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+
+.rem-tg-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.rem-tg-drawer-title { font-size: 16px; font-weight: 600; }
+
+.rem-tg-drawer-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.5);
+  &:hover { color: rgba(0, 0, 0, 0.8); }
+}
+
+.rem-tg-drawer-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rem-tg-field-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+
+  // lighter inline variant (e.g. the "Unlimited" toggle inside a field)
+  &--inline { font-size: 13px; font-weight: 400; gap: 6px; }
+}
+
+// group header; spaced from the previous group, flush at the top of the drawer
+.rem-tg-field-section {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(0, 0, 0, 0.5);
+
+  &:first-child { margin-top: 0; }
+}
+
+.rem-tg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label { font-size: 13px; color: rgba(0, 0, 0, 0.7); }
+
+  input[type='number'] {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
+    font-size: 13px;
+    width: 120px;
+  }
+}
+
+// consistent control widths
+.rem-tg-num { width: 120px; }
+.rem-tg-select-wide { width: 200px; }
+
+.rem-tg-field-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rem-tg-unit-select {
+  height: 32px;
+  padding: 0 6px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.rem-tg-field-unit { font-size: 13px; color: rgba(0, 0, 0, 0.6); }
+
+.rem-tg-field-error { font-size: 12px; color: #c0392b; }
+
+.rem-tg-field-hint { font-size: 12px; color: rgba(0, 0, 0, 0.55); }
+
+.rem-tg-drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.rem-tg-btn {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.04); }
+  &:disabled { opacity: 0.5; cursor: default; }
+
+  &--primary {
+    background: #3f73e3;
+    border-color: #3f73e3;
+    color: #fff;
+    &:hover:not(:disabled) { background: #335fc0; }
+  }
+}

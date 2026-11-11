@@ -1,0 +1,29 @@
+:host {
+  display: inline-flex;
+}
+
+.rem-trs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rem-trs-field {
+  width: 160px;
+}
+
+.rem-trs-datetime {
+  font-size: 0.8125rem;
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+  height: 30px;
+  box-sizing: border-box;
+}
+
+.rem-trs-to {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.38);
+}

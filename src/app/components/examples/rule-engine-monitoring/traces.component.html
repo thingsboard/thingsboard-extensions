@@ -1,0 +1,295 @@
+<div class="rem-tr">
+
+  <!-- Toolbar -->
+  <div class="rem-tr-filters">
+    <tb-rem-time-range
+        [preset]="rangePreset"
+        [customStart]="rangeCustomStart"
+        [customEnd]="rangeCustomEnd"
+        (rangeChange)="rangeChange.emit($event)">
+    </tb-rem-time-range>
+
+    <button type="button" class="rem-tr-icon-btn rem-tr-filter-btn"
+            [matMenuTriggerFor]="traceFilterMenu"
+            #traceFilterTrigger="matMenuTrigger"
+            (menuOpened)="onFilterMenuOpen()"
+            [matBadge]="activeFilterCount"
+            [matBadgeHidden]="activeFilterCount === 0"
+            matBadgeSize="small"
+            matBadgeColor="primary"
+            title="Filter">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+
+    <button type="button" class="rem-tr-reload-btn" (click)="reload()" [disabled]="loading" title="Refresh data">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <button type="button" class="rem-tr-clear" *ngIf="hasActiveFilters" (click)="clearAll()">
+      Clear filters
+    </button>
+
+    <button type="button" class="rem-tr-clear-sort" *ngIf="traceSort.length" (click)="clearSort()">
+      <mat-icon>sort</mat-icon> Clear sorting
+    </button>
+  </div>
+
+  <mat-menu #traceFilterMenu="matMenu" class="rem-tr-filter-menu" xPosition="after" yPosition="below">
+    <div class="rem-tr-filter-panel" (click)="$event.stopPropagation()">
+      <div class="rem-tr-filter-panel-body">
+        <div class="rem-tr-filter-section">
+          <div class="rem-tr-filter-section-title">Trace</div>
+          <div class="rem-tr-filter-grid">
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Trace ID</mat-label>
+              <input matInput placeholder="Exact trace id"
+                     [(ngModel)]="draftFilters.traceId" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Group ID</mat-label>
+              <input matInput placeholder="Exact group id"
+                     [(ngModel)]="draftFilters.pathId" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="rem-tr-filter-section">
+          <div class="rem-tr-filter-section-title">Topology</div>
+          <div class="rem-tr-filter-grid">
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Rule Engine</mat-label>
+              <mat-select [(ngModel)]="draftFilters.ruleEngine">
+                <div class="rem-option-search" (click)="$event.stopPropagation()">
+                  <input class="rem-search-input" placeholder="Search rule engines..."
+                         [(ngModel)]="ruleEngineSearch" [ngModelOptions]="{standalone: true}" />
+                </div>
+                <mat-option [value]="null">All</mat-option>
+                <mat-option *ngFor="let s of filteredRuleEngines" [value]="s">{{ s }}</mat-option>
+                <mat-option *ngIf="!filteredRuleEngines.length" disabled class="rem-no-results">No results</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Queue</mat-label>
+              <mat-select [(ngModel)]="draftFilters.queue">
+                <div class="rem-option-search" (click)="$event.stopPropagation()">
+                  <input class="rem-search-input" placeholder="Search queues..."
+                         [(ngModel)]="queueSearch" [ngModelOptions]="{standalone: true}" />
+                </div>
+                <mat-option [value]="null">All</mat-option>
+                <mat-option *ngFor="let q of filteredQueues" [value]="q">{{ q }}</mat-option>
+                <mat-option *ngIf="!filteredQueues.length" disabled class="rem-no-results">No results</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Rule Chain</mat-label>
+              <mat-select [(ngModel)]="draftFilters.ruleChain">
+                <div class="rem-option-search" (click)="$event.stopPropagation()">
+                  <input class="rem-search-input" placeholder="Search rule chains..."
+                         [(ngModel)]="ruleChainSearch" [ngModelOptions]="{standalone: true}" />
+                </div>
+                <mat-option [value]="null">All</mat-option>
+                <mat-option *ngFor="let c of filteredRuleChains" [value]="c">{{ c }}</mat-option>
+                <mat-option *ngIf="!filteredRuleChains.length" disabled class="rem-no-results">No results</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Rule Node</mat-label>
+              <mat-select [(ngModel)]="draftFilters.ruleNode">
+                <div class="rem-option-search" (click)="$event.stopPropagation()">
+                  <input class="rem-search-input" placeholder="Search rule nodes..."
+                         [(ngModel)]="ruleNodeSearch" [ngModelOptions]="{standalone: true}" />
+                </div>
+                <mat-option [value]="null">All</mat-option>
+                <mat-option *ngFor="let n of filteredRuleNodes" [value]="n">{{ n }}</mat-option>
+                <mat-option *ngIf="!filteredRuleNodes.length" disabled class="rem-no-results">No results</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="rem-tr-filter-section">
+          <div class="rem-tr-filter-section-title">Message</div>
+          <div class="rem-tr-filter-grid">
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Message Type</mat-label>
+              <mat-select [(ngModel)]="draftFilters.messageType">
+                <div class="rem-option-search" (click)="$event.stopPropagation()">
+                  <input class="rem-search-input" placeholder="Search message types..."
+                         [(ngModel)]="messageTypeSearch" [ngModelOptions]="{standalone: true}" />
+                </div>
+                <mat-option [value]="null">All</mat-option>
+                <mat-option *ngFor="let m of filteredMessageTypes" [value]="m">{{ m }}</mat-option>
+                <mat-option *ngIf="!filteredMessageTypes.length" disabled class="rem-no-results">No results</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Message ID</mat-label>
+              <input matInput placeholder="Exact message id"
+                     [(ngModel)]="draftFilters.messageId" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Originator</mat-label>
+              <input matInput placeholder="Exact originator id"
+                     [(ngModel)]="draftFilters.originator" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Message Data</mat-label>
+              <input matInput placeholder="Contains..."
+                     [(ngModel)]="draftFilters.messageData" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rem-tr-select">
+              <mat-label>Message Metadata</mat-label>
+              <input matInput placeholder="Contains..."
+                     [(ngModel)]="draftFilters.messageMetadata" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="rem-tr-filter-section">
+          <div class="rem-tr-filter-section-title">Status</div>
+          <div class="rem-tr-toggles">
+            <mat-slide-toggle [(ngModel)]="draftFilters.withTimeout">With timeout</mat-slide-toggle>
+            <mat-slide-toggle [(ngModel)]="draftFilters.withError">With error</mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <div class="rem-tr-filter-panel-actions">
+        <button type="button" class="rem-tr-panel-btn" (click)="cancelDraftFilters(traceFilterTrigger)">Cancel</button>
+        <button type="button" class="rem-tr-panel-btn rem-tr-panel-btn--primary"
+                [disabled]="!hasDraftChanges"
+                (click)="applyDraftFilters(traceFilterTrigger)">Apply</button>
+      </div>
+    </div>
+  </mat-menu>
+
+  <!-- Active filter chips -->
+  <div class="rem-tr-chips" *ngIf="hasActiveFilters">
+    <span class="rem-tr-chip" *ngFor="let chip of activeChips">
+      {{ chip.label }}
+      <button type="button" class="rem-tr-chip-x" (click)="removeChip(chip.key)" aria-label="Remove filter">×</button>
+    </span>
+  </div>
+
+  <div class="rem-tr-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="rem-tr-loading" *ngIf="loading">Loading traces…</div>
+
+  <!-- Trace list -->
+  <div class="rem-tr-list" *ngIf="!loading && !errorMessage">
+   <div class="rem-tr-table-wrap">
+    <table mat-table [dataSource]="pagedRows" [trackBy]="trackByTrace" class="rem-tr-table">
+
+      <ng-container matColumnDef="traceId">
+        <th mat-header-cell *matHeaderCellDef>Trace ID</th>
+        <td mat-cell *matCellDef="let t" class="rem-tr-mono">
+          <span class="rem-tr-traceid">
+            <span class="rem-tr-traceid-text" [matTooltip]="t.traceId">{{ t.traceId | slice:0:6 }}</span>
+            <button type="button" class="rem-tr-copy-btn"
+                    (click)="copyTraceId(t.traceId, $event)"
+                    [matTooltip]="copiedTraceId === t.traceId ? 'Copied' : 'Copy full Trace ID'">
+              <mat-icon>{{ copiedTraceId === t.traceId ? 'check' : 'content_copy' }}</mat-icon>
+            </button>
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="queue">
+        <th mat-header-cell *matHeaderCellDef>Root Queue</th>
+        <td mat-cell *matCellDef="let t">{{ t.queueName || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="messageType">
+        <th mat-header-cell *matHeaderCellDef>Root Message Type</th>
+        <td mat-cell *matCellDef="let t">{{ t.messageType || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ruleChain">
+        <th mat-header-cell *matHeaderCellDef>Root Rule Chain</th>
+        <td mat-cell *matCellDef="let t">{{ rootRuleChainName(t) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ruleNodes">
+        <th mat-header-cell *matHeaderCellDef class="rem-tr-num rem-tr-sort-col" (click)="onSort('ruleNodes')">
+          <span class="rem-tr-sort-label">Rule Node Executions
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: sortRule('ruleNodes'), count: traceSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let t" class="rem-tr-num">{{ t.ruleNodeCount }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="startTime">
+        <th mat-header-cell *matHeaderCellDef class="rem-tr-sort-col" (click)="onSort('startTime')">
+          <span class="rem-tr-sort-label">Start Time
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: sortRule('startTime'), count: traceSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let t">{{ fmtTime(t.startTime) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="duration">
+        <th mat-header-cell *matHeaderCellDef class="rem-tr-num rem-tr-sort-col" (click)="onSort('duration')">
+          <span class="rem-tr-sort-label">Duration
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: sortRule('duration'), count: traceSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let t" class="rem-tr-num">{{ fmtDuration(t.duration) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="inQueueTime">
+        <th mat-header-cell *matHeaderCellDef class="rem-tr-num rem-tr-sort-col" (click)="onSort('inQueueTime')">
+          <span class="rem-tr-sort-label">In Queue Time
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: sortRule('inQueueTime'), count: traceSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let t" class="rem-tr-num">{{ fmtDuration(t.inQueueTime) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalSpanTime">
+        <th mat-header-cell *matHeaderCellDef class="rem-tr-num rem-tr-sort-col" (click)="onSort('totalSpanTime')">
+          <span class="rem-tr-sort-label">Processing Time
+            <ng-container *ngTemplateOutlet="sortBadge; context: { rule: sortRule('totalSpanTime'), count: traceSort.length }"></ng-container></span>
+        </th>
+        <td mat-cell *matCellDef="let t" class="rem-tr-num">{{ fmtDuration(t.totalSpanTime) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="withTimeout">
+        <th mat-header-cell *matHeaderCellDef>With Timeout</th>
+        <td mat-cell *matCellDef="let t">
+          <span class="rem-tr-flag" [class.rem-tr-flag--on]="t.hasQueueTimeouts">{{ t.hasQueueTimeouts ? 'Yes' : 'No' }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="withErrors">
+        <th mat-header-cell *matHeaderCellDef>With Error</th>
+        <td mat-cell *matCellDef="let t">
+          <span class="rem-tr-flag" [class.rem-tr-flag--on]="t.hasErrors">{{ t.hasErrors ? 'Yes' : 'No' }}</span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let t; columns: columns;"
+          class="rem-tr-row" (click)="onRowClick(t)"></tr>
+    </table>
+
+    <div class="rem-tr-empty" *ngIf="!rows.length">No traces match the current filters.</div>
+   </div>
+
+   <tb-rem-paginator class="rem-tr-paginator"
+       [total]="total" [page]="page" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+       (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+   </tb-rem-paginator>
+  </div>
+
+</div>
+
+<ng-template #sortBadge let-rule="rule" let-count="count">
+  <ng-container *ngIf="rule">
+    <mat-icon class="rem-tr-sort-icon">{{ rule.direction === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+    <span class="rem-tr-sort-num" *ngIf="count > 1">{{ rule.priority }}</span>
+  </ng-container>
+</ng-template>

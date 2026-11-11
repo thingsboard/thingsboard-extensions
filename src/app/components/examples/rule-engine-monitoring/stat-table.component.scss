@@ -1,0 +1,197 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.rem-st {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 8px;
+}
+
+.rem-st-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rem-st-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.38);
+  margin-bottom: 4px;
+}
+
+.rem-st-legend-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+}
+
+.rem-st-clear-sort {
+  font-size: 0.8125rem;
+  color: rgba(0, 0, 0, 0.54);
+  height: 32px;
+  line-height: 32px;
+  padding: 0 8px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 2px;
+  }
+}
+
+.rem-st-groupby {
+  width: 200px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.rem-st-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+
+.rem-st-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #f44336;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.rem-st-table-wrap {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.rem-st-table {
+  width: 100%;
+}
+
+// Link colour/underline (border-bottom) comes from the global ui-ngx anchor styles
+.rem-st-link {
+  white-space: nowrap;
+}
+
+::ng-deep .rem-st-table {
+  th.mat-header-cell {
+    font-size: 0.625rem !important;
+    color: rgba(0, 0, 0, 0.54);
+    white-space: nowrap;
+    padding: 0 6px !important;
+    line-height: 1.3;
+    background: #fff;   // opaque so the sticky header isn't see-through as rows scroll beneath it
+    z-index: 2;
+  }
+
+  td.mat-cell {
+    font-size: 0.6875rem !important;
+    padding: 0 6px !important;
+    white-space: nowrap;
+  }
+}
+
+.rem-st-row {
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.rem-st-cell {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0;
+}
+
+.rem-st-primary {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.rem-st-secondary {
+  font-size: 0.5625rem;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.rem-st-primary.rem-delta--green,
+.rem-st-secondary.rem-delta--green { color: #4caf50; }
+.rem-st-primary.rem-delta--red,
+.rem-st-secondary.rem-delta--red   { color: #f44336; }
+
+.rem-st-primary.rem-semantic-value--error {
+  color: #D32F2F;
+  font-weight: 600;
+}
+
+.rem-st-primary.rem-semantic-value--timeout {
+  color: #ED6C02;
+  font-weight: 600;
+}
+
+.rem-st-primary.rem-semantic-value--zero {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.rem-st-primary.rem-semantic-value--missing {
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+.rem-st-sort-col {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.rem-st-col-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.rem-st-sort-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+}
+
+.rem-st-sort-num {
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.rem-st-empty {
+  padding: 20px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 0.875rem;
+}

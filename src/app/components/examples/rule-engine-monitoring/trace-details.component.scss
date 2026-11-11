@@ -1,0 +1,595 @@
+// status palette (shared by tree highlight, timeline bars, legend)
+$st-success:   #27ae60;
+$st-error:     #c0392b;
+$st-retry:     #8e44ad;
+$st-canceled:  #e67e22;
+$st-continued: #d4a017;
+$row-h: 28px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rem-td {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rem-td-back {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #2b58b8;
+  font-size: 13px;
+  padding: 2px 0;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+// ── header metadata strip ──
+.rem-td-meta {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 8px 12px;
+  background: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.rem-td-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rem-td-meta-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.rem-td-meta-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &--mono { font-family: 'Roboto Mono', monospace; font-weight: 500; }
+  &--error { color: $st-error; }
+  &--retry { color: $st-retry; }
+  &--canceled { color: $st-canceled; }
+  &--continued { color: $st-continued; }
+}
+
+.rem-td-meta-sep {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 2px 0;
+}
+
+.rem-td-copy {
+  display: inline-flex;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  color: rgba(0, 0, 0, 0.4);
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+  &:hover { color: #2b58b8; }
+}
+
+// ── body: Rule Nodes tree | Timeline (independently scrollable, row-aligned) ──
+.rem-td-body {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// Both panels' titles share this fixed height so the rows below them line up.
+.rem-td-section-title {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.55);
+  padding: 0 8px;
+
+  &--row {
+    justify-content: space-between;
+    gap: 12px;
+    overflow: hidden;   // legend stays on one line so the title height never grows
+  }
+}
+
+.rem-td-tree {
+  flex: 0 0 46%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.rem-td-timeline {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.rem-td-tree-rows,
+.rem-td-tl-rows {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// tree can scroll horizontally for long names; the timeline is %-based and always fits the width,
+// so it never scrolls horizontally (avoids a spurious scrollbar from the absolutely-positioned labels)
+.rem-td-tree-rows { overflow-x: auto; }
+.rem-td-tl-rows { overflow-x: hidden; }
+
+// Shared row: one definition drives BOTH panels — identical height, padding, border and box model
+// so the Rule Nodes tree and the Timeline line up 1:1 (border included in the height via border-box).
+.rem-td-row {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: $row-h;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+
+  // hover/selected are mirrored across both panels (driven by the shared hovered/selected span).
+  // Two-class selectors (0,2,0) so they outrank the single-class status tint (0,1,0) — the row background
+  // becomes blue/grey on hover/select while the status left-accent (box-shadow) is preserved.
+  &:hover,
+  &.rem-td-row--hover { background: rgba(63, 115, 227, 0.06); }
+  &.rem-td-row--selected { background: rgba(63, 115, 227, 0.12); }
+}
+
+// ── tree row status: one legend colour per row as a 3px left accent + a very subtle row tint.
+// Single-class selectors so hover/selected backgrounds (above) win, leaving only the left accent. ──
+.rem-td-status-success   { box-shadow: inset 3px 0 0 $st-success;   background: rgba($st-success, 0.05); }
+.rem-td-status-error     { box-shadow: inset 3px 0 0 $st-error;     background: rgba($st-error, 0.06); }
+.rem-td-status-retry     { box-shadow: inset 3px 0 0 $st-retry;     background: rgba($st-retry, 0.06); }
+.rem-td-status-canceled  { box-shadow: inset 3px 0 0 $st-canceled;  background: rgba($st-canceled, 0.07); }
+.rem-td-status-continued { box-shadow: inset 3px 0 0 $st-continued; background: rgba($st-continued, 0.08); }
+
+.rem-td-indent { display: inline-block; flex: none; }
+.rem-td-glyph { color: rgba(0, 0, 0, 0.3); margin-right: 6px; flex: none; }
+
+.rem-td-span-name {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+// queue name + service id pushed to the right edge of the tree row
+.rem-td-row-right {
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 8px;
+
+  .rem-td-badge { margin-left: 0; }   // spacing handled by the group gap
+}
+
+.rem-td-span-primary { font-weight: 500; color: rgba(0, 0, 0, 0.85); }
+.rem-td-span-secondary { font-size: 11px; color: rgba(0, 0, 0, 0.42); }
+.rem-td-span-service { font-size: 11px; color: #2b58b8; }
+
+.rem-td-badge {
+  flex: none;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 9px;
+  font-size: 10px;
+  line-height: 16px;
+
+  &--queue { background: rgba(0, 0, 0, 0.06); color: rgba(0, 0, 0, 0.6); }
+  &--retry { background: rgba(142, 68, 173, 0.14); color: $st-retry; font-weight: 700; }
+}
+
+// ── timeline ──
+.rem-td-tl-header {
+  flex: 0 0 auto;
+  position: relative;
+  height: 16px;
+  margin: 0 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.rem-td-tl-marker {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+
+  &:first-child { transform: none; }
+  &:last-child { transform: translateX(-100%); }
+}
+
+.rem-td-tl-row {
+  position: relative;
+}
+
+.rem-td-bar {
+  position: absolute;
+  top: 9px;
+  height: 10px;
+  border-radius: 3px;
+  background: $st-success;
+  min-width: 2px;
+
+  &--error { background: $st-error; }
+  &--canceled { background: $st-canceled; }
+  &--continued { background: $st-continued; }
+}
+
+.rem-td-bar-dur {
+  position: absolute;
+  top: 6px;
+  margin-left: 4px;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  pointer-events: none;
+
+  // for right-edge bars: render to the left of the bar (anchored at bar start) so it never overflows
+  &--flip {
+    margin-left: 0;
+    transform: translateX(calc(-100% - 4px));
+  }
+}
+
+// ── legend (lives in the timeline header) ──
+.rem-td-legend {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px 12px;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.rem-td-legend-item { flex: 0 0 auto; white-space: nowrap; }
+
+.rem-td-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rem-td-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+
+  &--success { background: $st-success; }
+  &--error { background: $st-error; }
+  &--retry { background: $st-retry; }
+  &--timeoutCanceled { background: $st-canceled; }
+  &--timeoutContinued { background: $st-continued; }
+}
+
+// ── selected span detail (stable bottom panel) ──
+.rem-td-detail {
+  flex: 0 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-top: 2px solid rgba(0, 0, 0, 0.16);   // strong separation from the trace view
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+
+  // header-only states size to content; open/max get an explicit share of the height
+  &--empty,
+  &--collapsed { height: auto; }
+  &--open { height: 32%; }
+  &--max  { height: 82%; }
+}
+
+.rem-td-meta,
+.rem-td-meta *,
+.rem-td-detail,
+.rem-td-detail-header,
+.rem-td-detail-title,
+.rem-td-detail-primary,
+.rem-td-detail-secondary,
+.rem-td-detail-dur,
+.rem-td-detail-body,
+.rem-td-detail-body *,
+.rem-td-tags,
+.rem-td-tags *,
+.rem-td-error,
+.rem-td-error * {
+  user-select: text !important;
+}
+
+.rem-td button,
+.rem-td button *,
+.rem-td-resize,
+.rem-td-resize *,
+.rem-td-icon-btn,
+.rem-td-icon-btn *,
+.rem-td-open-node,
+.rem-td-open-node * {
+  user-select: none !important;
+}
+
+// visible drag handle between the trace view and the details panel
+.rem-td-resize {
+  flex: 0 0 auto;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  user-select: none;
+  background: rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  &:hover { background: rgba(63, 115, 227, 0.12); }
+}
+
+.rem-td-resize-grip {
+  width: 36px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.rem-td-detail-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  &--empty {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 12px;
+    border-bottom: none;
+    cursor: default;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; color: rgba(0, 0, 0, 0.35); }
+  }
+}
+
+.rem-td-detail-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+.rem-td-detail-primary { font-weight: 600; color: rgba(0, 0, 0, 0.87); }
+.rem-td-detail-secondary { font-size: 11px; color: rgba(0, 0, 0, 0.45); }
+
+.rem-td-detail-status {
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(39, 174, 96, 0.14);
+  color: #1e8449;
+
+  &--error { background: rgba(192, 57, 43, 0.14); color: $st-error; }
+}
+
+.rem-td-detail-dur { font-size: 12px; color: rgba(0, 0, 0, 0.6); }
+.rem-td-detail-spacer { flex: 1 1 auto; }
+
+.rem-td-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  color: rgba(0, 0, 0, 0.5);
+  padding: 2px;
+  border-radius: 4px;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { background: rgba(0, 0, 0, 0.06); color: rgba(0, 0, 0, 0.85); }
+  &--close:hover { background: rgba(192, 57, 43, 0.1); color: #c0392b; }
+}
+
+.rem-td-detail-body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 10px;
+}
+
+// exception block for an error span
+.rem-td-error {
+  margin-bottom: 12px;
+  border: 1px solid rgba(192, 57, 43, 0.3);
+  border-radius: 6px;
+  background: rgba(192, 57, 43, 0.05);
+  padding: 8px 10px;
+}
+
+.rem-td-error-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $st-error;
+  margin-bottom: 6px;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.rem-td-error-stack {
+  margin: 0;
+  max-height: 280px;
+  overflow: auto;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.rem-td-tags-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.rem-td-open-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(43, 88, 184, 0.4);
+  background: rgba(43, 88, 184, 0.06);
+  color: #2b58b8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  &:hover { background: rgba(43, 88, 184, 0.12); }
+}
+
+.rem-td-tags-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.rem-td-tags {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: 3px 8px;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    vertical-align: top;
+  }
+}
+
+.rem-td-tag-key {
+  color: rgba(0, 0, 0, 0.55);
+  font-family: 'Roboto Mono', monospace;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.rem-td-tag-val {
+  color: rgba(0, 0, 0, 0.85);
+  word-break: break-word;
+}
+
+.rem-td-tag-val-wrap {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  user-select: text;
+
+  &--json {
+    align-items: stretch;
+  }
+}
+
+.rem-td-tag-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  user-select: text;
+}
+
+.rem-td-tag-json {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid rgba(43, 88, 184, 0.14);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(43, 88, 184, 0.045), rgba(43, 88, 184, 0.02));
+  color: rgba(0, 0, 0, 0.82);
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre;
+  tab-size: 2;
+  user-select: text;
+}
+
+.rem-td-tags-empty {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .rem-td-body { flex-direction: column; }
+  .rem-td-tree { flex: 0 0 40%; }
+}

@@ -1,0 +1,46 @@
+{
+  "widgetsBundle": {
+    "alias": "tracing_demo_monitoring",
+    "title": "Tracing Demo Monitoring",
+    "image": null,
+    "scada": false,
+    "description": "Rule-engine performance and tracing widget for the local tracing demonstration.",
+    "order": null,
+    "name": "Tracing Demo Monitoring"
+  },
+  "widgetTypes": [
+    {
+      "fqn": "rule_engine_monitoring_demo",
+      "name": "Rule Engine Monitoring Demo",
+      "deprecated": false,
+      "image": null,
+      "description": "Full-screen rule-engine Performance and Tracing views backed by the ThingsBoard monitoring APIs.",
+      "descriptor": {
+        "type": "static",
+        "sizeX": 24,
+        "sizeY": 12,
+        "resources": [
+          {
+            "url": "tb-resource;/api/resource/js_module/tenant/thingsboard-tracing-demo-extension.js",
+            "isModule": true
+          }
+        ],
+        "templateHtml": "<tb-rule-engine-monitoring [ctx]=\"ctx\"></tb-rule-engine-monitoring>",
+        "templateCss": ":host { display: block; width: 100%; height: 100%; }\ntb-rule-engine-monitoring { display: block; width: 100%; height: 100%; }",
+        "controllerScript": "self.onInit = function() {};\nself.onDataUpdated = function() {\n  if (self.ctx.$scope.ruleEngineMonitoringWidget) {\n    self.ctx.$scope.ruleEngineMonitoringWidget.onDataUpdated();\n  }\n};\nself.onDestroy = function() {};\nself.typeParameters = function() {\n  return { maxDatasources: 0, dataKeysOptional: true };\n};\n",
+        "settingsForm": [],
+        "dataKeySettingsForm": [],
+        "latestDataKeySettingsForm": [],
+        "settingsDirective": "",
+        "dataKeySettingsDirective": "",
+        "latestDataKeySettingsDirective": "",
+        "hasBasicMode": false,
+        "basicModeDirective": "",
+        "defaultConfig": "{\"datasources\":[],\"showTitle\":false,\"backgroundColor\":\"#f5f5f5\",\"color\":\"rgba(0,0,0,0.87)\",\"padding\":\"0\",\"settings\":{},\"dropShadow\":false,\"enableFullscreen\":true,\"useDashboardTimewindow\":false,\"displayTimewindow\":false,\"actions\":{},\"widgetStyle\":{},\"widgetCss\":\"\"}"
+      },
+      "resources": [],
+      "scada": false,
+      "tags": ["tracing", "rule-engine", "demo"]
+    }
+  ]
+}

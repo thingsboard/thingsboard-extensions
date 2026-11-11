@@ -1,0 +1,252 @@
+:host {
+  display: block;
+  height: 100%;
+  // Never exceed the viewport even if ThingsBoard sizes the widget cell taller than the screen —
+  // this keeps the whole dashboard within one viewport and pushes overflow into the inner scrollers.
+  max-height: 100vh;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.rem-widget {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  gap: 0;
+  height: 100%;
+  max-height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;   // dashboards are top-level tabs now — switching never scrolls the widget
+  background: #f5f5f5;
+}
+
+// ── top-level dashboard tabs (Performance | Tracing) ──
+.rem-dash-tabs {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f5f5f5;
+}
+
+.rem-dash-tab {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+  border-bottom: 2px solid transparent;
+
+  &:hover { color: rgba(0, 0, 0, 0.8); background: rgba(0, 0, 0, 0.03); }
+  &--active { color: #2b58b8; border-bottom-color: #3f73e3; }
+}
+
+// The selected dashboard fills the remaining height; the other stays mounted (display:none) to preserve
+// filters, pagination, the selected nested tab, and scroll position.
+.rem-dash-panels {
+  flex: 1 1 0;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.rem-dashboard-panel {
+  flex: 1 1 0;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 16px;
+}
+.rem-dashboard-panel[hidden] { display: none; }   // outrank the panels' own display:flex so hidden tabs collapse
+
+.rem-performance-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  // Fit the whole tab in the viewport: filters + KPI keep natural height, the charts/table row fills the
+  // rest. No panel-level scroll (which caused the small page scroll when the bottom chart was clipped) —
+  // the charts panel and the table each scroll internally when the viewport is too short.
+  overflow: hidden;
+}
+
+.rem-tracing-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.rem-filter-section,
+.rem-kpi-section,
+.rem-chart-section,
+.rem-table-section,
+.rem-paths-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+// Filters and KPI cards keep their compact natural height
+.rem-filter-section,
+.rem-kpi-section {
+  flex: 0 0 auto;
+}
+
+// Charts + aggregated stats table — fills the leftover height below filters + KPI (basis 0 so it takes
+// exactly the remaining space rather than growing from its content height)
+.rem-bottom-row {
+  display: flex;
+  gap: 12px;
+  flex: 1 1 0;
+  min-height: 0;
+  align-items: stretch;
+
+  .rem-chart-section {
+    flex: 0 0 65%;   // overridden inline by the drag handle
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rem-table-section {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    // The stat-table fills the section height (aligned with the charts panel) and scrolls its rows
+    // internally; flex-only (no display/height) so we don't outrank the component's own :host rules.
+    > tb-rem-stat-table {
+      flex: 1 1 auto;
+      min-height: 0;
+      min-width: 0;
+    }
+  }
+}
+
+// Execution Paths — full-width investigation card filling the tracing screen
+.rem-paths-section {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+// the tracing component fills the card so its inner table can use the full height
+.rem-paths-section > tb-rem-tracing {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.rem-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+}
+
+.rem-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #1565c0;
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+
+  &:hover:not(:disabled):not(.rem-crumb--current) {
+    background: rgba(21, 101, 192, 0.08);
+    text-decoration: underline;
+  }
+
+  &.rem-crumb--current {
+    color: rgba(0, 0, 0, 0.76);
+    font-weight: 600;
+    cursor: default;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.rem-crumb-prefix {
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+}
+
+.rem-crumb--current .rem-crumb-prefix {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.rem-crumb-sep {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: rgba(0, 0, 0, 0.32);
+}
+
+.rem-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f44336;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.rem-debug {
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+// Divider between the charts and the stat table on the Performance tab.
+.rem-split-handle {
+  flex: 0 0 auto;
+  width: 10px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  user-select: none;
+  border-radius: 4px;
+
+  &:hover { background: rgba(63, 115, 227, 0.12); }
+}
+
+.rem-split-grip {
+  width: 3px;
+  height: 36px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+// While dragging, keep the pointer from selecting text or landing inside the charts.
+.rem-bottom-row--dragging {
+  cursor: col-resize;
+  user-select: none;
+
+  * { pointer-events: none; }
+}

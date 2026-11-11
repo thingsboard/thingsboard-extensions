@@ -1,0 +1,1197 @@
+// Traces table geometry. The list can hold many rows (hundreds), so it scrolls within a
+// fixed viewport; Span Details uses the same height so the two views match.
+$rem-ep-trace-row-height: 36px;
+$rem-ep-trace-visible-rows: 7;   // header + ~6 data rows visible before scrolling
+$rem-ep-traces-height: $rem-ep-trace-row-height * $rem-ep-trace-visible-rows;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+}
+
+.rem-ep {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.rem-ep-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rem-ep-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.rem-ep-header-spacer {
+  flex: 1 1 auto;
+}
+
+.rem-ep-tracing {
+  font-size: 0.8125rem;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.rem-ep-tracing-on  { color: #2e7d32; font-weight: 600; }
+.rem-ep-tracing-off { color: rgba(0, 0, 0, 0.5); font-weight: 600; }
+
+.rem-ep-reload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  padding: 0;
+  border-radius: 4px;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.rem-ep-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(21, 101, 192, 0.4);
+  background: rgba(21, 101, 192, 0.06);
+  color: #1565c0;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover:not(:disabled) { background: rgba(21, 101, 192, 0.12); }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+// ── Trace Settings drawer ───────────────────────────────────────────────────
+// z-index must clear the CDK sticky table header (Angular Material sets z-index: 100 on
+// sticky header cells), so the backdrop/drawer sit above all dashboard content.
+.rem-ep-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 1000;
+}
+
+.rem-ep-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 92%;
+  z-index: 1001;
+  background: #fff;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+.rem-ep-drawer-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.rem-ep-drawer-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.rem-ep-drawer-close {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.54);
+  display: inline-flex;
+  padding: 2px;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  &:hover { color: rgba(0, 0, 0, 0.87); }
+}
+
+.rem-ep-drawer-body {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.rem-ep-field-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 4px;
+
+  // restore the native checkbox (host app resets it with appearance: none)
+  input[type="checkbox"] {
+    appearance: auto;
+    -webkit-appearance: checkbox;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    flex: 0 0 auto;
+    accent-color: #1565c0;
+    cursor: pointer;
+    opacity: 1;
+    position: static;
+  }
+}
+
+.rem-ep-field-group--disabled {
+  opacity: 0.55;
+}
+
+.rem-ep-field-section {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 18px 0 8px;
+}
+
+.rem-ep-field {
+  margin-bottom: 14px;
+
+  label {
+    display: block;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 4px;
+  }
+
+  input[type="number"] {
+    width: 88px;
+    padding: 5px 8px;
+    border: 1px solid rgba(0, 0, 0, 0.24);
+    border-radius: 4px;
+    font: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+  }
+}
+
+.rem-ep-field-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rem-ep-unit-select {
+  appearance: auto;
+  -webkit-appearance: menulist;
+  padding: 5px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  background: #fff;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.rem-ep-field-unit {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.rem-ep-field-error {
+  color: #c62828;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.rem-ep-strategy {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.rem-ep-drawer-footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.rem-ep-btn {
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.75);
+  font: inherit;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.04); }
+
+  &.rem-ep-btn--primary {
+    border-color: #1565c0;
+    background: #1565c0;
+    color: #fff;
+
+    &:hover:not(:disabled) { background: #0d47a1; }
+  }
+
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+.rem-ep-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.rem-ep-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #f44336;
+  font-size: 0.875rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Paths list fills the section and scrolls instead of growing with the number of rows
+.rem-ep-table-wrap {
+  overflow: auto;
+  flex: 1 1 0;        // fill the available height (independent of row count) so the paginator stays anchored at the bottom
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.rem-ep-table {
+  width: 100%;
+}
+
+::ng-deep .rem-ep-table {
+  th.mat-header-cell,
+  th.mat-mdc-header-cell {
+    font-size: 11px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    padding: 0 10px !important;
+    line-height: 1.2;
+    background: #fff;  // opaque so the sticky header hides rows scrolling beneath
+    z-index: 2;
+  }
+
+  td.mat-cell,
+  td.mat-mdc-cell {
+    font-size: 13px !important;
+    color: rgba(0, 0, 0, 0.84);
+    padding: 0 10px !important;
+    line-height: 1.25;
+    white-space: nowrap;
+  }
+
+  // compact rows — kill the default 52px Material row height and its empty vertical space
+  .mat-mdc-header-row { min-height: 30px; }
+  .mat-mdc-row        { min-height: 34px; }
+
+  // columns are explicitly sized (not evenly distributed); a trailing spacer absorbs the rest
+  .rem-ep-col-pathid { flex: 0 0 92px; }
+  .rem-ep-expand-col { flex: 0 0 30px; padding: 0 0 0 6px !important; }
+  .rem-ep-col-text   { flex: 0 1 148px; overflow: hidden; text-overflow: ellipsis; }
+  .rem-ep-col-num    { flex: 0 0 86px; justify-content: flex-end; }
+  .rem-ep-col-rate   { flex: 0 0 132px; justify-content: flex-end; }
+  .rem-ep-col-duration { flex: 0 0 120px; justify-content: flex-end; }
+  // fixed width so this column doesn't stretch (Material's default flex:1) and open a gap before
+  // the numeric columns — the trailing spacer is the only column meant to absorb slack width
+  .rem-ep-col-time   { flex: 0 0 122px; }
+  .rem-ep-col-spacer { flex: 1 1 8px; padding: 0 !important; }
+
+  .rem-ep-column-row {
+    height: 30px;
+    min-height: 30px;
+
+    th.mat-header-cell,
+    th.mat-mdc-header-cell {
+      background: #fff;
+    }
+  }
+
+  .rem-ep-group-start {
+    border-left: none;
+  }
+}
+
+.rem-ep-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+th.rem-ep-num,
+td.rem-ep-num {
+  text-align: right !important;
+}
+
+td.rem-ep-col-rate {
+  word-spacing: 2px;
+}
+
+.rem-semantic-value {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.rem-semantic-value--error {
+  color: #D32F2F;
+  font-weight: 600;
+}
+
+.rem-semantic-value--timeout {
+  color: #ED6C02;
+  font-weight: 600;
+}
+
+.rem-semantic-value--zero {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.rem-semantic-value--missing {
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+// warn for degraded success rate (below 99%)
+.rem-ep-warn {
+  color: #ef6c00;
+  font-weight: 600;
+}
+
+.rem-ep-name {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.rem-ep-expand-col {
+  width: 28px;
+  padding-right: 0 !important;
+}
+
+.rem-ep-expand-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.rem-ep-row {
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:hover {
+    background: rgba(21, 101, 192, 0.06);
+  }
+
+  &.rem-ep-row--expanded {
+    background: rgba(21, 101, 192, 0.06);
+  }
+}
+
+.rem-ep-sort-col {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.rem-ep-col-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.rem-ep-num .rem-ep-col-label {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.rem-ep-sort-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+}
+
+.rem-ep-sort-num {
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.rem-ep-clear-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  &:hover { background: rgba(0, 0, 0, 0.04); color: rgba(0, 0, 0, 0.87); }
+}
+
+// ── Path Details view ───────────────────────────────────────────────────────
+
+.rem-ep-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;   // back/summary fixed; the detail row fills and its graph/table scroll internally
+}
+
+.rem-ep-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  color: #1565c0;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 2px 4px;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { text-decoration: underline; }
+}
+
+.rem-ep-summary {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rem-ep-summary-spacer { flex: 1 1 auto; }
+
+// ── entry-point filters ──
+// Single compact toolbar row: time-range picker + selects + Clear button, vertically centred with
+// consistent spacing. The shared subscript-wrapper override drops the empty Material hint row and
+// pierces into the nested tb-rem-time-range component too.
+.rem-ep-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }   // drop the empty hint row
+}
+
+.rem-ep-select {
+  width: 220px;
+}
+
+.rem-ep-clear-filters {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.74);
+
+  &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.04); }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+// In-panel searchable-dropdown styles (mat-select overlay; emulated encapsulation applies these).
+.rem-option-search {
+  padding: 6px 12px 4px;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.rem-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  padding: 2px 0;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.87);
+
+  &::placeholder { color: rgba(0, 0, 0, 0.38); }
+}
+
+.rem-add-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0 2px;
+  font-size: 0.875rem;
+  color: #305680;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { text-decoration: underline; }
+}
+
+.rem-no-results {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.38) !important;
+}
+
+.rem-ep-traces-link {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: #2b58b8;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover:not(:disabled) { color: #163a8c; }
+  &:disabled { color: rgba(0, 0, 0, 0.38); text-decoration: none; cursor: default; }
+}
+
+// Path Id cell: truncated id + inline copy button (icon reveals fully on hover)
+.rem-ep-pathid {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.78;
+}
+
+.rem-ep-pathid-text {
+  font-family: monospace;
+  color: rgba(0, 0, 0, 0.46);
+}
+
+.rem-ep-pathid-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.38);
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+  }
+
+  &:hover { color: #2b58b8; }
+}
+
+.rem-ep-view-traces {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #3f73e3;
+  border-radius: 4px;
+  background: #fff;
+  color: #2b58b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { background: rgba(63, 115, 227, 0.08); }
+}
+
+.rem-ep-summary-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.rem-ep-summary-stats {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 2px;
+}
+
+.rem-ep-detail {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 3px solid #1565c0;
+  border-radius: 6px;
+  flex: 1 1 0;        // fill the remaining detail height; the two blocks scroll internally
+  min-height: 0;
+}
+
+// graph (left) and metrics/traces/span-details (right) split 60 / 40; each fills the detail height
+.rem-ep-detail-block {
+  flex: 3 1 0;   // 60%
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rem-ep-detail-block--narrow {
+  flex: 2 1 0;   // 40%
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rem-ep-detail-heading {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.54);
+  margin-bottom: 8px;
+}
+
+.rem-ep-detail-heading--action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+// Path metrics summary shown above the rule node metrics
+.rem-ep-path-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px 16px;
+  margin-bottom: 16px;
+}
+
+.rem-ep-pm-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.6875rem;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.rem-ep-pm-label {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.rem-ep-pm-value {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.rem-ep-pm-value.rem-semantic-value--error {
+  color: #D32F2F;
+}
+
+.rem-ep-pm-value.rem-semantic-value--timeout {
+  color: #ED6C02;
+}
+
+.rem-ep-pm-value.rem-semantic-value--zero {
+  color: #6B7280;
+}
+
+.rem-ep-action {
+  border: 1px solid rgba(21, 101, 192, 0.4);
+  background: rgba(21, 101, 192, 0.06);
+  color: #1565c0;
+  font: inherit;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 2px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(21, 101, 192, 0.12);
+  }
+}
+
+// Traces table (Traces view) — fills the detail height and scrolls
+.rem-ep-trace-wrap {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.rem-ep-trace-table {
+  width: 100%;
+  background: transparent;
+}
+
+::ng-deep .rem-ep-trace-table {
+  // sticky header must fully cover the rows scrolling beneath it
+  .mat-mdc-header-row {
+    background: #fafafa !important;
+  }
+
+  th.mat-header-cell,
+  th.mat-mdc-header-cell {
+    font-size: 0.625rem !important;
+    color: rgba(0, 0, 0, 0.54);
+    white-space: nowrap;
+    padding: 0 8px !important;
+    background: #fafafa !important;  // solid so sticky header hides scrolling rows beneath
+    z-index: 3;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  td.mat-cell {
+    font-size: 0.6875rem !important;
+    padding: 0 8px !important;
+    white-space: nowrap;
+  }
+
+  // fixed row heights so the table height is deterministic (matches Span Details)
+  .mat-mdc-header-row {
+    min-height: $rem-ep-trace-row-height;
+    height: $rem-ep-trace-row-height;
+  }
+
+  .mat-mdc-row {
+    min-height: $rem-ep-trace-row-height;
+    height: $rem-ep-trace-row-height;
+  }
+
+  .mat-mdc-row,
+  .mat-mdc-header-row {
+    background: transparent;
+  }
+}
+
+.rem-ep-trace-row {
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &.rem-ep-trace-row--selected {
+    background: rgba(21, 101, 192, 0.1);
+  }
+}
+
+.rem-ep-trace-status {
+  display: inline-block;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  padding: 1px 8px;
+  border-radius: 10px;
+}
+
+.rem-ep-trace-status--ok {
+  color: #2e7d32;
+  background: rgba(76, 175, 80, 0.14);
+}
+
+.rem-ep-trace-status--fail {
+  color: #c62828;
+  background: rgba(244, 67, 54, 0.14);
+}
+
+// Span Details panel — fills the detail height and scrolls
+.rem-ep-span-detail {
+  font-size: 0.6875rem;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.rem-ep-kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 12px;
+  row-gap: 4px;
+  margin: 0;
+
+  dt {
+    color: rgba(0, 0, 0, 0.54);
+    font-weight: 500;
+  }
+
+  dd {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.87);
+    word-break: break-all;
+  }
+}
+
+.rem-ep-span-next {
+  margin-top: 12px;
+}
+
+.rem-ep-span-next-head {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.54);
+  margin-bottom: 6px;
+}
+
+.rem-ep-span-next-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.rem-ep-span-next-name {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+// Path graph rendered like the Rule Nodes span tree: flat indented rows with a ├/└ glyph,
+// a bold primary name + muted secondary (node type), and trailing relation/rule-chain badges.
+.rem-ep-graph {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex: 1 1 0;        // fill the graph block height (independent of node count) and scroll internally
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.rem-ep-span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+}
+
+.rem-ep-span--clickable {
+  cursor: pointer;
+}
+
+.rem-ep-span--selected {
+  background: rgba(21, 101, 192, 0.1);
+
+  &:hover {
+    background: rgba(21, 101, 192, 0.14);
+  }
+}
+
+.rem-ep-span-indent {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.rem-ep-span-glyph {
+  flex-shrink: 0;
+  width: 14px;
+  font-family: monospace;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.rem-ep-span-name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 5px;
+  overflow: hidden;
+}
+
+// Primary label: bold node name
+.rem-ep-span-primary {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  max-width: 55%;
+}
+
+// Secondary label: muted node type
+.rem-ep-span-secondary {
+  font-size: 0.625rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+// rule engine instance the span ran on, e.g. [rule-engine-0]
+.rem-ep-span-service {
+  flex: 0 0 auto;
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: #6a1b9a;
+  white-space: nowrap;
+}
+
+// relation (incoming edge) badge
+.rem-ep-span-relation {
+  flex-shrink: 0;
+  font-size: 0.625rem;
+  color: #1565c0;
+  background: rgba(21, 101, 192, 0.08);
+  border: 1px solid rgba(21, 101, 192, 0.3);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+// rule chain badge
+.rem-ep-span-chain {
+  flex-shrink: 0;
+  font-size: 0.625rem;
+  color: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+// queue badge
+.rem-ep-span-queue {
+  flex-shrink: 0;
+  font-size: 0.625rem;
+  color: #455a64;
+  background: rgba(69, 90, 100, 0.08);
+  border: 1px solid rgba(69, 90, 100, 0.16);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+// ── Timeline (Traces view) — bar per span, aligned 1:1 with the tree rows ───────
+$rem-ep-tl-track-basis: 45%;
+
+.rem-ep-tl-header {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: #fff;
+}
+
+.rem-ep-tl-header-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rem-ep-tl-axis {
+  position: relative;
+  flex: 0 0 $rem-ep-tl-track-basis;
+  height: 100%;
+}
+
+.rem-ep-tl-marker {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 0.5625rem;
+  color: rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+
+  &:first-child { transform: none; }
+  &:last-child  { transform: translateX(-100%); }
+}
+
+// when the header is present the graph joins flush below it
+.rem-ep-tl-header + .rem-ep-graph {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+// per-row timeline track on the right of each span row
+.rem-ep-tl-track {
+  position: relative;
+  flex: 0 0 $rem-ep-tl-track-basis;
+  height: 14px;
+  margin-left: 8px;
+
+  // baseline guide line
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.06);
+  }
+}
+
+.rem-ep-tl-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 8px;
+  min-width: 2px;
+  border-radius: 3px;
+  background: #42a5f5;
+}
+
+.rem-ep-tl-bar--error {
+  background: #ef5350;
+}
+
+.rem-ep-tl-dur {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-left: 4px;
+  font-size: 0.5625rem;
+  color: rgba(0, 0, 0, 0.5);
+  background: #fff;
+  white-space: nowrap;
+}
+
+// Per-rule-node metrics table inside the detail block — fills remaining height and scrolls
+.rem-ep-node-wrap {
+  overflow: auto;
+  flex: 1 1 0;        // fill the block height (independent of row count); header stays via sticky
+  min-height: 0;
+}
+
+.rem-ep-node-table {
+  width: 100%;
+  background: transparent;
+}
+
+::ng-deep .rem-ep-node-table {
+  th.mat-header-cell,
+  th.mat-mdc-header-cell {
+    font-size: 0.625rem !important;
+    color: rgba(0, 0, 0, 0.54);
+    white-space: nowrap;
+    padding: 0 8px !important;
+    background: #fafafa !important;  // opaque so the sticky header hides rows scrolling beneath
+    z-index: 3;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  td.mat-cell {
+    font-size: 0.6875rem !important;
+    padding: 0 8px !important;
+    white-space: nowrap;
+  }
+
+  // data rows transparent (show the detail background); header row stays opaque
+  .mat-mdc-row {
+    background: transparent;
+  }
+
+  .mat-mdc-header-row {
+    background: #fafafa !important;
+  }
+}
+
+.rem-ep-empty {
+  padding: 20px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 0.875rem;
+}
